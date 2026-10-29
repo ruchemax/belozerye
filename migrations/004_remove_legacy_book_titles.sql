@@ -1,0 +1,2 @@
+ALTER TABLE books DROP COLUMN title;
+ALTER TABLE books DROP COLUMN card_title;

@@ -1,0 +1,24 @@
+{
+  "name": "belozerye",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "db:admin": "node scripts/database-admin-server.mjs",
+    "db:migrate": "node scripts/migrate-database.mjs",
+    "db:normalize-names": "node scripts/normalize-place-name-states.mjs",
+    "db:remove-place-name-variants": "node scripts/remove-place-name-variants.mjs",
+    "db:remove-legacy-mention-columns": "node scripts/remove-legacy-mention-columns.mjs",
+    "db:remove-source-punctuation": "node scripts/remove-source-punctuation.mjs",
+    "db:remove-target-anchor": "node scripts/remove-target-anchor.mjs",
+    "db:rename-source-heading-id": "node scripts/rename-source-heading-id.mjs",
+    "db:migrate-mention-name-variants": "node scripts/migrate-mention-name-variants.mjs",
+    "db:migrate-place-name-columns": "node scripts/migrate-place-name-columns.mjs",
+    "db:remove-source-book-id": "node scripts/remove-source-book-id.mjs",
+    "db:set-statuses-unknown": "node scripts/set-all-statuses-unknown.mjs",
+    "db:name-model": "node scripts/create-place-name-model.mjs",
+    "db:rename-place-ids": "node scripts/rename-place-ids-to-public-slugs.mjs",
+    "build": "node scripts/build-site.mjs && node scripts/audit-book-navigation.mjs",
+    "audit:release": "node scripts/audit-release.mjs",
+    "check": "node scripts/build-site.mjs --check && node scripts/audit-book-navigation.mjs && node scripts/audit-book-anchors.mjs && node scripts/audit-mention-anchors.mjs && node scripts/audit-place-links.mjs && node scripts/audit-place-name-model.mjs && node scripts/audit-place-card-names.mjs && node scripts/audit-release.mjs && node scripts/audit-english-comments.mjs"
+  }
+}

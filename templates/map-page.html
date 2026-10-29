@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Интерактивная историческая карта населённых пунктов и церквей Белозерского уезда XVI–XVII веков.">
+  <title>Историческая карта — Белозерье</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css">
+  <style>
+    :root { color-scheme: light; --paper:#eee6c9; --ink:#33281f; --accent:#9a3412; --line:rgba(111,78,43,.25); --muted:#80664f; }
+    * { box-sizing:border-box; }
+    .visually-hidden { position:absolute!important; width:1px!important; height:1px!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip:rect(0,0,0,0)!important; white-space:nowrap!important; border:0!important; }
+    body { margin:0; min-height:100vh; color:var(--ink); background:#e9dfc4 url("../images/textures/homepage-parchment-v2.jpg") center/cover fixed; font:Georgia,"Times New Roman",serif; }
+    .site-header { position:sticky; top:0; z-index:1000; display:flex; align-items:center; justify-content:space-between; min-height:62px; padding:0 14px; color:#f8f4e9; background:#181818; border-bottom:1px solid rgba(255,255,255,.12); }
+    .brand { display:inline-flex; align-items:center; gap:10px; color:inherit; text-decoration:none; font-size:1.15rem; font-weight:700; }
+    .brand img { width:36px; height:36px; }
+    .shell { width:100%; max-width:none; height:calc(100vh - 62px); margin:0; padding:10px; }
+    h1 { margin:0; font-size:clamp(1.8rem,3vw,2.6rem); }
+    .layout { display:grid; grid-template-columns:minmax(245px,310px) minmax(0,1fr) minmax(190px,260px); gap:18px; height:100%; min-height:0; }
+    .filters,.selected-panel,.map-panel { border:1px solid var(--line); border-radius:6px; background:rgba(255,252,235,.68); box-shadow:0 2px 9px rgba(58,41,24,.08); }
+    .filters { display:flex; flex-direction:column; padding:10px; overflow-y:auto; }
+    h2 { margin:0; font-size:1.25rem; }
+    .filters p { margin:5px 0 10px; color:var(--muted); font:500 .8rem/1.45 system-ui,sans-serif; }
+    label { display:grid; gap:3px; margin:0 0 8px; color:#6a5645; font:700 .64rem/1.2 system-ui,sans-serif; letter-spacing:.05em; text-transform:uppercase; }
+    select { width:100%; min-height:32px; padding:4px 7px; border:1px solid #cdbd99; border-radius:3px; color:var(--ink); background:#fffaf0; font:.78rem system-ui,sans-serif; }
+    button { border:1px solid #8d7352; border-radius:3px; padding:7px 9px; color:#fffaf0; background:var(--accent); font:700 .75rem system-ui,sans-serif; cursor:pointer; }
+    #filter-tab { display:flex; flex:1; min-height:0; flex-direction:column; }
+    #filter-tab[hidden], #legend-tab[hidden] { display:none; }
+    .current-group-heading { display:flex; align-items:center; gap:7px; margin:0 0 7px; color:var(--ink); font:700 .75rem/1.2 system-ui,sans-serif; }
+    .current-group-heading i { display:inline-block; width:11px; height:11px; border:1px solid rgba(0,0,0,.3); border-radius:50%; }
+    .group-list { display:grid; gap:6px; margin:auto 0 0; }
+    .group-choice { border:1px solid var(--line); border-radius:3px; background:rgba(255,250,240,.72); font:.75rem system-ui,sans-serif; }
+    .group-choice summary { display:flex; align-items:center; gap:7px; padding:7px; cursor:pointer; font-weight:700; }
+    .group-choice i { display:inline-block; width:11px; height:11px; border:1px solid rgba(0,0,0,.3); border-radius:50%; }
+    .group-choice > div:last-child { display:flex; justify-content:flex-end; padding:0 7px 7px; }
+    .group-choice button { padding:2px 6px; font-size:.68rem; }
+    #add-group { width:100%; margin:0 0 7px; background:#6d4c35; }
+    #delete-current-group { width:100%; margin:0 0 7px; background:#8a2f1b; }
+    .selected-panel { display:flex; flex-direction:column; min-height:0; padding:10px; }
+    .selected-panel-header { display:flex; align-items:center; justify-content:space-between; gap:8px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+    .selected-object-tabs { display:flex; gap:3px; }
+    .selected-object-tabs button { padding:4px 5px; border:0; border-bottom:2px solid transparent; border-radius:2px 2px 0 0; color:var(--muted); background:transparent; font-size:.68rem; }
+    .selected-object-tabs button[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--accent); }
+    #selected-objects-count { color:var(--muted); font:600 .7rem system-ui,sans-serif; }
+    .selected-objects { display:grid; gap:2px; margin:8px -3px 0 0; padding:0 4px 0 0; overflow-y:auto; list-style:none; scrollbar-width:thin; }
+    .selected-objects li { min-width:0; }
+    .selected-object-link { display:flex; align-items:center; gap:6px; padding:4px 3px; color:var(--ink); font:.75rem/1.25 system-ui,sans-serif; text-decoration:none; }
+    .selected-object-link:hover, .selected-object-link:focus-visible { color:var(--accent); text-decoration:underline; }
+    .selected-object-marker { flex:0 0 auto; width:8px; height:8px; border:1px solid rgba(0,0,0,.3); border-radius:50%; }
+    .selected-object-church-icon { flex:0 0 auto; width:15px; height:15px; object-fit:contain; }
+    .selected-object-overlap-marker { flex:0 0 auto; width:15px; height:15px; }
+    .selected-objects-empty { margin:10px 0; color:var(--muted); font:.75rem/1.35 system-ui,sans-serif; }
+    .map-panel { position:relative; display:flex; flex-direction:column; overflow:hidden; }
+    .map-head { display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:15px 17px 11px; }
+    .map-head p { margin:3px 0 0; color:var(--muted); font:.78rem system-ui,sans-serif; }
+    #filter-map { flex:1; min-height:0; background:#e5e7dc; }
+    .panel-tabs { display:flex; gap:3px; margin-bottom:8px; border-bottom:1px solid var(--line); }
+    .panel-tabs button { margin:0; padding:5px 7px; border:0; border-bottom:2px solid transparent; border-radius:3px 3px 0 0; color:var(--muted); background:transparent; }
+    .panel-tabs button[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--accent); }
+    #map-legend { font:.75rem/1.35 system-ui,sans-serif; }
+    #legend-tab { max-height:calc(100vh - 180px); overflow-y:auto; padding-right:5px; scrollbar-width:thin; }
+    #map-legend[hidden] { display:none; }
+    .legend-group + .legend-group { margin-top:8px; padding-top:8px; border-top:1px solid var(--line); }
+    .legend-title { display:flex; align-items:center; gap:6px; font-weight:700; }
+    .legend-title i { width:11px; height:11px; border:1px solid rgba(0,0,0,.3); border-radius:50%; }
+    .legend-group dl { display:grid; grid-template-columns:auto 1fr; gap:2px 6px; margin:5px 0 0; }
+    .legend-group dt { color:var(--muted); }
+    .legend-group dd { margin:0; overflow-wrap:anywhere; }
+    .map-hover-label { display:inline-block; color:transparent; font:var(--map-marker-label-font); white-space:nowrap; text-decoration:none; text-shadow:none; border-bottom:1px solid var(--map-place-label-color); pointer-events:none; }
+    .map-hover-label.is-church { border-bottom-color:var(--map-church-label-color); }
+    .ol-attribution { font-size:10px; }
+    @media (max-width:800px) { .site-header { padding-inline:18px; } .shell { height:auto; padding:15px; } .layout { grid-template-columns:1fr; } .selected-panel { min-height:220px; } #filter-map { min-height:500px; } }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="Белозерье — главная"><img src="../images/icons/belozerye-monastery-logo.svg" alt=""><span>Белозерье</span></a>
+  </header>
+  <main class="shell">
+    <h1 class="visually-hidden">Историческая карта Белозерья</h1>
+    <section class="layout">
+      <aside class="filters" aria-label="Панель карты">
+        <div class="panel-tabs" role="tablist" aria-label="Панель карты"><button type="button" role="tab" aria-selected="true" aria-controls="filter-tab" id="filters-tab">Фильтры</button><button type="button" role="tab" aria-selected="false" aria-controls="legend-tab" id="legend-tab-button">Легенда</button></div>
+        <div id="filter-tab" role="tabpanel" aria-labelledby="filters-tab">
+        <div id="current-group-heading" class="current-group-heading"><i style="background:#dc2626"></i>Группа 1</div>
+        <div id="filter-controls-anchor"></div>
+        <div id="current-filter-controls">
+        <label>Тип объекта<select data-filter="objectKind"><option value="">Все объекты</option><option value="place">Населённые пункты</option><option value="church">Церкви</option></select></label>
+        <label>Источник<select data-filter="books"><option value="">Все источники</option></select></label>
+        <div id="source-filters" hidden>
+          <label>Уезд<select data-filter="administrativeUezd"><option value="">Все уезды</option></select></label>
+          <label>Приказ<select data-filter="administrativePrikaz"><option value="">Все приказы</option></select></label>
+          <label>Волость<select data-filter="administrativeVolost"><option value="">Все волости</option></select></label>
+          <label>Подразделение<select data-filter="administrativeChild" disabled><option value="">Все подразделения</option></select></label>
+          <label>Принадлежность земли<select data-filter="land"><option value="">Все значения</option></select></label>
+          <label>Владелец<select data-filter="owners"><option value="">Все владельцы</option></select></label>
+        </div>
+        <label>Цвет маркеров<select data-filter="groupColor"><option value="#dc2626">Красный</option><option value="#008000">Зелёный</option><option value="#2563eb">Синий</option><option value="#7e22ce">Фиолетовый</option><option value="#c2410c">Оранжевый</option></select></label>
+        </div>
+        <button type="button" id="delete-current-group" hidden>Удалить группу</button>
+        <button type="button" id="add-group">Добавить группу</button>
+        <button type="button" id="reset-filters">Сбросить фильтры</button>
+        <div id="group-list" class="group-list" aria-label="Выбранные группы"></div>
+        </div>
+        <div id="legend-tab" role="tabpanel" aria-labelledby="legend-tab-button" hidden><aside id="map-legend" aria-label="Легенда выбранных групп"></aside></div>
+      </aside>
+      <section class="map-panel">
+        <div id="filter-map" aria-label="Карта с фильтрацией объектов"></div>
+      </section>
+      <aside class="selected-panel" aria-label="Выбранные объекты">
+        <div class="selected-panel-header"><div class="selected-object-tabs" role="tablist" aria-label="Тип выбранных объектов"><button type="button" role="tab" id="selected-places-tab" aria-selected="true">Населённые пункты</button><button type="button" role="tab" id="selected-churches-tab" aria-selected="false">Церкви</button></div><span id="selected-objects-count"></span></div>
+        <ul id="selected-objects" class="selected-objects" aria-live="polite"></ul>
+      </aside>
+    </section>
+  </main>
+  <script id="map-filter-data" type="application/json">{{MAP_FILTER_DATA}}</script>
+  <script id="book-options" type="application/json">{{BOOK_OPTIONS}}</script>
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
+  <script src="../js/map-marker-settings.js"></script>
+  <script>
+    (() => {
+      const items = JSON.parse(document.querySelector("#map-filter-data").textContent);
+      const bookOptions = JSON.parse(document.querySelector("#book-options").textContent);
+      const settings = window.BelozeryeMapMarkers;
+      const fields = ["books", "land", "owners"];
+      const selects = Object.fromEntries(fields.map((field) => [field, document.querySelector(`[data-filter="${field}"]`)]));
+      const objectKind = document.querySelector('[data-filter="objectKind"]');
+      const sourceFilters = document.querySelector("#source-filters");
+      const administrativeUezd = document.querySelector('[data-filter="administrativeUezd"]');
+      const administrativePrikaz = document.querySelector('[data-filter="administrativePrikaz"]');
+      const administrativeVolost = document.querySelector('[data-filter="administrativeVolost"]');
+      const administrativeChild = document.querySelector('[data-filter="administrativeChild"]');
+      const groupColor = document.querySelector('[data-filter="groupColor"]');
+      const groupList = document.querySelector("#group-list");
+      const currentFilterControls = document.querySelector("#current-filter-controls");
+      const filterControlsAnchor = document.querySelector("#filter-controls-anchor");
+      const currentGroupHeading = document.querySelector("#current-group-heading");
+      const selectedObjects = document.querySelector("#selected-objects");
+      const selectedObjectsCount = document.querySelector("#selected-objects-count");
+      const selectedPlacesTab = document.querySelector("#selected-places-tab");
+      const selectedChurchesTab = document.querySelector("#selected-churches-tab");
+      let selectedObjectKind = "place";
+      let selectedVisibleObjects = [];
+      const mapLegend = document.querySelector("#map-legend");
+      const filterTab = document.querySelector("#filter-tab");
+      const legendTab = document.querySelector("#legend-tab");
+      const filtersTabButton = document.querySelector("#filters-tab");
+      const legendTabButton = document.querySelector("#legend-tab-button");
+      const groupColors = ["#dc2626", "#008000", "#2563eb", "#7e22ce", "#c2410c"];
+      const originalChurchIconColor = "#2563eb";
+      const churchIconSources = new Map([[originalChurchIconColor, "../images/icons/church-marker.png"]]);
+      const savedGroups = [];
+      let currentGroupActive = true;
+      let editingGroupIndex = null;
+      let activePanel = "filters";
+      const addOptions = (select, options) => options.forEach(({ value, label }) => {
+        const option = document.createElement("option"); option.value = value; option.textContent = label; select.append(option);
+      });
+      addOptions(selects.books, bookOptions);
+      const resetOptions = (select, label) => { select.innerHTML = ""; const option=document.createElement("option"); option.value=""; option.textContent=label; select.append(option); };
+      const currentGroup = () => ({
+        id: "current",
+        color: groupColor.value,
+        objectKind: objectKind.value,
+        books: selects.books.value,
+        land: selects.land.value,
+        owners: selects.owners.value,
+        uezd: administrativeUezd.value,
+        prikaz: administrativePrikaz.value,
+        volost: administrativeVolost.value,
+        child: administrativeChild.value,
+        labels: {
+          "Тип объекта": objectKind.selectedOptions[0]?.textContent,
+          "Источник": selects.books.selectedOptions[0]?.textContent,
+          "Уезд": administrativeUezd.selectedOptions[0]?.textContent,
+          "Приказ": administrativePrikaz.selectedOptions[0]?.textContent,
+          "Волость": administrativeVolost.selectedOptions[0]?.textContent,
+          "Подразделение": administrativeChild.selectedOptions[0]?.textContent,
+          "Принадлежность земли": selects.land.selectedOptions[0]?.textContent,
+          "Владелец": selects.owners.selectedOptions[0]?.textContent
+        }
+      });
+      const groupMatches = (item, group) => (!group.objectKind || item.kind === group.objectKind) &&
+        (!group.books || item.books.includes(group.books)) &&
+        (!group.land || item.land_by_book?.[group.books]?.includes(group.land)) &&
+        (!group.owners || (group.land ? item.owners_by_land_by_book?.[group.books]?.[group.land]?.includes(group.owners) : item.owners_by_book?.[group.books]?.includes(group.owners))) &&
+        (!(group.uezd || group.prikaz || group.volost || group.child) || item.administrative_records?.some((record) =>
+          (!group.uezd || record.uezd === group.uezd) && (!group.prikaz || record.prikaz === group.prikaz) &&
+          (!group.volost || record.volost === group.volost) && (!group.child || record.child === group.child)
+        ));
+      const renderGroups = () => {
+        if (currentFilterControls.parentElement !== filterTab) filterControlsAnchor.after(currentFilterControls);
+        currentGroupHeading.innerHTML = `<i style="background:${groupColor.value}"></i>Группа ${(editingGroupIndex ?? savedGroups.length) + 1}`;
+        groupList.innerHTML = "";
+        savedGroups.forEach((group, index) => {
+          if (index === editingGroupIndex) return;
+          const choice = document.createElement("details"); choice.className = "group-choice";
+          choice.innerHTML = `<summary><i style="background:${group.color}"></i>Группа ${index + 1}</summary><div data-group-filters></div><div><button type="button" data-delete aria-label="Удалить группу ${index + 1}">Удалить</button></div>`;
+          choice.addEventListener("toggle", () => {
+            if (!choice.open) return;
+            if (editingGroupIndex === null && currentGroupActive) {
+              const pending = currentGroup();
+              pending.id = `saved-${Date.now()}`;
+              savedGroups.push(pending);
+              currentGroupActive = false;
+            }
+            if (editingGroupIndex !== null && editingGroupIndex !== index) {
+              const previous = currentGroup(); previous.id = savedGroups[editingGroupIndex].id; savedGroups[editingGroupIndex] = previous;
+            }
+            [...groupList.querySelectorAll("details")].forEach((other) => { if (other !== choice) other.open = false; });
+            const editing = savedGroups[index];
+            editingGroupIndex = index; currentGroupActive = true;
+            objectKind.value = editing.objectKind; selects.books.value = editing.books; groupColor.value = editing.color;
+            updateAdministrativeOptions();
+            administrativeUezd.value = editing.uezd; administrativePrikaz.value = editing.prikaz; administrativeVolost.value = editing.volost; administrativeChild.value = editing.child;
+            updateAdministrativeOptions(); selects.land.value = editing.land; updateSourceValueOptions(editing.books); selects.owners.value = editing.owners;
+            filterControlsAnchor.after(currentFilterControls);
+            renderGroups();
+            update();
+          });
+          choice.querySelector("[data-delete]").addEventListener("click", () => { savedGroups.splice(index, 1); if (editingGroupIndex === index) editingGroupIndex=null; else if (editingGroupIndex > index) editingGroupIndex--; renderGroups(); update(); });
+          groupList.append(choice);
+        });
+        document.querySelector("#add-group").disabled = savedGroups.length >= 4;
+        const groupCount = savedGroups.length + (editingGroupIndex === null ? 1 : 0);
+        document.querySelector("#delete-current-group").hidden = groupCount <= 1;
+      };
+      const renderLegend = (groups) => {
+        mapLegend.hidden = groups.length === 0;
+        const bookDependentLabels = new Set(["Уезд", "Приказ", "Волость", "Подразделение", "Принадлежность земли", "Владелец"]);
+        mapLegend.innerHTML = groups.map((group, index) => {
+          const entries = Object.entries(group.labels ?? {}).filter(([name]) => group.books || !bookDependentLabels.has(name));
+          return `<section class="legend-group"><div class="legend-title"><i style="background:${group.color}"></i>Группа ${index + 1}</div><dl>${entries.map(([name, value]) => `<dt>${name}</dt><dd>${value || "Все значения"}</dd>`).join("")}</dl></section>`;
+        }).join("");
+      };
+      const showPanel = (panel) => {
+        activePanel = panel;
+        filterTab.hidden = panel !== "filters";
+        legendTab.hidden = panel !== "legend";
+        filtersTabButton.setAttribute("aria-selected", String(panel === "filters"));
+        legendTabButton.setAttribute("aria-selected", String(panel === "legend"));
+      };
+      const matchesAdministrativeFilters = (item) => {
+        const hasFilter = administrativeUezd.value || administrativePrikaz.value || administrativeVolost.value || administrativeChild.value;
+        return !hasFilter || item.administrative_records?.some((record) =>
+          (!administrativeUezd.value || record.uezd === administrativeUezd.value) &&
+          (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) &&
+          (!administrativeVolost.value || record.volost === administrativeVolost.value) &&
+          (!administrativeChild.value || record.child === administrativeChild.value)
+        );
+      };
+      const itemsMatchingActiveFilters = (excludedField = "") => {
+        const book = selects.books.value;
+        return items.filter((item) =>
+          (!objectKind.value || item.kind === objectKind.value) &&
+          (!book || item.books.includes(book)) &&
+          (excludedField === "land" || !selects.land.value || item.land_by_book?.[book]?.includes(selects.land.value)) &&
+          (excludedField === "owners" || !selects.owners.value || (selects.land.value
+            ? item.owners_by_land_by_book?.[book]?.[selects.land.value]?.includes(selects.owners.value)
+            : item.owners_by_book?.[book]?.includes(selects.owners.value))) &&
+          matchesAdministrativeFilters(item)
+        );
+      };
+      const updateSourceValueOptions = (book) => {
+        for (const [field, label] of [["land", "Все значения"], ["owners", "Все владельцы"]]) {
+          const selected = selects[field].value;
+          resetOptions(selects[field], book ? label : "Сначала выберите источник");
+          if (!book) { selects[field].disabled = true; continue; }
+          const sourceField = field === "land" ? "land_by_book" : "owners_by_book";
+          const selectedLand = selects.land.value;
+          const values = [...new Set(itemsMatchingActiveFilters(field).flatMap((item) => field === "owners" && selectedLand ? item.owners_by_land_by_book?.[book]?.[selectedLand] ?? [] : item[sourceField]?.[book] ?? []).filter(Boolean))]
+            .sort((left, right) => left.localeCompare(right, "ru-RU"));
+          addOptions(selects[field], values.map((value) => ({ value, label:value })));
+          selects[field].value = values.includes(selected) ? selected : "";
+          selects[field].disabled = values.length === 0;
+        }
+      };
+      const updateAdministrativeOptions = () => {
+        const book = selects.books.value;
+        sourceFilters.hidden = !book;
+        if (!book) {
+          resetOptions(administrativeUezd, "Сначала выберите книгу");
+          resetOptions(administrativePrikaz, "Сначала выберите книгу");
+          resetOptions(administrativeVolost, "Сначала выберите книгу");
+          resetOptions(administrativeChild, "Сначала выберите книгу");
+          administrativeUezd.disabled = true;
+          administrativePrikaz.disabled = true;
+          administrativeVolost.disabled = true;
+          administrativeChild.disabled = true;
+          updateSourceValueOptions(book);
+          return;
+        }
+        administrativeUezd.disabled = false;
+        const records = items.flatMap((item) => item.administrative_records ?? []).filter((record) => !book || record.book === book);
+        const selectedUezd = administrativeUezd.value;
+        resetOptions(administrativeUezd, "Все уезды");
+        const uezdOptions = new Map(records.filter((record) => record.uezd).map((record) => [record.uezd, record.uezd_label]));
+        addOptions(administrativeUezd, [...uezdOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
+        administrativeUezd.value = [...administrativeUezd.options].some((option)=>option.value===selectedUezd) ? selectedUezd : "";
+        const selectedPrikaz = administrativePrikaz.value;
+        resetOptions(administrativePrikaz, "Все приказы");
+        const prikazOptions = new Map(records.filter((record) => record.prikaz && (!administrativeUezd.value || record.uezd === administrativeUezd.value)).map((record) => [record.prikaz, record.prikaz_label]));
+        addOptions(administrativePrikaz, [...prikazOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
+        administrativePrikaz.value = [...administrativePrikaz.options].some((option)=>option.value===selectedPrikaz) ? selectedPrikaz : "";
+        administrativePrikaz.disabled = prikazOptions.size === 0;
+        const selectedVolost = administrativeVolost.value;
+        resetOptions(administrativeVolost, "Все волости");
+        const volostOptions = new Map(records.filter((record) => record.volost && (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value)).map((record) => [record.volost, record.volost_label]));
+        addOptions(administrativeVolost, [...volostOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
+        administrativeVolost.value = [...administrativeVolost.options].some((option)=>option.value===selectedVolost) ? selectedVolost : "";
+        administrativeVolost.disabled = volostOptions.size === 0;
+        const childOptions = new Map(records.filter((record) => (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) && (!administrativeVolost.value || record.volost === administrativeVolost.value) && record.child).map((record) => [record.child, record.child_label]));
+        const children = [...childOptions.keys()];
+        resetOptions(administrativeChild, "Все подразделения");
+        addOptions(administrativeChild, children.sort((a,b)=>a.localeCompare(b,"ru-RU")).map((value)=>({value,label:childOptions.get(value)})));
+        administrativeChild.disabled = children.length === 0;
+        updateSourceValueOptions(book);
+      };
+      const initialBounds = items.reduce((bounds, item) => [
+        Math.min(bounds[0], item.longitude), Math.min(bounds[1], item.latitude),
+        Math.max(bounds[2], item.longitude), Math.max(bounds[3], item.latitude)
+      ], [Infinity, Infinity, -Infinity, -Infinity]);
+      const initialCenter = ol.proj.fromLonLat([
+        (initialBounds[0] + initialBounds[2]) / 2,
+        (initialBounds[1] + initialBounds[3]) / 2
+      ]);
+      const source = new ol.source.Vector();
+      const placeSource = new ol.source.Vector();
+      const churchSource = new ol.source.Vector();
+      let hoveredFeature = null;
+      const styleCache = new Map();
+      const overlapMarkerSources = new Map();
+      const overlapLabelOffsetX = 12;
+      const overlapMarkerSource = (colors) => {
+        const key = colors.join(",");
+        if (overlapMarkerSources.has(key)) return overlapMarkerSources.get(key);
+        const center = 8;
+        const radius = 6.5;
+        const point = (angle) => [center + radius * Math.cos(angle), center + radius * Math.sin(angle)];
+        const segments = colors.map((color, index) => {
+          const start = -Math.PI / 2 + index * 2 * Math.PI / colors.length;
+          const end = start + 2 * Math.PI / colors.length;
+          const [startX, startY] = point(start);
+          const [endX, endY] = point(end);
+          const largeArc = end - start > Math.PI ? 1 : 0;
+          return `<path d="M ${center} ${center} L ${startX} ${startY} A ${radius} ${radius} 0 ${largeArc} 1 ${endX} ${endY} Z" fill="${color}"/>`;
+        }).join("");
+        const source = `data:image/svg+xml,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">${segments}<circle cx="8" cy="8" r="6.5" fill="none" stroke="#fffaf0" stroke-width="1.2"/></svg>`)}`;
+        overlapMarkerSources.set(key, source);
+        return source;
+      };
+      const styleFor = (kind, clustersOnly = false) => (feature) => {
+        const members = feature.get("features") ?? [];
+        const count = members.length;
+        if (clustersOnly !== (count > 1)) return null;
+        const church = kind === "church";
+        const name = members[0]?.get("name") ?? "";
+        const groupColor = members[0]?.get("groupColor") ?? (church ? settings.church.labelColor : settings.place.fill);
+        const groupColors = members[0]?.get("groupColors") ?? [groupColor];
+        const isGroupOverlap = groupColors.length > 1;
+        const groupOrder = members[0]?.get("groupOrder") ?? 0;
+        const labels = count === 1 && feature.get("showLabel") !== false;
+        const key = `${kind}:${count}:${labels}:${name}:${groupColors.join(",")}:${groupOrder}`;
+        if (!styleCache.has(key)) styleCache.set(key, new ol.style.Style({
+          zIndex: (count > 1 ? settings.clusters.zIndex : 0) + groupOrder,
+          image: count > 1 ? new ol.style.Circle({ radius:Math.min(19,11 + Math.ceil(Math.log2(count))), fill:new ol.style.Fill({color:groupColor}), stroke:new ol.style.Stroke({color:settings.clusters.stroke,width:2}) }) : isGroupOverlap ? new ol.style.Icon({src:overlapMarkerSource(groupColors),anchor:[.5,.5],anchorXUnits:"fraction",anchorYUnits:"fraction"}) : church ? new ol.style.Icon({ src:churchIconSources.get(groupColor) ?? "../images/icons/church-marker.png", scale:settings.church.iconScale, anchor:[.5,1], anchorXUnits:"fraction", anchorYUnits:"fraction" }) : new ol.style.Circle({ radius:settings.place.diameter / 2 - settings.place.strokeWidth, fill:new ol.style.Fill({color:groupColor}), stroke:new ol.style.Stroke({color:settings.place.stroke,width:settings.place.strokeWidth}) }),
+          text: count > 1 ? new ol.style.Text({text:String(count),font:"700 11px/1 system-ui,sans-serif",fill:new ol.style.Fill({color:settings.clusters.stroke})}) : labels ? new ol.style.Text({text:name,offsetX:isGroupOverlap ? overlapLabelOffsetX : church ? settings.church.labelOffsetX : settings.place.labelOffsetX,offsetY:church && !isGroupOverlap ? settings.church.labelOffsetY : 0,textAlign:church && !isGroupOverlap ? settings.church.labelTextAlign : "left",font:settings.labels.font,fill:new ol.style.Fill({color:isGroupOverlap ? settings.labels.overlapColor : groupColor}),stroke:new ol.style.Stroke({color:settings.labels.haloColor,width:3})}) : undefined
+        }));
+        return styleCache.get(key);
+      };
+      const placesLayer = new ol.layer.Vector({ source:placeSource, style:styleFor("place") });
+      const churchesLayer = new ol.layer.Vector({ source:churchSource, style:styleFor("church") });
+      const placeClusterLayer = new ol.layer.Vector({ source:placeSource, style:styleFor("place",true) });
+      const churchClusterLayer = new ol.layer.Vector({ source:churchSource, style:styleFor("church",true) });
+      settings.clusters.setVectorLayerOrder([placesLayer,churchesLayer],[placeClusterLayer,churchClusterLayer]);
+      const map = new ol.Map({ target:"filter-map", layers:[new ol.layer.Tile({source:new ol.source.OSM()}),placesLayer,churchesLayer,placeClusterLayer,churchClusterLayer], view:new ol.View({center:initialCenter,zoom:10.5}), controls:ol.control.defaults.defaults({rotate:false}).extend([new ol.control.ScaleLine({units:"metric"})]) });
+      const recolorChurchIcons = () => {
+        const image = new Image();
+        image.addEventListener("load", () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = image.naturalWidth;
+          canvas.height = image.naturalHeight;
+          const context = canvas.getContext("2d", { willReadFrequently:true });
+          const hueFor = (hex) => {
+            const channels = hex.match(/[\da-f]{2}/gi).map((value) => parseInt(value, 16) / 255);
+            const [red, green, blue] = channels;
+            const maximum = Math.max(red, green, blue);
+            const minimum = Math.min(red, green, blue);
+            const delta = maximum - minimum;
+            if (!delta) return { hue:0, saturation:0 };
+            const hue = maximum === red
+              ? ((green - blue) / delta) % 6
+              : maximum === green ? (blue - red) / delta + 2 : (red - green) / delta + 4;
+            return { hue:(hue * 60 + 360) % 360, saturation:delta / (1 - Math.abs(maximum + minimum - 1)) };
+          };
+          const rgbFor = (hue, saturation, lightness) => {
+            const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation;
+            const part = chroma * (1 - Math.abs((hue / 60) % 2 - 1));
+            const offset = lightness - chroma / 2;
+            const [red, green, blue] = hue < 60 ? [chroma,part,0] : hue < 120 ? [part,chroma,0] : hue < 180 ? [0,chroma,part] : hue < 240 ? [0,part,chroma] : hue < 300 ? [part,0,chroma] : [chroma,0,part];
+            return [red + offset, green + offset, blue + offset].map((value) => Math.round(value * 255));
+          };
+          for (const color of groupColors) {
+            if (color === originalChurchIconColor) continue;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.drawImage(image, 0, 0);
+            const pixels = context.getImageData(0, 0, canvas.width, canvas.height);
+            const target = hueFor(color);
+            for (let index = 0; index < pixels.data.length; index += 4) {
+              const red = pixels.data[index] / 255;
+              const green = pixels.data[index + 1] / 255;
+              const blue = pixels.data[index + 2] / 255;
+              const maximum = Math.max(red, green, blue);
+              const minimum = Math.min(red, green, blue);
+              const lightness = (maximum + minimum) / 2;
+              const saturation = maximum === minimum ? 0 : (maximum - minimum) / (1 - Math.abs(2 * lightness - 1));
+              if (saturation < .08 || blue < red || blue < green) continue;
+              const replacement = rgbFor(target.hue, target.saturation === 0 ? 0 : saturation, lightness);
+              pixels.data[index] = replacement[0];
+              pixels.data[index + 1] = replacement[1];
+              pixels.data[index + 2] = replacement[2];
+            }
+            context.putImageData(pixels, 0, 0);
+            churchIconSources.set(color, canvas.toDataURL("image/png"));
+          }
+          styleCache.clear();
+          churchesLayer.changed();
+          renderSelectedObjects(selectedVisibleObjects);
+        });
+        image.src = "../images/icons/church-marker.png";
+      };
+      recolorChurchIcons();
+      const placeHoverLabel = document.createElement("span");
+      placeHoverLabel.className = "map-hover-label";
+      const churchHoverLabel = document.createElement("span");
+      churchHoverLabel.className = "map-hover-label is-church";
+      const placeHoverOverlay = new ol.Overlay({ element:placeHoverLabel, positioning:"center-left", offset:[settings.place.labelOffsetX,0], stopEvent:false });
+      const churchHoverOverlay = new ol.Overlay({ element:churchHoverLabel, positioning:"center-right", offset:[settings.church.labelOffsetX,settings.church.labelOffsetY], stopEvent:false });
+      map.addOverlay(placeHoverOverlay);
+      map.addOverlay(churchHoverOverlay);
+      const textMeasure = document.createElement("canvas").getContext("2d");
+      textMeasure.font = settings.labels.font;
+      const refreshLabelVisibility = () => {
+        const labels = [];
+        const objectBounds = [];
+        const features = [...placeSource.getFeatures(), ...churchSource.getFeatures()].sort((left, right) => {
+          const leftOrder = left.get("features")?.[0]?.get("groupOrder") ?? 0;
+          const rightOrder = right.get("features")?.[0]?.get("groupOrder") ?? 0;
+          return rightOrder - leftOrder;
+        });
+        for (const feature of features) {
+          const members = feature.get("features") ?? [];
+          const marker = members[0];
+          const pixel = map.getPixelFromCoordinate(feature.getGeometry().getCoordinates());
+          if (!marker || !pixel) continue;
+          const kind = marker.get("kind");
+          const isGroupOverlap = (marker.get("groupColors") ?? []).length > 1;
+          const count = members.length;
+          const iconWidth = isGroupOverlap ? 16 : kind === "church" ? settings.church.iconWidth : settings.place.diameter;
+          const iconHeight = isGroupOverlap ? 16 : kind === "church" ? settings.church.iconHeight : settings.place.diameter;
+          if (count > 1) {
+            const radius = Math.min(19, 11 + Math.ceil(Math.log2(count)));
+            objectBounds.push({left:pixel[0]-radius,right:pixel[0]+radius,top:pixel[1]-radius,bottom:pixel[1]+radius});
+            continue;
+          }
+          const iconBounds = {left:pixel[0]-iconWidth/2,right:pixel[0]+iconWidth/2,top:kind === "church" && !isGroupOverlap ? pixel[1]-iconHeight : pixel[1]-iconHeight/2,bottom:kind === "church" && !isGroupOverlap ? pixel[1] : pixel[1]+iconHeight/2};
+          const offsetX = isGroupOverlap ? overlapLabelOffsetX : kind === "church" ? settings.church.labelOffsetX : settings.place.labelOffsetX;
+          const offsetY = kind === "church" && !isGroupOverlap ? settings.church.labelOffsetY : 0;
+          const width = textMeasure.measureText(marker.get("name")).width + 4;
+          const left = kind === "church" && !isGroupOverlap ? pixel[0] + offsetX - width : pixel[0] + offsetX;
+          labels.push({feature,iconBounds,labelBounds:{left,right:left+width,top:pixel[1]+offsetY-8,bottom:pixel[1]+offsetY+8}});
+          objectBounds.push(iconBounds);
+        }
+        const occupiedLabelBounds = [];
+        for (const item of labels) {
+          const hiddenByObject = objectBounds.some((bounds) => bounds !== item.iconBounds && settings.clusters.overlaps(item.labelBounds, bounds));
+          const hiddenByLabel = occupiedLabelBounds.some((bounds) => settings.clusters.overlaps(item.labelBounds, bounds));
+          const showLabel = !hiddenByObject && !hiddenByLabel;
+          item.feature.set("showLabel", showLabel, true);
+          if (showLabel) occupiedLabelBounds.push(item.labelBounds);
+        }
+      };
+      const rebuildClusters = () => {
+        const rebuild = (kind, target) => {
+          const entries = source.getFeatures().filter((feature) => feature.get("kind") === kind).map((member) => {
+            const coordinate = member.getGeometry().getCoordinates(); const pixel = map.getPixelFromCoordinate(coordinate);
+            const isGroupOverlap = (member.get("groupColors") ?? []).length > 1;
+            const width = isGroupOverlap ? 16 : kind === "church" ? settings.church.iconWidth : settings.place.diameter;
+            const height = isGroupOverlap ? 16 : kind === "church" ? settings.church.iconHeight : settings.place.diameter;
+            return { kind, member, iconBounds:{left:pixel[0]-width/2,right:pixel[0]+width/2,top:kind === "church" && !isGroupOverlap ? pixel[1]-height : pixel[1]-height/2,bottom:kind === "church" && !isGroupOverlap ? pixel[1] : pixel[1]+height/2} };
+          });
+          target.clear();
+          const entriesByGroup = new Map();
+          entries.forEach((entry) => { const group = entry.member.get("groupId") ?? "default"; entriesByGroup.set(group, [...(entriesByGroup.get(group) ?? []), entry]); });
+          target.addFeatures([...entriesByGroup.values()].flatMap((groupEntries) => settings.clusters.group(groupEntries).map((group) => {
+            const members = group.map((entry) => entry.member);
+            const center = members.reduce((sum,member) => { const [x,y]=member.getGeometry().getCoordinates(); return [sum[0]+x/members.length,sum[1]+y/members.length]; },[0,0]);
+            return new ol.Feature({geometry:new ol.geom.Point(center),features:members});
+          })));
+        };
+        rebuild("place",placeSource); rebuild("church",churchSource);
+        refreshLabelVisibility();
+        styleCache.clear();
+      };
+      let rebuildTimer = null;
+      const scheduleRebuild = () => {
+        clearTimeout(rebuildTimer);
+        rebuildTimer = setTimeout(() => {
+          rebuildTimer = null;
+          rebuildClusters();
+        }, 120);
+      };
+      map.getView().on("change:resolution", () => {
+        styleCache.clear();
+        placesLayer.changed(); churchesLayer.changed(); placeClusterLayer.changed(); churchClusterLayer.changed();
+        scheduleRebuild();
+      });
+      map.on("moveend", scheduleRebuild);
+      let resizeFrame = null;
+      new ResizeObserver(() => {
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = requestAnimationFrame(() => {
+          map.updateSize();
+          scheduleRebuild();
+        });
+      }).observe(document.querySelector("#filter-map"));
+      let filterFitTimer = null;
+      const fitToVisibleFeatures = (featureCount) => {
+        if (!featureCount) return;
+        map.updateSize();
+        const size = map.getSize();
+        if (!size || !size[0] || !size[1]) return;
+        map.getView().fit(source.getExtent(), {
+          size,
+          padding: [55, 55, 55, 55],
+          maxZoom: featureCount === 1 ? 13 : 14,
+          duration: 0
+        });
+      };
+      const renderSelectedObjects = (visible) => {
+        selectedVisibleObjects = visible;
+        const uniqueObjects = new Map();
+        visible.filter((item) => item.kind === selectedObjectKind).forEach((item) => {
+          const key = `${item.kind}:${item.id}`;
+          const previous = uniqueObjects.get(key);
+          if (!previous) {
+            uniqueObjects.set(key, { ...item, groupColors:[item.groupColor] });
+            return;
+          }
+          const groupColors = [...previous.groupColors, item.groupColor].filter((color, index, colors) => colors.indexOf(color) === index);
+          uniqueObjects.set(key, { ...item, groupColors });
+        });
+        const selected = [...uniqueObjects.values()].sort((left, right) => left.name.localeCompare(right.name, "ru-RU"));
+        selectedObjectsCount.textContent = String(selected.length);
+        selectedObjects.replaceChildren();
+        if (!selected.length) {
+          const empty = document.createElement("li");
+          empty.className = "selected-objects-empty";
+          empty.textContent = "Нет выбранных объектов";
+          selectedObjects.append(empty);
+          return;
+        }
+        selected.forEach((item) => {
+          const entry = document.createElement("li");
+          const link = document.createElement("a");
+          link.className = "selected-object-link";
+          link.href = item.kind === "church" ? `../churches/${encodeURIComponent(item.slug)}/` : `../places/${encodeURIComponent(item.slug)}/`;
+          const marker = item.groupColors.length > 1 || item.kind === "church" ? document.createElement("img") : document.createElement("i");
+          if (item.groupColors.length > 1) {
+            marker.className = "selected-object-overlap-marker";
+            marker.src = overlapMarkerSource(item.groupColors);
+            marker.alt = "";
+          } else if (item.kind === "church") {
+            marker.className = "selected-object-church-icon";
+            marker.src = churchIconSources.get(item.groupColor) ?? "../images/icons/church-marker.png";
+            marker.alt = "";
+          } else {
+            marker.className = "selected-object-marker";
+            marker.style.background = item.groupColor;
+          }
+          const name = document.createElement("span");
+          name.textContent = item.name;
+          link.append(marker, name);
+          entry.append(link);
+          selectedObjects.append(entry);
+        });
+      };
+      const showSelectedObjectKind = (kind) => {
+        selectedObjectKind = kind;
+        selectedPlacesTab.setAttribute("aria-selected", String(kind === "place"));
+        selectedChurchesTab.setAttribute("aria-selected", String(kind === "church"));
+        renderSelectedObjects(selectedVisibleObjects);
+      };
+      const update = () => {
+        const values = Object.fromEntries(fields.map((field) => [field, selects[field].value]));
+        const hasAdministrativeFilter = administrativeUezd.value || administrativePrikaz.value || administrativeVolost.value || administrativeChild.value;
+        const currentVisible = items.filter((item) => (!objectKind.value || item.kind === objectKind.value) && fields.every((field) => {
+          if (!values[field]) return true;
+          if (field === "land") return item.land_by_book?.[values.books]?.includes(values[field]);
+          if (field === "owners") return values.land ? item.owners_by_land_by_book?.[values.books]?.[values.land]?.includes(values[field]) : item.owners_by_book?.[values.books]?.includes(values[field]);
+          return item[field].includes(values[field]);
+        }) && (!hasAdministrativeFilter || item.administrative_records?.some((record) => (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) && (!administrativeVolost.value || record.volost === administrativeVolost.value) && (!administrativeChild.value || record.child === administrativeChild.value))));
+        const editedGroup = currentGroup();
+        const groups = savedGroups.map((group, index) => index === editingGroupIndex ? { ...editedGroup, id:group.id } : group);
+        if (editingGroupIndex === null && currentGroupActive) groups.push(editedGroup);
+        renderLegend(groups);
+        const visible = groups.flatMap((group, groupOrder) => (group.id === "current" ? currentVisible : items.filter((item) => groupMatches(item, group))).map((item) => ({ ...item, groupColor:group.color, groupId:group.id, groupOrder })));
+        renderSelectedObjects(visible);
+        const mapMarkers = new Map();
+        visible.forEach((item) => {
+          const key = `${item.kind}:${item.id}`;
+          const previous = mapMarkers.get(key);
+          if (!previous) {
+            mapMarkers.set(key, { ...item, groupColors:[item.groupColor] });
+            return;
+          }
+          const groupColors = [...previous.groupColors, item.groupColor].filter((color, index, colors) => colors.indexOf(color) === index);
+          mapMarkers.set(key, { ...item, groupColors });
+        });
+        source.clear();
+        source.addFeatures([...mapMarkers.values()].map((item) => new ol.Feature({ geometry:new ol.geom.Point(ol.proj.fromLonLat([item.longitude,item.latitude])), ...item })));
+        rebuildClusters();
+        clearTimeout(filterFitTimer);
+        if (visible.length) {
+          filterFitTimer = setTimeout(() => {
+            map.once("moveend", () => {
+              rebuildClusters();
+              placesLayer.changed(); churchesLayer.changed(); placeClusterLayer.changed(); churchClusterLayer.changed();
+            });
+            fitToVisibleFeatures(visible.length);
+          }, 120);
+        }
+      };
+      const activateCurrentGroup = () => { currentGroupActive = true; };
+      objectKind.addEventListener("change", () => { activateCurrentGroup(); update(); });
+      fields.forEach((field) => selects[field].addEventListener("change", () => {
+        activateCurrentGroup();
+        if (field === "books") {
+          if (!selects.books.value) { selects.land.value=""; selects.owners.value=""; }
+          updateAdministrativeOptions();
+        }
+        if (field === "land") updateSourceValueOptions(selects.books.value);
+        update();
+      }));
+      administrativeUezd.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
+      administrativePrikaz.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
+      administrativeVolost.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
+      administrativeChild.addEventListener("change", () => { activateCurrentGroup(); update(); });
+      groupColor.addEventListener("change", () => { activateCurrentGroup(); update(); });
+      document.querySelector("#add-group").addEventListener("click", () => {
+        const group = currentGroup();
+        if (editingGroupIndex !== null) { group.id = savedGroups[editingGroupIndex].id; savedGroups[editingGroupIndex] = group; editingGroupIndex = null; }
+        else { if (savedGroups.length >= 4) return; group.id = `saved-${Date.now()}`; savedGroups.push(group); }
+        objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value="";
+        groupColor.value = groupColors.find((color) => !savedGroups.some((saved) => saved.color === color)) ?? groupColors[0];
+        currentGroupActive = true; document.querySelector("#add-group").textContent = "Добавить группу"; updateAdministrativeOptions(); renderGroups(); update();
+      });
+      document.querySelector("#delete-current-group").addEventListener("click", () => {
+        if (editingGroupIndex === null) {
+          const previousIndex = savedGroups.length - 1;
+          if (previousIndex < 0) return;
+          const previous = savedGroups[previousIndex];
+          editingGroupIndex = previousIndex;
+          objectKind.value = previous.objectKind; selects.books.value = previous.books; groupColor.value = previous.color;
+          updateAdministrativeOptions();
+          administrativeUezd.value = previous.uezd; administrativePrikaz.value = previous.prikaz; administrativeVolost.value = previous.volost; administrativeChild.value = previous.child;
+          updateAdministrativeOptions(); selects.land.value = previous.land; updateSourceValueOptions(previous.books); selects.owners.value = previous.owners;
+          currentGroupActive = true;
+          filterControlsAnchor.after(currentFilterControls);
+          renderGroups();
+          update();
+          return;
+        }
+        const removedIndex = editingGroupIndex;
+        savedGroups.splice(removedIndex, 1);
+        editingGroupIndex = null;
+        const nextIndex = Math.min(removedIndex, savedGroups.length - 1);
+        if (nextIndex >= 0) {
+          const next = savedGroups[nextIndex];
+          editingGroupIndex = nextIndex;
+          objectKind.value = next.objectKind; selects.books.value = next.books; groupColor.value = next.color;
+          updateAdministrativeOptions();
+          administrativeUezd.value = next.uezd; administrativePrikaz.value = next.prikaz; administrativeVolost.value = next.volost; administrativeChild.value = next.child;
+          updateAdministrativeOptions(); selects.land.value = next.land; updateSourceValueOptions(next.books); selects.owners.value = next.owners;
+        } else {
+          objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value="";
+          groupColor.value = groupColors[0]; updateAdministrativeOptions();
+        }
+        currentGroupActive = true;
+        filterControlsAnchor.after(currentFilterControls);
+        renderGroups();
+        update();
+      });
+      document.querySelector("#reset-filters").addEventListener("click", () => { savedGroups.length=0; editingGroupIndex=null; objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value=""; groupColor.value=groupColors[0]; currentGroupActive=true; document.querySelector("#add-group").textContent="Добавить группу"; updateAdministrativeOptions(); renderGroups(); update(); });
+      map.on("pointermove", (event) => {
+        const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate, { hitTolerance:6 });
+        const members = feature?.get("features") ?? [];
+        const canUnderline = settings.labels.underlineOnHover && members.length === 1 && feature?.get("showLabel") !== false;
+        const nextHoveredFeature = canUnderline ? feature : null;
+        if (hoveredFeature !== nextHoveredFeature) {
+          hoveredFeature = nextHoveredFeature;
+          styleCache.clear();
+          placesLayer.changed(); churchesLayer.changed(); placeClusterLayer.changed(); churchClusterLayer.changed();
+        }
+        placeHoverOverlay.setPosition(undefined);
+        churchHoverOverlay.setPosition(undefined);
+        if (nextHoveredFeature) {
+          const marker = members[0];
+          const isGroupOverlap = (marker.get("groupColors") ?? []).length > 1;
+          const overlay = marker.get("kind") === "church" && !isGroupOverlap ? churchHoverOverlay : placeHoverOverlay;
+          const label = marker.get("kind") === "church" && !isGroupOverlap ? churchHoverLabel : placeHoverLabel;
+          if (overlay === placeHoverOverlay) overlay.setOffset([isGroupOverlap ? overlapLabelOffsetX : settings.place.labelOffsetX, 0]);
+          label.textContent = marker.get("name");
+          overlay.setPosition(marker.getGeometry().getCoordinates());
+        }
+        document.querySelector("#filter-map").style.cursor = feature ? "pointer" : "";
+      });
+      map.on("singleclick", (event) => { const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate); if (!feature) return; const members=feature.get("features") ?? []; if(members.length>1){const extent=ol.extent.createEmpty();members.forEach((member)=>ol.extent.extend(extent,member.getGeometry().getExtent()));map.getView().fit(extent,{padding:[55,55,55,55],maxZoom:14,duration:250});return;}const marker=members[0];if(!marker)return;location.href = `../${marker.get("kind") === "church" ? "churches" : "places"}/${encodeURIComponent(marker.get("slug"))}/`; });
+      map.once("postrender", () => {
+        requestAnimationFrame(() => fitToVisibleFeatures(source.getFeatures().length));
+      });
+      filtersTabButton.addEventListener("click", () => showPanel("filters"));
+      legendTabButton.addEventListener("click", () => showPanel("legend"));
+      selectedPlacesTab.addEventListener("click", () => showSelectedObjectKind("place"));
+      selectedChurchesTab.addEventListener("click", () => showSelectedObjectKind("church"));
+      updateAdministrativeOptions();
+      renderGroups();
+      update();
+    })();
+  </script>
+</body>
+</html>

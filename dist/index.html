@@ -1,40 +1,698 @@
 <!doctype html>
 <html lang="ru">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Белозерье</title>
-    <style>
-      body {
-        margin: 40px;
-        color: #111;
-        background: #fff;
-        font-family: Georgia, "Times New Roman", serif;
-      }
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Источники, исторические населённые пункты и церкви Белозерского уезда XVI–XVII веков.">
+  <title>Белозерье — историко-географический проект</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #33281f;
+      --deep: #241f1a;
+      --muted: #80664f;
+      --accent: #9a3412;
+      --blue: #365b73;
+      --rule: rgba(111, 78, 43, .25);
+      --paper: #eee6c9;
+      --panel: rgba(255, 251, 235, .57);
+      --page-max-width: 1510px;
+      --page-inline-padding: clamp(20px, 3.3vw, 52px);
+    }
 
-      .logo {
-        display: block;
-        width: 88px;
-        height: 88px;
-        margin-bottom: 20px;
-      }
+    * { box-sizing: border-box; }
 
-      h1 {
-        margin: 0 0 24px;
-        font-size: 2.5rem;
-      }
+    html { scroll-behavior: smooth; scrollbar-width: none; }
+    html::-webkit-scrollbar { display: none; }
 
-      a {
-        color: #0645ad;
-        font-size: 1.1rem;
+    body {
+      margin: 0;
+      color: var(--ink);
+      font: 16px/1.5 Georgia, "Times New Roman", serif;
+      background-color: #e8dfc4;
+      background-image:
+        linear-gradient(110deg, rgba(255,250,231,.54), rgba(232,216,181,.26)),
+        url("./images/textures/homepage-parchment-v2.jpg");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 62px;
+      padding-inline: max(
+        var(--page-inline-padding),
+        calc((100vw - var(--page-max-width)) / 2 + var(--page-inline-padding))
+      );
+      color: #f8f4e9;
+      background: #181818;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .brand img { width: 36px; height: 36px; }
+
+    main {
+      width: min(var(--page-max-width), 100%);
+      margin: auto;
+      padding: 24px var(--page-inline-padding) 48px;
+    }
+
+    .intro {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 30px;
+      margin-bottom: 25px;
+      padding-bottom: 26px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .eyebrow {
+      color: var(--muted);
+      font: 700 .69rem/1.5 system-ui, sans-serif;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .intro h1 {
+      margin: 2px 0 0;
+      color: var(--deep);
+      font-size: clamp(2.4rem, 4vw, 3.7rem);
+      line-height: 1.08;
+      letter-spacing: -.02em;
+    }
+
+    .intro p {
+      max-width: 710px;
+      margin: 0;
+      color: #624e3d;
+      font-size: 1.06rem;
+    }
+
+    .stats { display: flex; gap: 28px; flex: none; }
+    .stat strong { display: block; color: var(--deep); font-size: 1.7rem; line-height: 1.1; }
+    .stat span {
+      color: var(--muted);
+      font: 650 .64rem/1.4 system-ui, sans-serif;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: minmax(300px, 1fr) minmax(430px, 1.4fr);
+      gap: 22px;
+      height: clamp(500px, calc(100vh - 260px), 820px);
+      height: clamp(500px, calc(100dvh - 260px), 820px);
+      align-items: stretch;
+    }
+
+    .left-column { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; gap: 17px; }
+
+    .panel {
+      padding: 19px 22px;
+      border: 1px solid var(--rule);
+      border-radius: 5px;
+      background: var(--panel);
+      box-shadow: 0 1px 1px rgba(60,45,25,.035);
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 13px;
+    }
+
+    .panel h2 { margin: 0; color: var(--deep); font-size: 1.38rem; line-height: 1.2; }
+    .panel small { color: var(--muted); font: 650 .69rem/1.4 system-ui, sans-serif; }
+
+    .book-item {
+      display: grid;
+      grid-template-columns: 68px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      padding: 10px 0;
+      border-top: 1px solid rgba(111,78,43,.13);
+    }
+
+    .book-item:first-of-type { border-top: 0; }
+
+    .book-year {
+      min-width: 66px;
+      padding: 5px 4px;
+      border-radius: 3px;
+      color: #fff;
+      background: #876b50;
+      font: 700 .75rem/1.35 system-ui, sans-serif;
+      text-align: center;
+    }
+
+    .book-title { color: var(--accent); font-size: .95rem; font-weight: 700; line-height: 1.35; }
+    .book-title:hover, .book-title:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+    .book-description {
+      margin-top: 3px;
+      color: var(--muted);
+      font: .75rem/1.45 system-ui, sans-serif;
+    }
+
+    .directory { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .directory-card { min-height: 168px; }
+    .directory-title { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--deep); font-size: 1.1rem; font-weight: 700; }
+    .directory-icon { width: 21px; color: var(--accent); font: 700 1.2rem/1 Georgia, serif; text-align: center; }
+    .directory-card p { margin: 0 0 13px; color: #6b5846; font-size: .82rem; }
+    .action-link {
+      padding: 0 0 2px;
+      border: 0;
+      border-bottom: 1px solid #c4a28a;
+      color: var(--accent);
+      background: none;
+      font: 700 .75rem/1.4 system-ui, sans-serif;
+      cursor: pointer;
+    }
+
+    .action-link:hover, .action-link:focus-visible { border-color: var(--accent); }
+
+    .search-panel { display: flex; min-height: 0; flex-direction: column; }
+    .search-panel h2 { font-size: 1.12rem; }
+    .search {
+      width: 100%;
+      padding: 10px 11px;
+      border: 1px solid #c4b292;
+      border-radius: 3px;
+      outline: none;
+      color: var(--ink);
+      background: #fff9e8;
+      font: .82rem/1.4 system-ui, sans-serif;
+    }
+
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(154,52,18,.12); }
+    .search-results { display: grid; gap: 2px; margin-top: 9px; overflow-y: auto; }
+    .search-result {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 6px 8px;
+      border-radius: 3px;
+      font-size: .86rem;
+    }
+
+    .search-result:hover, .search-result:focus-visible { background: rgba(255,255,255,.5); }
+    .search-result strong { color: var(--accent); }
+    .search-result span { color: var(--muted); font: .7rem/1.4 system-ui, sans-serif; }
+    .search-empty { margin: 5px 0 0; color: var(--muted); font: .78rem/1.5 system-ui, sans-serif; }
+
+    .map-panel {
+      display: flex;
+      height: 100%;
+      min-height: 0;
+      padding: 0;
+      overflow: hidden;
+      flex-direction: column;
+    }
+
+    .map-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 15px 20px;
+    }
+
+    .map-head h2 { font-size: 1.3rem; }
+    .map-head h2 a { color: inherit; text-decoration: none; }
+    .map-head h2 a:hover,
+    .map-head h2 a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+    .map-head p { margin: 3px 0 0; color: var(--muted); font: .75rem/1.4 system-ui, sans-serif; }
+    .map-controls { display: flex; align-items: center; gap: 7px; }
+    .map-controls button {
+      padding: 7px 10px;
+      border: 1px solid #c6b69b;
+      border-radius: 3px;
+      color: #584935;
+      background: #f6f0dd;
+      font: 600 .75rem/1.3 system-ui, sans-serif;
+      cursor: pointer;
+    }
+
+    .map-controls button.active { color: #fff; border-color: var(--accent); background: var(--accent); }
+    .map { position: relative; flex: 1; min-height: 0; background: #e8e8d9; }
+    .map-legend {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 11px 20px;
+      border-top: 1px solid var(--rule);
+      color: var(--muted);
+      font: .75rem/1.4 system-ui, sans-serif;
+      flex-wrap: wrap;
+    }
+
+    .legend-dot {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 6px;
+      border: 1px solid #fff;
+      border-radius: 50%;
+      background: #191919;
+      box-shadow: 0 0 0 1px #444;
+    }
+
+    .legend-church-icon {
+      width: 16px;
+      height: 20px;
+      margin-right: 5px;
+      object-fit: contain;
+      object-position: center bottom;
+      vertical-align: middle;
+    }
+    .map-count { margin-left: auto; }
+    .map-hover-label {
+      display: inline-block;
+      color: transparent;
+      font: var(--map-marker-label-font);
+      white-space: nowrap;
+      text-decoration: none;
+      text-shadow: none;
+      border-bottom: 1px solid var(--map-place-label-color);
+      pointer-events: none;
+    }
+    .map-hover-label.is-church { border-bottom-color: var(--map-church-label-color); }
+
+    .ol-attribution { font-size: 10px; }
+    .ol-overlaycontainer-stopevent .ol-zoom { top: 9px; left: 9px; }
+
+    .footer-note {
+      margin: 19px 0 0;
+      color: #76614d;
+      font: .75rem/1.6 system-ui, sans-serif;
+    }
+
+    @media (max-width: 1050px) {
+      .dashboard { height: auto; grid-template-columns: 1fr; }
+      .left-column { grid-template-rows: none; }
+      .search-results { overflow-y: visible; }
+      .map-panel {
+        height: clamp(480px, 70vh, 720px);
+        height: clamp(480px, 70dvh, 720px);
       }
-    </style>
-  </head>
-  <body>
-    <main>
-      <img class="logo" src="./belozerye-monastery-logo.svg" alt="Логотип Белозерья: монастырь на берегу озера">
-      <h1>Белозерье</h1>
-      <a href="./books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда Н. Шеховского и М. Козлова (1626/27 г.)</a>
-    </main>
-  </body>
+    }
+
+    @media (max-width: 720px) {
+      .site-header { padding-inline: 14px; }
+      main { padding: 25px 14px 38px; }
+      .intro { display: block; }
+      .stats { margin-top: 23px; }
+      .directory { grid-template-columns: 1fr 1fr; }
+      .map-head { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 520px) {
+      .intro h1 { font-size: 2.45rem; }
+      .intro p { font-size: .98rem; }
+      .stats { justify-content: space-between; gap: 10px; }
+      .stat strong { font-size: 1.45rem; }
+      .directory { grid-template-columns: 1fr; }
+      .panel { padding: 17px; }
+      .map-panel {
+        height: clamp(440px, 68vh, 600px);
+        height: clamp(440px, 68dvh, 600px);
+      }
+      .map-controls { width: 100%; overflow-x: auto; }
+      .map-controls button { white-space: nowrap; }
+      .map-count { width: 100%; margin-left: 0; }
+    }
+  </style>
+  <link rel="canonical" href="https://belozersky.uezd.workers.dev/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Белозерье">
+  <meta property="og:title" content="Белозерье — историко-географический проект">
+  <meta property="og:description" content="Источники, исторические населённые пункты и церкви Белозерского уезда XVI–XVII веков.">
+  <meta property="og:url" content="https://belozersky.uezd.workers.dev/">
+  <meta name="twitter:card" content="summary">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Белозерье — главная">
+      <img src="./images/icons/belozerye-monastery-logo.svg" alt="">
+      <span>Белозерье</span>
+    </a>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <div class="eyebrow">Историко-географический проект</div>
+        <h1 id="page-title">Белозерье</h1>
+      </div>
+      <div class="stats" aria-label="Состав проекта">
+        <div class="stat"><strong>3</strong><span>Источника</span></div>
+        <div class="stat"><strong>209</strong><span>Населённых пунктов</span></div>
+        <div class="stat"><strong>6</strong><span>Церквей</span></div>
+      </div>
+    </section>
+
+    <section class="dashboard">
+      <div class="left-column">
+        <section class="panel" id="books" aria-labelledby="books-title">
+          <div class="panel-head">
+            <h2 id="books-title">Источники</h2>
+          </div>
+          <article class="book-item">
+            <span class="book-year">1544</span>
+            <div>
+              <a class="book-title" href="./books/belozersky_uezd-1544/">Сотная из писцовых книг Белозерского уезда (1544 г.)</a>
+              <div class="book-description">Сотная из писцовых книг Ф.Ф. Хидырщикова и Г.Л. Клементиева на земли Кирилло-Белозерского монастыря в Белозерском уезде (1544 г.)</div>
+            </div>
+          </article>
+          <article class="book-item">
+            <span class="book-year">1585</span>
+            <div>
+              <a class="book-title" href="./books/belozersky_uezd-1585/">Писцовая книга Белозерского уезда (1585 г.)</a>
+              <div class="book-description">Писцовая книга езовых дворцовых волостей и государевых оброчных угодий Белозерского уезда А.Е. Салтыкова и подьячих А. Варламова и Б. Логинова (1585 г.)</div>
+            </div>
+          </article>
+          <article class="book-item">
+            <span class="book-year">1626/27</span>
+            <div>
+              <a class="book-title" href="./books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a>
+              <div class="book-description">Писцовая книга Белозерского уезда письма и меры Н. Шеховского и подьячего М. Козлова 1626/27 г. Копия XVIII в. за скрепой секретаря И. Феоктистова и справами подканцеляристов П. Цветкова и И. Михайлова</div>
+            </div>
+          </article>
+        </section>
+
+        <section class="panel search-panel" aria-labelledby="search-title">
+          <div class="panel-head">
+            <h2 id="search-title">Найти населённый пункт</h2>
+          </div>
+          <input id="place-search" class="search" type="search" placeholder="Например: Крушково, Поповская, Чарома…" autocomplete="off" aria-controls="search-results">
+          <div id="search-results" class="search-results" aria-live="polite"></div>
+        </section>
+      </div>
+
+      <section class="panel map-panel" id="map-section" aria-labelledby="map-title">
+        <div class="map-head">
+          <div>
+            <h2 id="map-title"><a href="./map/">Историческая карта</a></h2>
+            <p>Населённые пункты и церкви с установленным местоположением</p>
+          </div>
+          <div class="map-controls" role="group" aria-label="Фильтр объектов карты">
+            <button class="active" type="button" data-map-filter="all">Все</button>
+            <button type="button" data-map-filter="place">Поселения</button>
+            <button type="button" data-map-filter="church">Церкви</button>
+          </div>
+        </div>
+        <div id="historical-map" class="map" aria-label="Интерактивная карта населённых пунктов и церквей"></div>
+        <div class="map-legend">
+          <span><span class="legend-dot"></span>Населённые пункты</span>
+          <span><img class="legend-church-icon" src="./images/icons/church-marker.png" alt="">Церкви</span>
+          <span class="map-count">На карте: 130</span>
+        </div>
+      </section>
+    </section>
+
+  </main>
+
+  <script id="place-search-data" type="application/json">[{"slug":"ananino","name":"Ананьино","type":"Деревня","search":["Ананьино"]},{"slug":"aristov","name":"Аристов","type":"Починок","search":["Аристов"]},{"slug":"bezsoloe","name":"Безсолое","type":"Деревня","search":["Безсолое"]},{"slug":"bezkhvostoe","name":"Безхвостое","type":"Селище","search":["Безхвостое"]},{"slug":"bovynin","name":"Бовынин","type":"Деревня","search":["Бовынин"]},{"slug":"bodaga","name":"Бодага","type":"Деревня","search":["Бодага"]},{"slug":"borisovo","name":"Борисово","type":"Деревня","search":["Борисово"]},{"slug":"borisovskaya","name":"Борисовская","type":"Деревня","search":["Борисовская","Борисовска"]},{"slug":"bronnikovo","name":"Бронниково","type":"Деревня","search":["Бронниково"]},{"slug":"brykino","name":"Брыкино","type":"Деревня","search":["Брыкино"]},{"slug":"vasileva","name":"Василева","type":"Пустошь","search":["Василева"]},{"slug":"vladychna","name":"Владычна","type":"Пустошь","search":["Владычна"]},{"slug":"vorobevo","name":"Воробьево","type":"Селище","search":["Воробьево"]},{"slug":"voroshnino","name":"Ворошнино","type":"Деревня","search":["Ворошнино"]},{"slug":"vysokoe-ugla","name":"Высокое","type":"Деревня","search":["Высокое"]},{"slug":"vysokoe-churovskaya","name":"Высокое","type":"Деревня","search":["Высокое"]},{"slug":"gavrilova","name":"Гаврилова","type":"Деревня","search":["Гаврилова"]},{"slug":"galshutin","name":"Галшутин","type":"Деревня","search":["Галшутин"]},{"slug":"golobokovo","name":"Голобоково","type":"Деревня","search":["Голобоково"]},{"slug":"gologuzovo-ugla","name":"Гологузово","type":"Починок","search":["Гологузово"]},{"slug":"gologuzovo-churovskaya","name":"Гологузово","type":"Селище","search":["Гологузово"]},{"slug":"golodyaevo","name":"Голодяево","type":"Деревня","search":["Голодяево"]},{"slug":"gorchakovo","name":"Горчаково","type":"Селище","search":["Горчаково"]},{"slug":"grishiev","name":"Гришиев","type":"Деревня","search":["Гришиев"]},{"slug":"davydovo","name":"Давыдово","type":"Селище","search":["Давыдово"]},{"slug":"demidov-bolshoe","name":"Демидов Болшое","type":"Селище","search":["Демидов Болшое"]},{"slug":"demsino","name":"Демсино","type":"Деревня","search":["Демсино"]},{"slug":"derevyanitsa","name":"Деревяница","type":"Деревня","search":["Деревяница"]},{"slug":"dmitrokovo","name":"Дмитроково","type":"Деревня","search":["Дмитроково"]},{"slug":"dor","name":"Дор","type":"Пустошь","search":["Дор"]},{"slug":"dor-levashev","name":"Дор Левашев","type":"Деревня","search":["Дор Левашев"]},{"slug":"drozdovo","name":"Дроздово","type":"Деревня","search":["Дроздово"]},{"slug":"dryugino","name":"Дрюгино","type":"Пустошь","search":["Дрюгино","Дручино"]},{"slug":"dubrova","name":"Дуброва","type":"Деревня","search":["Дуброва"]},{"slug":"durakov","name":"Дураков","type":"Деревня","search":["Дураков"]},{"slug":"ezdalki","name":"Ездалки","type":"Пустошь","search":["Ездалки","Елданицы","Езданницы"]},{"slug":"eltsovo","name":"Ельцово","type":"Пустошь","search":["Ельцово"]},{"slug":"eremeevskoe","name":"Еремеевское","type":"Деревня","search":["Еремеевское"]},{"slug":"esipo-esino","name":"Есино","type":"Пустошь","search":["Есино"]},{"slug":"zhukovo","name":"Жуково","type":"Селище","search":["Жуково"]},{"slug":"zaopoche","name":"Заопочье","type":"Деревня","search":["Заопочье"]},{"slug":"zarkovo","name":"Зарково","type":"Селище","search":["Зарково"]},{"slug":"zoserikhino","name":"Зосерихино","type":"Пустошь","search":["Зосерихино"]},{"slug":"ivankov","name":"Иванков","type":"Деревня","search":["Иванков"]},{"slug":"ivantsovo","name":"Иванцово","type":"Деревня","search":["Иванцово"]},{"slug":"igaya","name":"Игая","type":"Деревня","search":["Игая"]},{"slug":"igumnovo","name":"Игумново","type":"Деревня","search":["Игумново"]},{"slug":"ievlevo","name":"Иевлево","type":"Деревня","search":["Иевлево"]},{"slug":"ikonnikovo","name":"Иконниково","type":"Пустошь","search":["Иконниково","Лихачево"]},{"slug":"ilinskaya","name":"Ильинская","type":"Пустошь","search":["Ильинская"]},{"slug":"isakovo","name":"Исаково","type":"Пустошь","search":["Исаково"]},{"slug":"kislikha-bolshoe","name":"Кислиха Большое","type":"Селище","search":["Кислиха Большое"]},{"slug":"kislikha-maloe","name":"Кислиха Малое","type":"Селище","search":["Кислиха Малое"]},{"slug":"klykov","name":"Клыков","type":"Деревня","search":["Клыков"]},{"slug":"knyazhe","name":"Княжье","type":"Деревня","search":["Княжье"]},{"slug":"kolyshino","name":"Колышино","type":"Деревня","search":["Колышино"]},{"slug":"koryukino","name":"Корюкино","type":"Деревня","search":["Корюкино"]},{"slug":"kotovo","name":"Котово","type":"Деревня","search":["Котово"]},{"slug":"koshcheiv-koshcheev","name":"Кощеев","type":"Починок","search":["Кощеев"]},{"slug":"koshcheevo","name":"Кощеево","type":"Деревня","search":["Кощеево"]},{"slug":"krasnoe","name":"Красное","type":"Деревня","search":["Красное"]},{"slug":"krivosheino","name":"Кривошеино","type":"Деревня","search":["Кривошеино"]},{"slug":"krutets","name":"Крутец","type":"Деревня","search":["Крутец"]},{"slug":"krushkova","name":"Крушкова","type":"Деревня","search":["Крушкова","Крушково"]},{"slug":"krushkovo","name":"Крушково","type":"Починок","search":["Крушково"]},{"slug":"kuznetsovo","name":"Кузнецово","type":"Пустошь","search":["Кузнецово"]},{"slug":"kuleberovo","name":"Кулеберово","type":"Деревня","search":["Кулеберово"]},{"slug":"kunino","name":"Кунино","type":"Пустошь","search":["Кунино","Кукино"]},{"slug":"kurakin","name":"Куракин","type":"Деревня","search":["Куракин"]},{"slug":"kurgany","name":"Курганы","type":"Деревня","search":["Курганы"]},{"slug":"kurya","name":"Курья","type":"Селище","search":["Курья"]},{"slug":"kusty","name":"Кусты","type":"Деревня","search":["Кусты"]},{"slug":"larino","name":"Ларино","type":"Деревня","search":["Ларино","Заречьем"]},{"slug":"likhacheva","name":"Лихачева","type":"Пустошь","search":["Лихачева","Чюрове"]},{"slug":"likhachevo","name":"Лихачево","type":"Деревня","search":["Лихачево"]},{"slug":"loshakova","name":"Лошакова","type":"Селище","search":["Лошакова"]},{"slug":"luzhkovo","name":"Лужкова","type":"Деревня","search":["Лужкова"]},{"slug":"lukino","name":"Лукино","type":"Деревня","search":["Лукино"]},{"slug":"lykhovo","name":"Лыхово","type":"Селище","search":["Лыхово"]},{"slug":"lyshkovo","name":"Лышково","type":"Деревня","search":["Лышково"]},{"slug":"makarovo","name":"Макарово","type":"Деревня","search":["Макарово"]},{"slug":"maksimkov","name":"Максимков","type":"Деревня","search":["Максимков"]},{"slug":"maksimtsova","name":"Максимцова","type":"Пустошь","search":["Максимцова"]},{"slug":"malgin","name":"Малгин","type":"Деревня","search":["Малгин"]},{"slug":"malgina","name":"Малгина","type":"Деревня","search":["Малгина"]},{"slug":"malinukha","name":"Малинуха","type":"Пустошь","search":["Малинуха"]},{"slug":"malchino","name":"Малчино","type":"Деревня","search":["Малчино"]},{"slug":"maltsov","name":"Мальцов","type":"Деревня","search":["Мальцов"]},{"slug":"manuylova","name":"Мануйлова","type":"Пустошь","search":["Мануйлова"]},{"slug":"medvezhe","name":"Медвежье","type":"Деревня","search":["Медвежье"]},{"slug":"mervyatino","name":"Мервятино","type":"Деревня","search":["Мервятино"]},{"slug":"merzlyakovo","name":"Мерзляково","type":"Селище","search":["Мерзляково"]},{"slug":"mizhuevo","name":"Мижуево","type":"Деревня","search":["Мижуево"]},{"slug":"mizhukovo","name":"Мижуково","type":"Селище","search":["Мижуково"]},{"slug":"mikhaylovskaya","name":"Михайловская","type":"Пустошь","search":["Михайловская"]},{"slug":"modenov","name":"Моденов","type":"Деревня","search":["Моденов"]},{"slug":"mokrotsyno","name":"Мокроцыно","type":"Деревня","search":["Мокроцыно"]},{"slug":"morshikha","name":"Моршиха","type":"Деревня","search":["Моршиха"]},{"slug":"mosyakino","name":"Мосякино","type":"Селище","search":["Мосякино"]},{"slug":"moshkov","name":"Мошков","type":"Деревня","search":["Мошков"]},{"slug":"mudygino","name":"Мудыгино","type":"Пустошь","search":["Мудыгино"]},{"slug":"mys","name":"Мыс","type":"Деревня","search":["Мыс"]},{"slug":"myshkino","name":"Мышкино","type":"Деревня","search":["Мышкино"]},{"slug":"na-shchuche","name":"на Щучье","type":"Деревня","search":["на Щучье"]},{"slug":"nazarovo","name":"Назарово","type":"Деревня","search":["Назарово"]},{"slug":"nekraskov","name":"Некрасков","type":"Деревня","search":["Некрасков"]},{"slug":"novo","name":"Ново","type":"Пустошь","search":["Ново"]},{"slug":"novoy-pochinok-filin","name":"Новой Починок Филин","type":"Пустошь","search":["Новой Починок Филин"]},{"slug":"nov-shatretskaya","name":"Новь Шатрецкая","type":"Деревня","search":["Новь Шатрецкая"]},{"slug":"norovo","name":"Норово","type":"Селище","search":["Норово"]},{"slug":"obukhovo-ugla","name":"Обухово","type":"Деревня","search":["Обухово"]},{"slug":"obukhovo-ramenskaya","name":"Обухово","type":"Деревня","search":["Обухово"]},{"slug":"ovinets","name":"Овинец","type":"Деревня","search":["Овинец"]},{"slug":"okatevo","name":"Окатьево","type":"Деревня","search":["Окатьево"]},{"slug":"okoemovo","name":"Окоемово","type":"Деревня","search":["Окоемово"]},{"slug":"oksenovo","name":"Оксеново","type":"Деревня","search":["Оксеново"]},{"slug":"okunevo","name":"Окунево","type":"Деревня","search":["Окунево"]},{"slug":"oleksino","name":"Олексино","type":"Деревня","search":["Олексино"]},{"slug":"olesheva","name":"Олешева","type":"Деревня","search":["Олешева"]},{"slug":"olkhovets","name":"Ольховец","type":"Пустошь","search":["Ольховец"]},{"slug":"omelyanov","name":"Омельянов","type":"Деревня","search":["Омельянов"]},{"slug":"onanin-pochinok","name":"Онаньин Починок","type":"Деревня","search":["Онаньин Починок"]},{"slug":"opalikha","name":"Опалиха","type":"Деревня","search":["Опалиха"]},{"slug":"osifkovo","name":"Осифково","type":"Деревня","search":["Осифково"]},{"slug":"palshmay","name":"Палшмай","type":"Пустошь","search":["Палшмай","Палшма"]},{"slug":"pateryaeva","name":"Патеряева","type":"Пустошь","search":["Патеряева"]},{"slug":"patrekeitsovo","name":"Патрекеицово","type":"Пустошь","search":["Патрекеицово","Патрекеево"]},{"slug":"pakhomovo","name":"Пахомово","type":"Пустошь","search":["Пахомово"]},{"slug":"perkhino","name":"Перхино","type":"Деревня","search":["Перхино"]},{"slug":"pestovo","name":"Пестово","type":"Деревня","search":["Пестово"]},{"slug":"pestyushkin","name":"Пестюшкин","type":"Пустошь","search":["Пестюшкин"]},{"slug":"peshkov","name":"Пешков","type":"Деревня","search":["Пешков"]},{"slug":"pirogovo","name":"Пирогово","type":"Пустошь","search":["Пирогово"]},{"slug":"pishchalinskoe","name":"Пищалинское","type":"Деревня","search":["Пищалинское"]},{"slug":"plesnyukovo","name":"Плеснюково","type":"Пустошь","search":["Плеснюково"]},{"slug":"pleshchakovo","name":"Плещаково","type":"Селище","search":["Плещаково"]},{"slug":"ploskoe","name":"Плоское","type":"Деревня","search":["Плоское"]},{"slug":"pogost-rozhestva-bogoroditsy","name":"Погост Рождества Богородицы","type":"Погост","search":["Погост Рождества Богородицы","Рождества Богородицы"]},{"slug":"pograeva","name":"Пограева","type":"Деревня","search":["Пограева"]},{"slug":"podosenkovo","name":"Подосенково","type":"Селище","search":["Подосенково"]},{"slug":"polezhaevo","name":"Полежаево","type":"Деревня","search":["Полежаево"]},{"slug":"popovskaya","name":"Поповская","type":"Деревня","search":["Поповская","Богоявления"]},{"slug":"poteryaevo","name":"Потеряево","type":"Деревня","search":["Потеряево"]},{"slug":"pochinok-ugla","name":"Починок","type":"Деревня","search":["Починок"]},{"slug":"pochinok-churovskaya","name":"Починок","type":"Деревня","search":["Починок"]},{"slug":"pochinok-kharlamov-u-kolentsa","name":"Починок Харламов","type":"Деревня","search":["Починок Харламов","Харламов"]},{"slug":"presnyakovo","name":"Пресняково","type":"Пустошь","search":["Пресняково"]},{"slug":"prikino","name":"Прикино","type":"Пустошь","search":["Прикино"]},{"slug":"pritykino","name":"Притыкино","type":"Деревня","search":["Притыкино"]},{"slug":"pryamikovo","name":"Прямиково","type":"Селище","search":["Прямиково"]},{"slug":"pyatkov","name":"Пятков","type":"Деревня","search":["Пятков"]},{"slug":"ramene","name":"Раменье","type":"Деревня","search":["Раменье"]},{"slug":"rameshka-churovskaya","name":"Рамешка","type":"Пустошь","search":["Рамешка","Раменки","Раменка"]},{"slug":"rameshka-churovskaya-2","name":"Рамешка","type":"Пустошь","search":["Рамешка"]},{"slug":"rodino","name":"Родино","type":"Деревня","search":["Родино"]},{"slug":"rozbuy","name":"Розбуй","type":"Пустошь","search":["Розбуй"]},{"slug":"romanovo","name":"Романово","type":"Деревня","search":["Романово"]},{"slug":"romanovskoe","name":"Романовское","type":"Деревня","search":["Романовское","Раменье Дупельное"]},{"slug":"rublevo","name":"Рублево","type":"Деревня","search":["Рублево"]},{"slug":"savin","name":"Савин","type":"Деревня","search":["Савин"]},{"slug":"savinskoe","name":"Савинское","type":"Деревня","search":["Савинское","Великим Двором"]},{"slug":"samsonitsa","name":"Самсоница","type":"Пустошь","search":["Самсоница"]},{"slug":"samsonova-dubrovka","name":"Самсонова Дубровка","type":"Деревня","search":["Самсонова Дубровка"]},{"slug":"samuilova","name":"Самуилова","type":"Пустошь","search":["Самуилова"]},{"slug":"saunkin","name":"Саункин","type":"Деревня","search":["Саункин"]},{"slug":"svatkova","name":"Сваткова","type":"Деревня","search":["Сваткова"]},{"slug":"selivanov","name":"Селиванов","type":"Деревня","search":["Селиванов"]},{"slug":"selittskoe","name":"Селитцкое","type":"Пустошь","search":["Селитцкое","Селецкое"]},{"slug":"selishche","name":"Селище","type":"Деревня","search":["Селище"]},{"slug":"seltsa","name":"Сельца","type":"Деревня","search":["Сельца"]},{"slug":"semkino","name":"Семкино","type":"Пустошь","search":["Семкино"]},{"slug":"senukhino","name":"Сенухино","type":"Селище","search":["Сенухино"]},{"slug":"senkin","name":"Сенькин","type":"Деревня","search":["Сенькин"]},{"slug":"senyutino","name":"Сенютино","type":"Селище","search":["Сенютино"]},{"slug":"sintsovskoe","name":"Синцовское","type":"Деревня","search":["Синцовское"]},{"slug":"skorobogatoy","name":"Скоробогатой","type":"Деревня","search":["Скоробогатой"]},{"slug":"slizovo","name":"Слизово","type":"Пустошь","search":["Слизово"]},{"slug":"sogareva","name":"Согарева","type":"Пустошь","search":["Согарева"]},{"slug":"sokolovo","name":"Соколово","type":"Деревня","search":["Соколово"]},{"slug":"sosnovka","name":"Сосновка","type":"Пустошь","search":["Сосновка"]},{"slug":"sofonovo","name":"Софоново","type":"Деревня","search":["Софоново","Кистенево"]},{"slug":"staraya","name":"Старая","type":"Деревня","search":["Старая"]},{"slug":"stikino","name":"Стикино","type":"Селище","search":["Стикино"]},{"slug":"syromyatkino","name":"Сыромяткино","type":"Пустошь","search":["Сыромяткино"]},{"slug":"tarasov","name":"Тарасов","type":"Деревня","search":["Тарасов"]},{"slug":"tarasova","name":"Тарасова","type":"Деревня","search":["Тарасова"]},{"slug":"tarutin","name":"Тарутин","type":"Деревня","search":["Тарутин"]},{"slug":"telyatnik","name":"Телятник","type":"Деревня","search":["Телятник"]},{"slug":"timoshin","name":"Тимошин","type":"Деревня","search":["Тимошин"]},{"slug":"tishinskoe","name":"Тишинское","type":"Деревня","search":["Тишинское"]},{"slug":"tolstoe-ramene","name":"Толстое Раменье","type":"Деревня","search":["Толстое Раменье"]},{"slug":"troshino","name":"Трошино","type":"Пустошь","search":["Трошино"]},{"slug":"trufonovo","name":"Труфоново","type":"Пустошь","search":["Труфоново","Труфаново"]},{"slug":"uvarova-gorka","name":"Уварова Горка","type":"Деревня","search":["Уварова Горка"]},{"slug":"ulushkovo","name":"Улушково","type":"Деревня","search":["Улушково","Лошакова"]},{"slug":"fedorkovo","name":"Федорково","type":"Пустошь","search":["Федорково","Федорово"]},{"slug":"fedosino","name":"Федосьино","type":"Деревня","search":["Федосьино"]},{"slug":"fedotov","name":"Федотов","type":"Деревня","search":["Федотов"]},{"slug":"filino","name":"Филино","type":"Деревня","search":["Филино"]},{"slug":"fomkin","name":"Фомкин","type":"Деревня","search":["Фомкин"]},{"slug":"fofonovo","name":"Фофоново","type":"Пустошь","search":["Фофоново","Фофанова"]},{"slug":"charoma","name":"Чарома","type":"Деревня","search":["Чарома"]},{"slug":"chyuravskaya-nov","name":"Чюравская Новь","type":"Деревня","search":["Чюравская Новь","Черепаново"]},{"slug":"shevyrino","name":"Шевырино","type":"Деревня","search":["Шевырино"]},{"slug":"shizdino","name":"Шиздино","type":"Пустошь","search":["Шиздино"]},{"slug":"shilolino","name":"Шилолино","type":"Деревня","search":["Шилолино"]},{"slug":"yakulkino","name":"Якулкино","type":"Пустошь","search":["Якулкино","Якунино"]},{"slug":"yaltsova","name":"Ялцова","type":"Пустошь","search":["Ялцова"]},{"slug":"yartsova","name":"Ярцова","type":"Пустошь","search":["Ярцова","Ярново"]}]</script>
+  <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
+  <script src="./js/map-marker-settings.js"></script>
+  <script>
+    (() => {
+      const places = JSON.parse(document.querySelector("#place-search-data").textContent);
+      const search = document.querySelector("#place-search");
+      const results = document.querySelector("#search-results");
+      const normalize = (value) => String(value).toLocaleLowerCase("ru-RU").replaceAll("ё", "е").trim();
+      const escapeMarkup = (value) => String(value).replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
+      })[character]);
+
+      const renderResults = () => {
+        const query = normalize(search.value);
+        const matches = (query
+          ? places.filter((place) => place.search.some((name) => normalize(name).includes(query)))
+          : places.slice(0, 5)).slice(0, 8);
+        results.innerHTML = matches.length
+          ? matches.map((place) => `<a class="search-result" href="./places/${encodeURIComponent(place.slug)}/"><strong>${escapeMarkup(place.name)}</strong><span>${escapeMarkup(place.type)}</span></a>`).join("")
+          : `<p class="search-empty">Совпадений не найдено</p>`;
+      };
+
+      search.addEventListener("input", renderResults);
+      document.querySelector("[data-focus-search]")?.addEventListener("click", () => {
+        search.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => search.focus(), 350);
+      });
+      renderResults();
+
+      if (!window.ol) return;
+      const mapElement = document.querySelector("#historical-map");
+      const markerSettings = window.BelozeryeMapMarkers;
+      const source = new ol.source.Vector();
+      const placeSource = new ol.source.Vector();
+      const churchSource = new ol.source.Vector();
+      const placeClusters = new ol.source.Vector();
+      const churchClusters = new ol.source.Vector();
+      let activeFilter = "all";
+      let hoveredFeature = null;
+      const styleCache = new Map();
+      const styleFor = (kind, clustersOnly = false) => (feature) => {
+        const members = feature.get("features") ?? [];
+        const count = members.length;
+        if (clustersOnly !== (count > 1)) return null;
+        const showLabel = count === 1 && feature.get("showLabel") !== false;
+        const marker = members[0];
+        const name = marker?.get("name") ?? "";
+        const key = `${kind}:${count}:${showLabel}:${name}`;
+        if (!styleCache.has(key)) {
+          const church = kind === "church";
+          if (count > 1) {
+            styleCache.set(key, new ol.style.Style({
+              zIndex: markerSettings.clusters.zIndex,
+              image: new ol.style.Circle({
+                radius: Math.min(19, 11 + Math.ceil(Math.log2(count))),
+                fill: new ol.style.Fill({ color: church ? markerSettings.clusters.churchColor : markerSettings.clusters.placeColor }),
+                stroke: new ol.style.Stroke({ color: markerSettings.clusters.stroke, width: 2 })
+              }),
+              text: new ol.style.Text({
+                text: String(count),
+                font: "700 11px/1 system-ui, sans-serif",
+                fill: new ol.style.Fill({ color: "#fffaf0" })
+              })
+            }));
+            return styleCache.get(key);
+          }
+          styleCache.set(key, new ol.style.Style({
+            image: church
+              ? new ol.style.Icon({
+                  src: "./images/icons/church-marker.png",
+                  scale: markerSettings.church.iconScale,
+                  anchor: [.5, 1],
+                  anchorXUnits: "fraction",
+                  anchorYUnits: "fraction"
+                })
+              : new ol.style.Circle({
+                  radius: markerSettings.place.diameter / 2 - markerSettings.place.strokeWidth,
+                  fill: new ol.style.Fill({ color: markerSettings.place.fill }),
+                  stroke: new ol.style.Stroke({ color: markerSettings.place.stroke, width: markerSettings.place.strokeWidth })
+                }),
+            text: showLabel ? new ol.style.Text({
+              text: name,
+              offsetX: church ? markerSettings.church.labelOffsetX : markerSettings.place.labelOffsetX,
+              offsetY: church ? markerSettings.church.labelOffsetY : 0,
+              textAlign: church ? markerSettings.church.labelTextAlign : "left",
+              font: markerSettings.labels.font,
+              fill: new ol.style.Fill({ color: church ? markerSettings.church.labelColor : markerSettings.place.labelColor }),
+              stroke: new ol.style.Stroke({ color: markerSettings.labels.haloColor, width: 3 })
+            }) : undefined
+          }));
+        }
+        return styleCache.get(key);
+      };
+      // Do not use declutter because it can hide a marker together with its label.
+      // Clustering alone controls object density.
+      const placesLayer = new ol.layer.Vector({ source: placeClusters, style: styleFor("place") });
+      const churchesLayer = new ol.layer.Vector({ source: churchClusters, style: styleFor("church") });
+      const placeClusterLayer = new ol.layer.Vector({ source: placeClusters, style: styleFor("place", true) });
+      const churchClusterLayer = new ol.layer.Vector({ source: churchClusters, style: styleFor("church", true) });
+      markerSettings.clusters.setVectorLayerOrder(
+        [placesLayer, churchesLayer],
+        [placeClusterLayer, churchClusterLayer]
+      );
+      const map = new ol.Map({
+        target: mapElement,
+        layers: [new ol.layer.Tile({ source: new ol.source.OSM() }), placesLayer, churchesLayer, placeClusterLayer, churchClusterLayer],
+        view: new ol.View({ center: ol.proj.fromLonLat([38.35, 59.55]), zoom: 9 }),
+        controls: ol.control.defaults.defaults({ attribution: true, rotate: false }).extend([new ol.control.ScaleLine({ units: "metric" })])
+      });
+      const placeHoverLabel = document.createElement("span");
+      placeHoverLabel.className = "map-hover-label";
+      const churchHoverLabel = document.createElement("span");
+      churchHoverLabel.className = "map-hover-label is-church";
+      const placeHoverOverlay = new ol.Overlay({ element: placeHoverLabel, positioning: "center-left", offset: [markerSettings.place.labelOffsetX, 0], stopEvent: false });
+      const churchHoverOverlay = new ol.Overlay({ element: churchHoverLabel, positioning: "center-right", offset: [markerSettings.church.labelOffsetX, markerSettings.church.labelOffsetY], stopEvent: false });
+      map.addOverlay(placeHoverOverlay);
+      map.addOverlay(churchHoverOverlay);
+
+      const textMeasure = document.createElement("canvas").getContext("2d");
+      textMeasure.font = "600 11px system-ui, sans-serif";
+      const boundsIntersect = (left, right) => left.left < right.right && left.right > right.left
+        && left.top < right.bottom && left.bottom > right.top;
+      const clusterMembers = (members, kind) => {
+        const items = members.map((member) => {
+          const pixel = map.getPixelFromCoordinate(member.getGeometry().getCoordinates());
+          const name = member.get("name");
+          const labelStart = kind === "church" ? markerSettings.church.labelOffsetX : markerSettings.place.labelOffsetX;
+          const labelY = kind === "church" ? markerSettings.church.labelOffsetY : 0;
+          const labelWidth = textMeasure.measureText(name).width + 4;
+          const labelLeft = kind === "church"
+            ? pixel[0] + labelStart - labelWidth
+            : pixel[0] + labelStart;
+          const iconWidth = kind === "church" ? markerSettings.church.iconWidth : markerSettings.place.diameter;
+          const iconHeight = kind === "church" ? markerSettings.church.iconHeight : markerSettings.place.diameter;
+          return { kind, member, pixel, labelBounds: {
+            left: labelLeft, right: labelLeft + labelWidth,
+            top: pixel[1] + labelY - 8, bottom: pixel[1] + labelY + 8
+          }, iconBounds: {
+            left: pixel[0] - iconWidth / 2, right: pixel[0] + iconWidth / 2,
+            top: kind === "church" ? pixel[1] - iconHeight : pixel[1] - iconHeight / 2,
+            bottom: pixel[1] + (kind === "church" ? 0 : iconHeight / 2)
+          } };
+        });
+        return markerSettings.clusters.group(items);
+      };
+      const rebuildClusters = () => {
+        const placeGroups = clusterMembers(placeSource.getFeatures(), "place");
+        const churchGroups = clusterMembers(churchSource.getFeatures(), "church");
+        const allIconBounds = [...placeGroups, ...churchGroups].flatMap((group) => group.map((item) => item.iconBounds));
+        const clusterBounds = [...placeGroups, ...churchGroups].filter((group) => group.length > 1).map((group) => {
+          const center = group.reduce((sum, item) => [sum[0] + item.pixel[0] / group.length, sum[1] + item.pixel[1] / group.length], [0, 0]);
+          const radius = Math.min(19, 11 + Math.ceil(Math.log2(group.length)));
+          return { left:center[0]-radius, right:center[0]+radius, top:center[1]-radius, bottom:center[1]+radius };
+        });
+        const objectBounds = [...allIconBounds, ...clusterBounds];
+        const occupiedLabelBounds = [];
+        const rebuild = (groups, target) => {
+          target.clear();
+          target.addFeatures(groups.map((group) => {
+            const labelItem = group[0];
+            const overlapsIcon = objectBounds.some((bounds) => bounds !== labelItem.iconBounds
+              && boundsIntersect(bounds, labelItem.labelBounds));
+            const showLabel = group.length === 1 && !overlapsIcon
+              && !occupiedLabelBounds.some((bounds) => boundsIntersect(bounds, labelItem.labelBounds));
+            if (showLabel) occupiedLabelBounds.push(group[0].labelBounds);
+            const groupMembers = group.map((item) => item.member);
+            const center = groupMembers.reduce((sum, member) => {
+              const [x, y] = member.getGeometry().getCoordinates();
+              return [sum[0] + x / group.length, sum[1] + y / group.length];
+            }, [0, 0]);
+            return new ol.Feature({ geometry: new ol.geom.Point(center), features: groupMembers, showLabel });
+          }));
+        };
+        rebuild(placeGroups, placeClusters);
+        rebuild(churchGroups, churchClusters);
+        styleCache.clear();
+      };
+      map.getView().on("change:resolution", rebuildClusters);
+      map.on("moveend", rebuildClusters);
+
+      const setFilter = (filter) => {
+        activeFilter = filter;
+        styleCache.clear();
+        placesLayer.setVisible(filter === "all" || filter === "place");
+        churchesLayer.setVisible(filter === "all" || filter === "church");
+        placeClusterLayer.setVisible(filter === "all" || filter === "place");
+        churchClusterLayer.setVisible(filter === "all" || filter === "church");
+        document.querySelectorAll("[data-map-filter]").forEach((button) => button.classList.toggle("active", button.dataset.mapFilter === filter));
+      };
+
+      document.querySelectorAll("[data-map-filter]").forEach((button) => button.addEventListener("click", () => setFilter(button.dataset.mapFilter)));
+      document.querySelector("[data-show-churches]")?.addEventListener("click", () => {
+        setFilter("church");
+        document.querySelector("#map-section").scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+
+      fetch("./data/place-markers.json", { cache: "no-store" })
+        .then((response) => {
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          return response.json();
+        })
+        .then((markers) => {
+          source.addFeatures(markers.map((marker) => new ol.Feature({
+            geometry: new ol.geom.Point(ol.proj.fromLonLat([marker.longitude, marker.latitude])),
+            ...marker
+          })));
+          for (const feature of source.getFeatures()) {
+            (feature.get("kind") === "church" ? churchSource : placeSource).addFeature(feature);
+          }
+          rebuildClusters();
+          if (source.getFeatures().length) map.getView().fit(source.getExtent(), { padding: [55, 55, 55, 55], maxZoom: 10.5, duration: 0 });
+        })
+        .catch((error) => console.error("Не удалось загрузить объекты карты.", error));
+
+      map.on("pointermove", (event) => {
+        const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate, { hitTolerance: 6 });
+        const members = feature?.get("features") ?? [];
+        const canUnderline = markerSettings.labels.underlineOnHover && members.length === 1 && feature?.get("showLabel") !== false;
+        const nextHoveredFeature = canUnderline ? feature : null;
+        if (hoveredFeature !== nextHoveredFeature) {
+          hoveredFeature = nextHoveredFeature;
+          styleCache.clear();
+          placesLayer.changed();
+          churchesLayer.changed();
+          placeClusterLayer.changed();
+          churchClusterLayer.changed();
+        }
+        placeHoverOverlay.setPosition(undefined);
+        churchHoverOverlay.setPosition(undefined);
+        if (nextHoveredFeature) {
+          const marker = members[0];
+          const overlay = marker.get("kind") === "church" ? churchHoverOverlay : placeHoverOverlay;
+          const label = marker.get("kind") === "church" ? churchHoverLabel : placeHoverLabel;
+          label.textContent = marker.get("name");
+          overlay.setPosition(marker.getGeometry().getCoordinates());
+        }
+        mapElement.style.cursor = feature ? "pointer" : "";
+        if (!feature) return;
+      });
+
+      map.on("singleclick", (event) => {
+        const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate, { hitTolerance: 7 });
+        if (!feature) return;
+        const members = feature.get("features") ?? [];
+        if (members.length > 1) {
+          const extent = ol.extent.createEmpty();
+          members.forEach((member) => ol.extent.extend(extent, member.getGeometry().getExtent()));
+          map.getView().fit(extent, { padding: [70, 70, 70, 70], maxZoom: 14, duration: 250 });
+          return;
+        }
+        const marker = members[0];
+        if (!marker) return;
+        const directory = marker.get("kind") === "church" ? "churches" : "places";
+        location.href = `./${directory}/${encodeURIComponent(marker.get("slug"))}/`;
+      });
+    })();
+  </script>
+</body>
 </html>

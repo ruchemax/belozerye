@@ -1,0 +1,1042 @@
+[
+  {
+    "id": "bezsoloe",
+    "slug": "bezsoloe",
+    "name": "Безсолое",
+    "kind": "place",
+    "longitude": 38.521450776237,
+    "latitude": 59.30621390179
+  },
+  {
+    "id": "bodaga",
+    "slug": "bodaga",
+    "name": "Бодага",
+    "kind": "place",
+    "longitude": 38.60202333333333,
+    "latitude": 59.19340166666667
+  },
+  {
+    "id": "borisovo",
+    "slug": "borisovo",
+    "name": "Борисово",
+    "kind": "place",
+    "longitude": 38.684164444444,
+    "latitude": 59.368851111111
+  },
+  {
+    "id": "borisovskaya",
+    "slug": "borisovskaya",
+    "name": "Борисовская",
+    "kind": "place",
+    "longitude": 38.594704891648,
+    "latitude": 59.250057717721
+  },
+  {
+    "id": "bovynin",
+    "slug": "bovynin",
+    "name": "Бовынин",
+    "kind": "place",
+    "longitude": 38.5292080532,
+    "latitude": 59.25109714291
+  },
+  {
+    "id": "bronnikovo",
+    "slug": "bronnikovo",
+    "name": "Бронниково",
+    "kind": "place",
+    "longitude": 38.633106053849,
+    "latitude": 59.38897394363
+  },
+  {
+    "id": "brykino",
+    "slug": "brykino",
+    "name": "Брыкино",
+    "kind": "place",
+    "longitude": 38.6153439173,
+    "latitude": 59.372399861885
+  },
+  {
+    "id": "charoma",
+    "slug": "charoma",
+    "name": "Чарома",
+    "kind": "place",
+    "longitude": 38.619834166667,
+    "latitude": 59.341693611111
+  },
+  {
+    "id": "chyuravskaya-nov",
+    "slug": "chyuravskaya-nov",
+    "name": "Чюравская Новь",
+    "kind": "place",
+    "longitude": 38.497132252102,
+    "latitude": 59.24579591877
+  },
+  {
+    "id": "demsino",
+    "slug": "demsino",
+    "name": "Демсино",
+    "kind": "place",
+    "longitude": 38.631991974964,
+    "latitude": 59.220615390718
+  },
+  {
+    "id": "derevyanitsa",
+    "slug": "derevyanitsa",
+    "name": "Деревяница",
+    "kind": "place",
+    "longitude": 38.580706465537,
+    "latitude": 59.260429684826
+  },
+  {
+    "id": "dryugino",
+    "slug": "dryugino",
+    "name": "Дрюгино",
+    "kind": "place",
+    "longitude": 38.581642965152,
+    "latitude": 59.206022745784
+  },
+  {
+    "id": "dubrova",
+    "slug": "dubrova",
+    "name": "Дуброва",
+    "kind": "place",
+    "longitude": 38.619424933487,
+    "latitude": 59.286347684207
+  },
+  {
+    "id": "durakov",
+    "slug": "durakov",
+    "name": "Дураков",
+    "kind": "place",
+    "longitude": 38.542487626406,
+    "latitude": 59.237915807813
+  },
+  {
+    "id": "eltsovo",
+    "slug": "eltsovo",
+    "name": "Ельцово",
+    "kind": "place",
+    "longitude": 38.67295111111111,
+    "latitude": 59.245666666666665
+  },
+  {
+    "id": "eremeevskoe",
+    "slug": "eremeevskoe",
+    "name": "Еремеевское",
+    "kind": "place",
+    "longitude": 38.616242701335,
+    "latitude": 59.386766983598
+  },
+  {
+    "id": "fedorkovo",
+    "slug": "fedorkovo",
+    "name": "Федорково",
+    "kind": "place",
+    "longitude": 38.692464324456,
+    "latitude": 59.260585800346
+  },
+  {
+    "id": "fedosino",
+    "slug": "fedosino",
+    "name": "Федосьино",
+    "kind": "place",
+    "longitude": 38.60607888888889,
+    "latitude": 59.23082083333333
+  },
+  {
+    "id": "fedotov",
+    "slug": "fedotov",
+    "name": "Федотов",
+    "kind": "place",
+    "longitude": 38.616118924726,
+    "latitude": 59.33365599642
+  },
+  {
+    "id": "fofonovo",
+    "slug": "fofonovo",
+    "name": "Фофоново",
+    "kind": "place",
+    "longitude": 38.639751897659,
+    "latitude": 59.226455382865
+  },
+  {
+    "id": "fomkin",
+    "slug": "fomkin",
+    "name": "Фомкин",
+    "kind": "place",
+    "longitude": 38.617288153182,
+    "latitude": 59.392943874572
+  },
+  {
+    "id": "gavrilova",
+    "slug": "gavrilova",
+    "name": "Гаврилова",
+    "kind": "place",
+    "longitude": 38.600965905107,
+    "latitude": 59.312728203545
+  },
+  {
+    "id": "golobokovo",
+    "slug": "golobokovo",
+    "name": "Голобоково",
+    "kind": "place",
+    "longitude": 38.623946445279,
+    "latitude": 59.319604927667
+  },
+  {
+    "id": "golodyaevo",
+    "slug": "golodyaevo",
+    "name": "Голодяево",
+    "kind": "place",
+    "longitude": 38.534883262907,
+    "latitude": 59.307412372417
+  },
+  {
+    "id": "gologuzovo-churovskaya",
+    "slug": "gologuzovo-churovskaya",
+    "name": "Гологузово",
+    "kind": "place",
+    "longitude": 38.555645394835,
+    "latitude": 59.288754847995
+  },
+  {
+    "id": "gologuzovo-ugla",
+    "slug": "gologuzovo-ugla",
+    "name": "Гологузово",
+    "kind": "place",
+    "longitude": 38.683430905935,
+    "latitude": 59.362119632962
+  },
+  {
+    "id": "grishiev",
+    "slug": "grishiev",
+    "name": "Гришиев",
+    "kind": "place",
+    "longitude": 38.669646617722,
+    "latitude": 59.372900514746
+  },
+  {
+    "id": "igaya",
+    "slug": "igaya",
+    "name": "Игая",
+    "kind": "place",
+    "longitude": 38.603918749912,
+    "latitude": 59.328714877536
+  },
+  {
+    "id": "igumnovo",
+    "slug": "igumnovo",
+    "name": "Игумново",
+    "kind": "place",
+    "longitude": 38.596408995747,
+    "latitude": 59.270785547746
+  },
+  {
+    "id": "ikonnikovo",
+    "slug": "ikonnikovo",
+    "name": "Иконниково",
+    "kind": "place",
+    "longitude": 38.708545501384,
+    "latitude": 59.293665889649
+  },
+  {
+    "id": "ilinskaya",
+    "slug": "ilinskaya",
+    "name": "Ильинская",
+    "kind": "place",
+    "longitude": 38.589339952617,
+    "latitude": 59.221335796441
+  },
+  {
+    "id": "ivantsovo",
+    "slug": "ivantsovo",
+    "name": "Иванцово",
+    "kind": "place",
+    "longitude": 38.59802687578,
+    "latitude": 59.214228291884
+  },
+  {
+    "id": "kislikha-bolshoe",
+    "slug": "kislikha-bolshoe",
+    "name": "Кислиха Большое",
+    "kind": "place",
+    "longitude": 38.704170238331,
+    "latitude": 59.298506419515
+  },
+  {
+    "id": "kislikha-maloe",
+    "slug": "kislikha-maloe",
+    "name": "Кислиха Малое",
+    "kind": "place",
+    "longitude": 38.683022840742,
+    "latitude": 59.295535370661
+  },
+  {
+    "id": "knyazhe",
+    "slug": "knyazhe",
+    "name": "Княжье",
+    "kind": "place",
+    "longitude": 38.625600728349,
+    "latitude": 59.381936904157
+  },
+  {
+    "id": "kolyshino",
+    "slug": "kolyshino",
+    "name": "Колышино",
+    "kind": "place",
+    "longitude": 38.602724440586,
+    "latitude": 59.233521710437
+  },
+  {
+    "id": "koryukino",
+    "slug": "koryukino",
+    "name": "Корюкино",
+    "kind": "place",
+    "longitude": 38.64927222222222,
+    "latitude": 59.21024111111111
+  },
+  {
+    "id": "koshcheevo",
+    "slug": "koshcheevo",
+    "name": "Кощеево",
+    "kind": "place",
+    "longitude": 38.653453611763,
+    "latitude": 59.396949870039
+  },
+  {
+    "id": "kotovo",
+    "slug": "kotovo",
+    "name": "Котово",
+    "kind": "place",
+    "longitude": 38.616706944444,
+    "latitude": 59.323998333333
+  },
+  {
+    "id": "krasnoe",
+    "slug": "krasnoe",
+    "name": "Красное",
+    "kind": "place",
+    "longitude": 38.699698382461,
+    "latitude": 59.316705683997
+  },
+  {
+    "id": "krushkova",
+    "slug": "krushkova",
+    "name": "Крушкова",
+    "kind": "place",
+    "longitude": 38.585188715999,
+    "latitude": 59.230244749997
+  },
+  {
+    "id": "krushkovo",
+    "slug": "krushkovo",
+    "name": "Крушково",
+    "kind": "place",
+    "longitude": 38.684063307313,
+    "latitude": 59.309785837707
+  },
+  {
+    "id": "krutets",
+    "slug": "krutets",
+    "name": "Крутец",
+    "kind": "place",
+    "longitude": 38.668325664357,
+    "latitude": 59.325033740701
+  },
+  {
+    "id": "kuleberovo",
+    "slug": "kuleberovo",
+    "name": "Кулеберово",
+    "kind": "place",
+    "longitude": 38.621780223436,
+    "latitude": 59.402692339101
+  },
+  {
+    "id": "kunino",
+    "slug": "kunino",
+    "name": "Кунино",
+    "kind": "place",
+    "longitude": 38.637973738423,
+    "latitude": 59.249641473872
+  },
+  {
+    "id": "kurgany",
+    "slug": "kurgany",
+    "name": "Курганы",
+    "kind": "place",
+    "longitude": 38.504522929564,
+    "latitude": 59.252392170966
+  },
+  {
+    "id": "kurya",
+    "slug": "kurya",
+    "name": "Курья",
+    "kind": "place",
+    "longitude": 38.665294001712,
+    "latitude": 59.281915917081
+  },
+  {
+    "id": "kusty",
+    "slug": "kusty",
+    "name": "Кусты",
+    "kind": "place",
+    "longitude": 38.596948000039,
+    "latitude": 59.302267133944
+  },
+  {
+    "id": "lukino",
+    "slug": "lukino",
+    "name": "Лукино",
+    "kind": "place",
+    "longitude": 38.665842777778,
+    "latitude": 59.357072777778
+  },
+  {
+    "id": "lyshkovo",
+    "slug": "lyshkovo",
+    "name": "Лышково",
+    "kind": "place",
+    "longitude": 38.539049748587,
+    "latitude": 59.301859031708
+  },
+  {
+    "id": "makarovo",
+    "slug": "makarovo",
+    "name": "Макарово",
+    "kind": "place",
+    "longitude": 38.66488194444445,
+    "latitude": 59.17145583333333
+  },
+  {
+    "id": "malchino",
+    "slug": "malchino",
+    "name": "Малчино",
+    "kind": "place",
+    "longitude": 38.622810278977,
+    "latitude": 59.384137912823
+  },
+  {
+    "id": "malgina",
+    "slug": "malgina",
+    "name": "Малгина",
+    "kind": "place",
+    "longitude": 38.561772364212,
+    "latitude": 59.179552626655
+  },
+  {
+    "id": "malinukha",
+    "slug": "malinukha",
+    "name": "Малинуха",
+    "kind": "place",
+    "longitude": 38.525951149928,
+    "latitude": 59.275299849343
+  },
+  {
+    "id": "medvezhe",
+    "slug": "medvezhe",
+    "name": "Медвежье",
+    "kind": "place",
+    "longitude": 38.654355520169,
+    "latitude": 59.312151309294
+  },
+  {
+    "id": "mikhaylovskaya",
+    "slug": "mikhaylovskaya",
+    "name": "Михайловская",
+    "kind": "place",
+    "longitude": 38.605023475131,
+    "latitude": 59.20728225474
+  },
+  {
+    "id": "mizhuevo",
+    "slug": "mizhuevo",
+    "name": "Мижуево",
+    "kind": "place",
+    "longitude": 38.511898999395,
+    "latitude": 59.270372085187
+  },
+  {
+    "id": "modenov",
+    "slug": "modenov",
+    "name": "Моденов",
+    "kind": "place",
+    "longitude": 38.653288836717,
+    "latitude": 59.390135072189
+  },
+  {
+    "id": "mokrotsyno",
+    "slug": "mokrotsyno",
+    "name": "Мокроцыно",
+    "kind": "place",
+    "longitude": 38.577308654224,
+    "latitude": 59.295079706782
+  },
+  {
+    "id": "morshikha",
+    "slug": "morshikha",
+    "name": "Моршиха",
+    "kind": "place",
+    "longitude": 38.617986878633,
+    "latitude": 59.304904567303
+  },
+  {
+    "id": "mys",
+    "slug": "mys",
+    "name": "Мыс",
+    "kind": "place",
+    "longitude": 38.61808472222222,
+    "latitude": 59.19744694444444
+  },
+  {
+    "id": "myshkino",
+    "slug": "myshkino",
+    "name": "Мышкино",
+    "kind": "place",
+    "longitude": 38.539160542282,
+    "latitude": 59.292521436668
+  },
+  {
+    "id": "nazarovo",
+    "slug": "nazarovo",
+    "name": "Назарово",
+    "kind": "place",
+    "longitude": 38.683708876544,
+    "latitude": 59.351713179322
+  },
+  {
+    "id": "norovo",
+    "slug": "norovo",
+    "name": "Норово",
+    "kind": "place",
+    "longitude": 38.650820568758,
+    "latitude": 59.234391903316
+  },
+  {
+    "id": "obukhovo-ugla",
+    "slug": "obukhovo-ugla",
+    "name": "Обухово",
+    "kind": "place",
+    "longitude": 38.553466518638,
+    "latitude": 59.252946069065
+  },
+  {
+    "id": "okatevo",
+    "slug": "okatevo",
+    "name": "Окатьево",
+    "kind": "place",
+    "longitude": 38.65914694444445,
+    "latitude": 59.21666555555556
+  },
+  {
+    "id": "okoemovo",
+    "slug": "okoemovo",
+    "name": "Окоемово",
+    "kind": "place",
+    "longitude": 38.564243833099,
+    "latitude": 59.304071569826
+  },
+  {
+    "id": "oksenovo",
+    "slug": "oksenovo",
+    "name": "Оксеново",
+    "kind": "place",
+    "longitude": 38.574550441866,
+    "latitude": 59.311048879286
+  },
+  {
+    "id": "oleksino",
+    "slug": "oleksino",
+    "name": "Олексино",
+    "kind": "place",
+    "longitude": 38.610264047512,
+    "latitude": 59.343476119048
+  },
+  {
+    "id": "olesheva",
+    "slug": "olesheva",
+    "name": "Олешева",
+    "kind": "place",
+    "longitude": 38.64949472222222,
+    "latitude": 59.18092388888889
+  },
+  {
+    "id": "olkhovets",
+    "slug": "olkhovets",
+    "name": "Ольховец",
+    "kind": "place",
+    "longitude": 38.526000670341,
+    "latitude": 59.232794000003
+  },
+  {
+    "id": "ovinets",
+    "slug": "ovinets",
+    "name": "Овинец",
+    "kind": "place",
+    "longitude": 38.51734172831,
+    "latitude": 59.234393948576
+  },
+  {
+    "id": "pakhomovo",
+    "slug": "pakhomovo",
+    "name": "Пахомово",
+    "kind": "place",
+    "longitude": 38.67699611111111,
+    "latitude": 59.23803444444445
+  },
+  {
+    "id": "palshmay",
+    "slug": "palshmay",
+    "name": "Палшмай",
+    "kind": "place",
+    "longitude": 38.539063268614,
+    "latitude": 59.234955030864
+  },
+  {
+    "id": "pateryaeva",
+    "slug": "pateryaeva",
+    "name": "Патеряева",
+    "kind": "place",
+    "longitude": 38.64805777777778,
+    "latitude": 59.30135277777778
+  },
+  {
+    "id": "patrekeitsovo",
+    "slug": "patrekeitsovo",
+    "name": "Патрекеицово",
+    "kind": "place",
+    "longitude": 38.658569892811,
+    "latitude": 59.225126176582
+  },
+  {
+    "id": "perkhino",
+    "slug": "perkhino",
+    "name": "Перхино",
+    "kind": "place",
+    "longitude": 38.584855897262,
+    "latitude": 59.235028970995
+  },
+  {
+    "id": "peshkov",
+    "slug": "peshkov",
+    "name": "Пешков",
+    "kind": "place",
+    "longitude": 38.698515344165,
+    "latitude": 59.30703218301
+  },
+  {
+    "id": "pestovo",
+    "slug": "pestovo",
+    "name": "Пестово",
+    "kind": "place",
+    "longitude": 38.576690739606,
+    "latitude": 59.236677586139
+  },
+  {
+    "id": "pestyushkin",
+    "slug": "pestyushkin",
+    "name": "Пестюшкин",
+    "kind": "place",
+    "longitude": 38.72351472222222,
+    "latitude": 59.26276888888889
+  },
+  {
+    "id": "pirogovo",
+    "slug": "pirogovo",
+    "name": "Пирогово",
+    "kind": "place",
+    "longitude": 38.628310595274,
+    "latitude": 59.207304538318
+  },
+  {
+    "id": "pleshchakovo",
+    "slug": "pleshchakovo",
+    "name": "Плещаково",
+    "kind": "place",
+    "longitude": 38.670918536181,
+    "latitude": 59.276230108148
+  },
+  {
+    "id": "plesnyukovo",
+    "slug": "plesnyukovo",
+    "name": "Плеснюково",
+    "kind": "place",
+    "longitude": 38.672220852991,
+    "latitude": 59.2564815443
+  },
+  {
+    "id": "pochinok-churovskaya",
+    "slug": "pochinok-churovskaya",
+    "name": "Починок",
+    "kind": "place",
+    "longitude": 38.606642720951,
+    "latitude": 59.278595216115
+  },
+  {
+    "id": "pochinok-ugla",
+    "slug": "pochinok-ugla",
+    "name": "Починок",
+    "kind": "place",
+    "longitude": 38.627924444444,
+    "latitude": 59.368343611111
+  },
+  {
+    "id": "pogost-rozhestva-bogoroditsy",
+    "slug": "pogost-rozhestva-bogoroditsy",
+    "name": "Погост Рождества Богородицы",
+    "kind": "place",
+    "longitude": 38.597633427041,
+    "latitude": 59.258038989811
+  },
+  {
+    "id": "pograeva",
+    "slug": "pograeva",
+    "name": "Пограева",
+    "kind": "place",
+    "longitude": 38.578724102882,
+    "latitude": 59.253428676873
+  },
+  {
+    "id": "polezhaevo",
+    "slug": "polezhaevo",
+    "name": "Полежаево",
+    "kind": "place",
+    "longitude": 38.638881411945,
+    "latitude": 59.309292685328
+  },
+  {
+    "id": "popovskaya",
+    "slug": "popovskaya",
+    "name": "Поповская",
+    "kind": "place",
+    "longitude": 38.607918438013,
+    "latitude": 59.223485668356
+  },
+  {
+    "id": "pryamikovo",
+    "slug": "pryamikovo",
+    "name": "Прямиково",
+    "kind": "place",
+    "longitude": 38.65344745378,
+    "latitude": 59.274917823956
+  },
+  {
+    "id": "rameshka-churovskaya-2",
+    "slug": "rameshka-churovskaya-2",
+    "name": "Рамешка",
+    "kind": "place",
+    "longitude": 38.544701725874,
+    "latitude": 59.276277342843
+  },
+  {
+    "id": "rodino",
+    "slug": "rodino",
+    "name": "Родино",
+    "kind": "place",
+    "longitude": 38.692235514204,
+    "latitude": 59.334326958565
+  },
+  {
+    "id": "romanovo",
+    "slug": "romanovo",
+    "name": "Романово",
+    "kind": "place",
+    "longitude": 38.670720555556,
+    "latitude": 59.393716388889
+  },
+  {
+    "id": "romanovskoe",
+    "slug": "romanovskoe",
+    "name": "Романовское",
+    "kind": "place",
+    "longitude": 38.676431388889,
+    "latitude": 59.379558611111
+  },
+  {
+    "id": "rozbuy",
+    "slug": "rozbuy",
+    "name": "Розбуй",
+    "kind": "place",
+    "longitude": 38.629692317229,
+    "latitude": 59.273651407198
+  },
+  {
+    "id": "rublevo",
+    "slug": "rublevo",
+    "name": "Рублево",
+    "kind": "place",
+    "longitude": 38.558386700915,
+    "latitude": 59.296938368077
+  },
+  {
+    "id": "samsonitsa",
+    "slug": "samsonitsa",
+    "name": "Самсоница",
+    "kind": "place",
+    "longitude": 38.65567119397,
+    "latitude": 59.303656474822
+  },
+  {
+    "id": "saunkin",
+    "slug": "saunkin",
+    "name": "Саункин",
+    "kind": "place",
+    "longitude": 38.632368028306,
+    "latitude": 59.405667608253
+  },
+  {
+    "id": "selittskoe",
+    "slug": "selittskoe",
+    "name": "Селитцкое",
+    "kind": "place",
+    "longitude": 38.663931990361,
+    "latitude": 59.263345264381
+  },
+  {
+    "id": "selivanov",
+    "slug": "selivanov",
+    "name": "Селиванов",
+    "kind": "place",
+    "longitude": 38.7122984981,
+    "latitude": 59.30498200171
+  },
+  {
+    "id": "seltsa",
+    "slug": "seltsa",
+    "name": "Сельца",
+    "kind": "place",
+    "longitude": 38.559720197818,
+    "latitude": 59.2451479188
+  },
+  {
+    "id": "semkino",
+    "slug": "semkino",
+    "name": "Семкино",
+    "kind": "place",
+    "longitude": 38.642690452626,
+    "latitude": 59.245274078959
+  },
+  {
+    "id": "sintsovskoe",
+    "slug": "sintsovskoe",
+    "name": "Синцовское",
+    "kind": "place",
+    "longitude": 38.571660752402,
+    "latitude": 59.303753054636
+  },
+  {
+    "id": "slizovo",
+    "slug": "slizovo",
+    "name": "Слизово",
+    "kind": "place",
+    "longitude": 38.628025005843,
+    "latitude": 59.215336462431
+  },
+  {
+    "id": "sofonovo",
+    "slug": "sofonovo",
+    "name": "Софоново",
+    "kind": "place",
+    "longitude": 38.536953001678,
+    "latitude": 59.243234411648
+  },
+  {
+    "id": "sogareva",
+    "slug": "sogareva",
+    "name": "Согарева",
+    "kind": "place",
+    "longitude": 38.616122222222,
+    "latitude": 59.20911
+  },
+  {
+    "id": "sokolovo",
+    "slug": "sokolovo",
+    "name": "Соколово",
+    "kind": "place",
+    "longitude": 38.60374609389,
+    "latitude": 59.380186367659
+  },
+  {
+    "id": "sosnovka",
+    "slug": "sosnovka",
+    "name": "Сосновка",
+    "kind": "place",
+    "longitude": 38.744122534482,
+    "latitude": 59.26657177878
+  },
+  {
+    "id": "staraya",
+    "slug": "staraya",
+    "name": "Старая",
+    "kind": "place",
+    "longitude": 38.586478946057,
+    "latitude": 59.243911257872
+  },
+  {
+    "id": "stikino",
+    "slug": "stikino",
+    "name": "Стикино",
+    "kind": "place",
+    "longitude": 38.62454861111111,
+    "latitude": 59.29963944444444
+  },
+  {
+    "id": "svatkova",
+    "slug": "svatkova",
+    "name": "Сваткова",
+    "kind": "place",
+    "longitude": 38.674617908756,
+    "latitude": 59.306455861269
+  },
+  {
+    "id": "syromyatkino",
+    "slug": "syromyatkino",
+    "name": "Сыромяткино",
+    "kind": "place",
+    "longitude": 38.69726916666667,
+    "latitude": 59.27543972222222
+  },
+  {
+    "id": "tarasova",
+    "slug": "tarasova",
+    "name": "Тарасова",
+    "kind": "place",
+    "longitude": 38.630893055556,
+    "latitude": 59.341364444444
+  },
+  {
+    "id": "telyatnik",
+    "slug": "telyatnik",
+    "name": "Телятник",
+    "kind": "place",
+    "longitude": 38.591510923926,
+    "latitude": 59.36364287077
+  },
+  {
+    "id": "timoshin",
+    "slug": "timoshin",
+    "name": "Тимошин",
+    "kind": "place",
+    "longitude": 38.658474216834,
+    "latitude": 59.347205116228
+  },
+  {
+    "id": "troshino",
+    "slug": "troshino",
+    "name": "Трошино",
+    "kind": "place",
+    "longitude": 38.654690657941,
+    "latitude": 59.298796095431
+  },
+  {
+    "id": "ulushkovo",
+    "slug": "ulushkovo",
+    "name": "Улушково",
+    "kind": "place",
+    "longitude": 38.608208878946,
+    "latitude": 59.263018026204
+  },
+  {
+    "id": "uvarova-gorka",
+    "slug": "uvarova-gorka",
+    "name": "Уварова Горка",
+    "kind": "place",
+    "longitude": 38.680004553445,
+    "latitude": 59.401494942548
+  },
+  {
+    "id": "vasileva",
+    "slug": "vasileva",
+    "name": "Василева",
+    "kind": "place",
+    "longitude": 38.550979344422,
+    "latitude": 59.267052028821
+  },
+  {
+    "id": "vladychna",
+    "slug": "vladychna",
+    "name": "Владычна",
+    "kind": "place",
+    "longitude": 38.63922222222222,
+    "latitude": 59.23456055555556
+  },
+  {
+    "id": "voroshnino",
+    "slug": "voroshnino",
+    "name": "Ворошнино",
+    "kind": "place",
+    "longitude": 38.51091040728,
+    "latitude": 59.26203964413
+  },
+  {
+    "id": "vysokoe-churovskaya",
+    "slug": "vysokoe-churovskaya",
+    "name": "Высокое",
+    "kind": "place",
+    "longitude": 38.542024726812,
+    "latitude": 59.260180601404
+  },
+  {
+    "id": "vysokoe-ugla",
+    "slug": "vysokoe-ugla",
+    "name": "Высокое",
+    "kind": "place",
+    "longitude": 38.568927065609,
+    "latitude": 59.342859513493
+  },
+  {
+    "id": "yakulkino",
+    "slug": "yakulkino",
+    "name": "Якулкино",
+    "kind": "place",
+    "longitude": 38.622384155993,
+    "latitude": 59.2399408258
+  },
+  {
+    "id": "yartsova",
+    "slug": "yartsova",
+    "name": "Ярцова",
+    "kind": "place",
+    "longitude": 38.629989607129,
+    "latitude": 59.242861068968
+  },
+  {
+    "id": "ili-proroka-charoma",
+    "slug": "ili-proroka-charoma",
+    "name": "Церковь Ильи Пророка",
+    "kind": "church",
+    "longitude": 38.619834166667,
+    "latitude": 59.342593611111
+  },
+  {
+    "id": "rozhdestva-bogoroditsy-churovskaya",
+    "slug": "rozhdestva-bogoroditsy-churovskaya",
+    "name": "Церковь Рождества Богородицы",
+    "kind": "church",
+    "longitude": 38.597633427041,
+    "latitude": 59.258938989811
+  },
+  {
+    "id": "bogoyavlenie-ugol",
+    "slug": "bogoyavlenie-ugol",
+    "name": "Церковь Богоявления",
+    "kind": "church",
+    "longitude": 38.607918438013,
+    "latitude": 59.224385668356
+  },
+  {
+    "id": "georgiya-pobedonostsa-ugol",
+    "slug": "georgiya-pobedonostsa-ugol",
+    "name": "Церковь Страстотерпца Георгия",
+    "kind": "church",
+    "longitude": 38.607040673939736,
+    "latitude": 59.222585668356
+  },
+  {
+    "id": "nikolaya-chudotvortsa-churovskaya",
+    "slug": "nikolaya-chudotvortsa-churovskaya",
+    "name": "Церковь Николая Чудотворца",
+    "kind": "church",
+    "longitude": 38.596754773113496,
+    "latitude": 59.257138989811
+  }
+]

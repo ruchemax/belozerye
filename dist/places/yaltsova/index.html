@@ -1,0 +1,1545 @@
+
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Ялцова — Белозерье</title>
+<meta name="description" content="Ялцова по историческим источникам Белозерского уезда.">
+
+<!-- OpenLayers -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css"
+>
+
+<style>
+:root {
+  color-scheme: light;
+  font-family: Georgia, "Times New Roman", serif;
+  background: #e8dfc4;
+  --paper: #eee6c9;
+  --ink: #33281f;
+  --heading: #2d241d;
+  --accent: #9a3412;
+  --muted: #80664f;
+  --line: rgba(111, 78, 43, .22);
+  --card-bg: rgba(255, 252, 235, .32);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  color: #fff;
+  background-color: #e8dfc4;
+  background-image:
+    linear-gradient(110deg, rgba(255,250,231,.54), rgba(232,216,181,.26)),
+    url("../../images/textures/homepage-parchment-v2.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+a {
+  color: inherit;
+}
+
+/* Header */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  flex: 0 0 62px;
+  height: 62px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  background: #171717;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 28px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: .6rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.08rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.brand img {
+  width: 36px;
+  height: 36px;
+}
+
+/* Main background */
+
+main {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.parchment {
+  height: 100%;
+  min-height: 0;
+  padding: 24px 28px;
+  color: var(--ink);
+  background-color: #e8dfc4;
+  background-image:
+    linear-gradient(110deg, rgba(255,250,231,.54), rgba(232,216,181,.26)),
+    url("../../images/textures/homepage-parchment-v2.jpg");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Two columns: 40% / 60% */
+
+.content {
+  display: grid;
+  grid-template-columns: minmax(0,40fr) minmax(0,60fr);
+  gap: 24px;
+  align-items: stretch;
+  height: 100%;
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+/* Left column */
+
+.place-info {
+  min-width: 0;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0 .35rem 2rem 0;
+  scrollbar-gutter: stable;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  color: #2d241d;
+  font-size: clamp(2.2rem,3.15vw,3.2rem);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+/* Settlement status */
+
+.place-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .7rem 1rem;
+  margin-bottom: 1.6rem;
+}
+
+.place-status {
+  display: inline-flex;
+  align-items: center;
+  gap: .65rem;
+  margin: 0;
+  color: #715842;
+  font: 500 .92rem/1.45 system-ui,sans-serif;
+}
+
+.status-dot {
+  width: .6rem;
+  height: .6rem;
+  flex: 0 0 auto;
+  margin-inline: 0;
+  border-radius: 50%;
+  background: #77716a;
+}
+
+/* Coordinates */
+
+.place-location {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin: 0;
+  color: #715842;
+  font: 500 .9rem/1.6 system-ui,sans-serif;
+}
+
+.location-icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: #a53b20;
+}
+
+.location-place-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.location-text {
+  min-width: 0;
+}
+
+.location-label {
+  display: block;
+  color: #80664f;
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.location-coordinates {
+  display: inline-block;
+  margin-top: .12rem;
+  color: #9a3412;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: .9rem;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.place-meta-row:not(.has-extra-meta) .place-status {
+  padding-right: 1rem;
+  border-right: 1px solid rgba(111,78,43,.28);
+}
+
+.place-meta-row:not(.has-extra-meta) .location-label {
+  display: none;
+}
+
+.place-meta-row:not(.has-extra-meta) .location-coordinates {
+  margin-top: 0;
+  color: #3f3429;
+  font: 600 .92rem/1.45 Georgia, "Times New Roman", serif;
+}
+
+.location-coordinates:hover,
+.location-coordinates:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Historical names */
+
+.overview {
+  margin: .75rem 0 1rem;
+  padding: .95rem 1.1rem;
+  border: 1px solid rgba(111,78,43,.2);
+  border-radius: 3px;
+  background: rgba(255,252,235,.35);
+}
+
+.overview-label {
+  color: #80664f;
+  font: 700 .73rem/1.5 system-ui,sans-serif;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.overview summary {
+  cursor: pointer;
+}
+
+.overview summary::marker {
+  color: #a33d1f;
+}
+
+.overview-value {
+  margin: .65rem 0 0;
+  padding-left: 1.3rem;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.overview-value li + li {
+  margin-top: .4rem;
+}
+
+.overview-value li::marker {
+  color: #4c4034;
+  font-size: .8em;
+}
+
+/* Historical sources */
+
+.sources-heading {
+  display: flex;
+  align-items: center;
+  gap: .65rem;
+  margin: 1.65rem 0 .75rem;
+  padding: .75rem 0;
+  border-top: 1px solid rgba(111,78,43,.2);
+  border-bottom: 1px solid rgba(111,78,43,.2);
+  color: #80664f;
+  font: 750 .75rem/1.5 system-ui,sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.sources-heading-icon {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  color: #80664f;
+}
+
+.mention-card + .mention-card {
+  margin-top: 1.25rem;
+}
+
+.source-details {
+  border-top: 0;
+  padding-top: .45rem;
+}
+
+.source-details > summary {
+  display: flex;
+  align-items: flex-start;
+  gap: .65rem;
+  color: #9a3412;
+  cursor: pointer;
+  font-size: 1.06rem;
+  font-weight: 700;
+  line-height: 1.4;
+  list-style: none;
+}
+
+.source-details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.source-details > summary::before {
+  flex: 0 0 auto;
+  content: "▸";
+  transition: transform .16s ease;
+}
+
+.source-details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.source-details > summary:focus-visible {
+  outline: 2px solid #9a3412;
+  outline-offset: 4px;
+}
+
+.source-summary-copy {
+  min-width: 0;
+}
+
+.source-title {
+  display: block;
+}
+
+.source-title a {
+  text-decoration: none;
+}
+
+.source-title a:hover,
+.source-title a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.source-body {
+  padding-top: 1rem;
+}
+
+.source-document-window {
+  margin: 0;
+  box-sizing: border-box;
+  border-top: 1px solid rgba(111,78,43,.25);
+  max-height: none;
+  overflow: hidden;
+  resize: none;
+}
+
+.source-document-window iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-top: 1px solid rgba(111,78,43,.2);
+  background: transparent;
+}
+
+.source-fragment { position: relative; }
+
+.source-fragment-reset {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  /* The button's right edge aligns with the iframe scrollbar's left edge. */
+  right: 17px;
+  width: 1.55rem;
+  height: 1.55rem;
+  border: 1px solid rgba(154,52,18,.5);
+  border-radius: 3px;
+  padding: 0;
+  color: #9a3412;
+  background: transparent;
+  font: 700 1rem/1 system-ui,sans-serif;
+  cursor: pointer;
+}
+
+.source-fragment-reset:hover { background: transparent; }
+.source-fragment-reset:focus-visible { outline: 2px solid #9a3412; outline-offset: 2px; }
+.source-fragment-reset svg { display: block; width: 1rem; height: 1rem; margin: auto; fill: currentColor; }
+
+.source-resize-handle {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: -4px;
+  left: 0;
+  height: 9px;
+  border: 0;
+  background: transparent;
+  cursor: ns-resize;
+  touch-action: none;
+}
+
+
+/* Book details */
+
+.source-content-card {
+  overflow: hidden;
+  border: 1px solid rgba(111,78,43,.3);
+  border-left: 3px solid #9a3412;
+  border-radius: 3px;
+  background: rgba(255,252,235,.42);
+}
+
+.source-content-card + .source-content-card { margin-top: .75rem; }
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 1rem;
+  margin: 0;
+  padding: 1rem 1.35rem;
+}
+
+.fact {
+  min-width: 0;
+}
+
+.fact-wide {
+  grid-column: 1 / -1;
+  padding-bottom: .85rem;
+  border-bottom: 1px solid rgba(111,78,43,.2);
+}
+
+.land-fact {
+  grid-column: 1 / -1;
+}
+
+.fact dt {
+  margin-bottom: .3rem;
+  color: #80664f;
+  font: 700 .72rem/1.5 system-ui,sans-serif;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.fact dd {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.land-type {
+  display: inline-flex;
+  align-items: center;
+  gap: .45rem;
+  color: #7c2d12;
+}
+
+.land-type::before {
+  width: .65rem;
+  height: .65rem;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #a84d20;
+  content: "";
+  box-shadow: 0 0 0 3px rgba(168,77,32,.14);
+}
+
+h2 {
+  margin: 1.25rem 0 .75rem;
+  color: #9a3412;
+  font-size: 1rem;
+}
+
+/* Transcription */
+
+.transcription-fragment {
+  padding: 1.15rem 1.35rem;
+  border-top: 1px solid rgba(111,78,43,.25);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1rem;
+  line-height: 1.5;
+  text-align: justify;
+}
+
+.page-mark {
+  color: #2563eb;
+  font-size: .9375rem;
+  font-style: italic;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.place-heading {
+  display: inline;
+  margin: 0;
+  color: #9a3412;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: inherit;
+}
+
+.place-heading a {
+  text-decoration: none;
+}
+
+.place-heading a:hover {
+  text-decoration: underline;
+}
+
+.merged-fragment {
+  display: block;
+  margin-top: 1rem;
+}
+
+.place-heading.merged-place-heading {
+  display: inline;
+  margin: 0;
+}
+
+.village-lines .place-name {
+  color: #9a3412;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.village-lines .place-name:hover,
+.village-lines .place-name:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.heading-comma {
+  color: #000;
+  font-weight: 400;
+}
+
+.village-lines {
+  display: contents;
+}
+
+.village-lines p {
+  display: inline;
+  margin: 0;
+  line-height: inherit;
+}
+
+/* The 1544 book preserves the paragraph structure of household records. */
+.village-lines p.courtyard,
+.village-lines p.record-prose,
+.village-lines p.closing-church {
+  display: block;
+  margin: .5rem 0 0;
+  line-height: 1.65;
+  text-indent: 0;
+}
+
+.village-lines p.courtyard {
+  text-align: left;
+}
+
+.village-lines p.courtyard + p:not(.courtyard) {
+  display: block;
+  margin: .5rem 0 0;
+  line-height: 1.65;
+}
+
+.village-lines p.closing-church {
+  text-align: left;
+}
+
+.village-lines p.record-prose {
+  text-align: justify;
+}
+
+.transcription-fragment.is-headingless .village-lines p:first-child {
+  display: inline;
+  margin-top: 0;
+}
+
+.transcription-fragment.is-headingless .village-lines h3.record-title.closing-church {
+  display: inline;
+  margin: 0;
+  color: #9a3412;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: inherit;
+}
+
+.transcription-fragment.is-headingless .village-lines h3.record-title.closing-church .heading-inline-prose {
+  color: #33281f;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.transcription-fragment.is-headingless .village-lines h3.record-title.closing-church .record-punctuation {
+  color: #33281f;
+  font-weight: 400;
+}
+
+.transcription-fragment.is-headingless .village-lines h3.record-title.closing-church + p.closing-church {
+  display: block;
+  margin: .5rem 0 0;
+  line-height: 1.65;
+  text-indent: 0;
+}
+
+.village-lines .person-name {
+  color: #33281f;
+  font-weight: 550;
+  font-style: normal;
+}
+
+.village-lines .surname {
+  font-weight: 600;
+}
+
+.transcription-fragment[data-book-id="belozersky-1544"] .person-name {
+  font-weight: 600;
+}
+
+/* OpenLayers map */
+
+.place-map {
+  position: relative;
+  align-self: stretch;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.map-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(111,78,43,.24);
+  border-radius: 3px;
+  background: #e6e3d7;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
+}
+
+#village-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* Marker: black circle and label */
+
+.village-marker-link {
+  display: flex;
+  position: relative;
+  z-index: 0;
+  align-items: center;
+  gap: 7px;
+  width: max-content;
+  color: var(--map-place-label-color);
+  font: var(--map-marker-label-font);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.village-marker-link.is-active {
+  z-index: var(--map-active-z-index) !important;
+  color: var(--map-active-color);
+  font-size: var(--map-active-label-size);
+}
+
+.village-marker-dot {
+  display: block;
+  width: var(--map-place-diameter);
+  height: var(--map-place-diameter);
+  flex: 0 0 auto;
+  border: var(--map-place-stroke-width) solid var(--map-place-stroke);
+  border-radius: 50%;
+  background: var(--map-place-fill);
+  box-shadow: 0 0 0 1px rgba(0,0,0,.5);
+}
+
+.village-marker-link.is-active .village-marker-dot {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #fff7df;
+  background: #b24117;
+  box-shadow:
+    0 0 0 2px #7c2d12,
+    0 2px 7px rgba(50,20,8,.55);
+}
+
+/* Church marker */
+
+.church-marker-icon {
+  flex: 0 0 auto;
+  width: var(--map-church-width);
+  height: var(--map-church-height);
+  margin: 0;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 1px rgba(22,48,67,.4));
+}
+
+.village-marker-link.is-church .church-marker-icon {
+  margin: 0;
+}
+
+.village-marker-link.is-active .church-marker-icon {
+  width: 41px;
+  height: 51px;
+  filter: drop-shadow(0 1px 3px rgba(22,48,67,.6));
+}
+
+.village-marker-name {
+  color: var(--map-place-label-color);
+  white-space: nowrap;
+  text-shadow:
+    -1px -1px 2px var(--map-marker-label-halo),
+     1px -1px 2px var(--map-marker-label-halo),
+    -1px  1px 2px var(--map-marker-label-halo),
+     1px  1px 2px var(--map-marker-label-halo);
+}
+
+.village-marker-link.is-active .village-marker-name {
+  color: var(--map-active-color);
+  font-weight: 800;
+}
+
+.village-marker-link.is-church .village-marker-name {
+  color: var(--map-church-label-color);
+}
+
+.village-marker-link.is-church.is-active .village-marker-name {
+  color: var(--map-active-color);
+}
+
+.village-marker-link.is-church.is-active .church-marker-icon {
+  filter: hue-rotate(165deg) saturate(1.25) drop-shadow(0 2px 7px rgba(50,20,8,.55));
+}
+
+.village-marker-link:hover .village-marker-name,
+.village-marker-link:focus-visible .village-marker-name {
+  text-decoration: underline;
+}
+
+.village-marker-link:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 4px;
+}
+
+.map-marker-cluster {
+  display: grid;
+  position: relative;
+  z-index: var(--map-cluster-z-index) !important;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  border: 2px solid var(--map-cluster-stroke);
+  border-radius: 50%;
+  color: var(--map-cluster-stroke);
+  background: var(--map-cluster-place-color);
+  box-shadow: 0 1px 3px rgba(30,20,12,.28);
+  font: 700 11px/1 system-ui,sans-serif;
+  cursor: pointer;
+}
+
+.map-marker-cluster-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--map-cluster-z-index);
+  pointer-events: none;
+}
+
+.map-marker-cluster-layer .map-marker-cluster {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+}
+
+.map-marker-active-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--map-active-z-index);
+  pointer-events: none;
+}
+
+.map-marker-active-layer .village-marker-link {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.map-marker-cluster.is-church { background: var(--map-cluster-church-color); }
+
+/* Compact editorial card system */
+.place-info h1 {
+  margin: 0 0 .75rem;
+  color: var(--heading);
+  font-size: clamp(2.5rem, 3.1vw, 3.15rem);
+  letter-spacing: -.025em;
+}
+
+.place-meta-row {
+  gap: .75rem 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.place-status,
+.place-location {
+  color: var(--muted);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+.location-icon { width: 17px; height: 20px; color: var(--accent); }
+.location-place-icon { width: 17px; height: 20px; }
+.location-coordinates { color: var(--accent); font-size: .9rem; }
+.place-meta-row:not(.has-extra-meta) .place-status { padding-right: 0; border-right: 0; }
+.place-meta-row:not(.has-extra-meta) .location-coordinates { color: var(--accent); font: 650 .9rem/1.5 Georgia, "Times New Roman", serif; }
+
+.overview {
+  margin: 0 0 .85rem;
+  padding: .9rem 1.05rem;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--card-bg);
+}
+
+.overview-label {
+  display: inline;
+  margin: 0;
+  color: var(--muted);
+  font: 750 .75rem/1.5 system-ui,sans-serif;
+}
+
+.overview summary {
+  display: flex;
+  align-items: center;
+  gap: .45rem;
+  list-style: none;
+}
+
+.overview summary::marker { content: ""; font-size: 0; }
+
+.overview summary::before {
+  content: "▸";
+  flex: 0 0 auto;
+  color: var(--accent);
+  font-size: .9rem;
+  transition: transform .16s ease;
+}
+
+.overview[open] summary::before { transform: rotate(90deg); }
+
+.overview-value { margin: .45rem 0 0; padding-left: 1.2rem; line-height: 1.55; }
+.overview-value li + li { margin: .15rem 0; padding-left: .1rem; }
+.overview-value li::marker { color: #715842; font-size: .8em; }
+
+.sources-heading {
+  gap: .55rem;
+  margin: 1.6rem 0 .7rem;
+  padding: .8rem 0 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+  color: var(--muted);
+  font: 750 .82rem/1.5 system-ui,sans-serif;
+  letter-spacing: .07em;
+}
+
+.source-details { padding: .65rem 0; border-top: 1px solid var(--line); }
+.source-details > summary { color: var(--accent); font-size: 1.03rem; }
+.source-details > summary::before { color: var(--accent); font-size: .85rem; }
+
+.map-frame { border: 1px solid var(--line); border-radius: 5px; background: #e9e9dd; }
+.village-marker-link { color: var(--map-place-label-color); font: var(--map-marker-label-font); }
+.village-marker-dot { width: var(--map-place-diameter); height: var(--map-place-diameter); background: var(--map-place-fill); border: var(--map-place-stroke-width) solid var(--map-place-stroke); }
+.village-marker-link.is-active { color: var(--map-active-color); font-size: var(--map-active-label-size); }
+.village-marker-link.is-active .village-marker-dot {
+  width: 17px; height: 17px; border: 3px solid #fff8e8;
+  box-shadow: 0 0 0 2px #7c2d12, 0 2px 5px rgba(50,20,8,.22);
+}
+.village-marker-link.is-active .village-marker-name { color: var(--map-active-color); }
+
+/* Shared layout for settlement and church cards */
+:is(.place-card, .church-card) .place-info h1 {
+  margin-bottom: .85rem;
+  font-size: clamp(2rem, 2.45vw, 2.55rem);
+  line-height: 1.05;
+}
+
+:is(.place-card, .church-card) .place-meta-row {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  gap: .75rem 1rem;
+  margin-bottom: .75rem;
+  padding: .85rem 1rem .8rem;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  background: var(--card-bg);
+}
+
+.place-card .place-meta-row {
+  padding: 0 0 1.1rem;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+}
+
+.church-card .place-meta-row .place-location:not(:has(.location-place-icon)) {
+  grid-column: 1 / -1;
+}
+
+.church-card .place-meta-row {
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+}
+
+.church-card .place-meta-row .place-status {
+  align-self: start;
+}
+
+:is(.place-card, .church-card) .place-meta-row .place-location {
+  align-items: flex-start;
+}
+
+:is(.place-card, .church-card) .place-meta-row .place-status,
+:is(.place-card, .church-card) .place-meta-row .place-location {
+  gap: .65rem;
+}
+
+:is(.place-card, .church-card) .place-meta-row .place-status {
+  align-items: flex-start;
+}
+
+:is(.place-card, .church-card) .place-meta-row .status-dot {
+  margin-inline: calc((17px - .6rem) / 2);
+  margin-top: .35rem;
+}
+
+.status-text {
+  min-width: 0;
+}
+
+.status-value {
+  display: block;
+  margin-top: .08rem;
+  color: var(--accent);
+  font: 650 .9rem/1.5 Georgia, "Times New Roman", serif;
+}
+
+:is(.place-card, .church-card) .place-meta-row .location-coordinates {
+  margin-top: .08rem;
+}
+
+.place-card .place-meta-row:not(.has-extra-meta) .location-label {
+  display: block;
+}
+
+.place-card .place-meta-row:not(.has-extra-meta) .location-coordinates {
+  margin-top: .08rem;
+  color: var(--accent);
+}
+
+:is(.place-card, .church-card) .sources-heading {
+  margin: .75rem 0 .45rem;
+  padding-top: .8rem;
+}
+
+:is(.place-card, .church-card) .sources-heading-icon {
+  width: 19px;
+  height: 19px;
+}
+
+:is(.place-card, .church-card) .mention-card {
+  margin: 0;
+  border-right: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  background: var(--card-bg);
+}
+
+:is(.place-card, .church-card) .sources-heading + .mention-card {
+  border-top: 1px solid var(--line);
+  border-radius: 5px 5px 0 0;
+}
+
+:is(.place-card, .church-card) .mention-card:last-child {
+  border-bottom: 1px solid var(--line);
+  border-radius: 0 0 5px 5px;
+}
+
+:is(.place-card, .church-card) .source-details {
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+:is(.place-card, .church-card) .sources-heading + .mention-card .source-details {
+  border-top: 0;
+}
+
+:is(.place-card, .church-card) .source-details > summary {
+  align-items: center;
+  padding: .72rem .9rem;
+  font-size: .94rem;
+  line-height: 1.35;
+}
+
+:is(.place-card, .church-card) .source-body {
+  padding: 0 .9rem .9rem;
+}
+
+/* Responsive layout */
+
+@media (max-width: 950px) {
+  .site-nav {
+    padding-inline: 16px;
+  }
+
+  body {
+    display: block;
+    height: auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  main {
+    min-height: auto;
+  }
+
+  .parchment {
+    height: auto;
+    min-height: calc(100vh - 62px);
+    padding: 20px 16px 2rem;
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    height: auto;
+  }
+
+  .place-info {
+    height: auto;
+    overflow: visible;
+    padding: 0;
+  }
+
+  .place-map {
+    position: relative;
+    top: auto;
+    height: 55vh;
+    min-height: 350px;
+  }
+}
+
+@media (max-width: 500px) {
+  h1 {
+    font-size: 2rem;
+  }
+
+  :is(.place-card, .church-card) .place-info h1 {
+    font-size: 2rem;
+  }
+
+  .church-card .place-meta-row {
+    padding: .75rem .8rem;
+  }
+
+  .place-map {
+    height: 420px;
+    min-height: 0;
+  }
+
+  .facts {
+    grid-template-columns: 1fr;
+  }
+
+  .fact-wide {
+    grid-column: auto;
+  }
+
+  .transcription-fragment {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+
+/* Footer */
+
+footer {
+  display: none;
+  padding: 1rem;
+  border-top: 1px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.68);
+  font: .84rem system-ui,sans-serif;
+}
+
+@media (max-width: 950px) {
+  footer {
+    display: block;
+  }
+}
+</style>
+  <link rel="canonical" href="https://belozersky.uezd.workers.dev/places/yaltsova/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Белозерье">
+  <meta property="og:title" content="Ялцова — Белозерье">
+  <meta property="og:description" content="Ялцова по историческим источникам Белозерского уезда.">
+  <meta property="og:url" content="https://belozersky.uezd.workers.dev/places/yaltsova/">
+  <meta name="twitter:card" content="summary">
+</head>
+
+<body class="place-card">
+
+<header class="site-header">
+  <nav class="site-nav" aria-label="Основная навигация">
+    <a class="brand" href="../../">
+      <img src="../../images/icons/belozerye-monastery-logo.svg" alt="">
+      <span>Белозерье</span>
+    </a>
+  </nav>
+</header>
+
+<main>
+<article class="parchment">
+
+<div class="content">
+
+  <!-- LEFT COLUMN -->
+
+  <div class="place-info">
+
+    <h1>Ялцова</h1>
+
+    <div class="place-meta-row">
+
+    <!-- Status -->
+
+    <div class="place-status">
+      <span class="status-dot"></span>
+      <div class="status-text">
+        <span class="location-label">Статус</span>
+        <span class="status-value">не установлен</span>
+      </div>
+    </div>
+
+    <!-- Coordinates -->
+
+    <div class="place-location">
+
+      <svg
+        class="location-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true">
+        <path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/>
+        <circle cx="12" cy="10" r="2.5"/>
+      </svg>
+
+      <div class="location-text">
+
+        <span class="location-label">
+          Координаты
+        </span>
+
+        <span class="location-coordinates">не установлены</span>
+
+      </div>
+
+    </div>
+
+    </div>
+
+    <!-- Historical names -->
+
+    <details class="overview">
+      <summary><span class="overview-label">Названия</span></summary>
+      <ul class="overview-value">
+                <li>пустошь Ялцова (1626/27)</li>
+      </ul>
+    </details>
+
+    <details class="overview">
+      <summary><span class="overview-label">Административная принадлежность</span></summary>
+      <ul class="overview-value">
+                <li>Белозерский уезд · Надпорожский стан · Чуровская волость (1626/27)</li>
+      </ul>
+    </details>
+
+    <details class="overview">
+      <summary><span class="overview-label">Принадлежность земли</span></summary>
+      <ul class="overview-value">
+                <li>Порозжая (1626/27)</li>
+      </ul>
+    </details>
+
+
+
+    <!-- Sources -->
+
+    <h2 class="sources-heading">
+      <svg class="sources-heading-icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M2.5 4.65c3.2-1.05 6.2-.56 8.55 1.2v13.55c-2.55-1.58-5.3-1.94-8.55-.98V4.65Zm19 0c-3.2-1.05-6.2-.56-8.55 1.2v13.55c2.55-1.58 5.3-1.94 8.55-.98V4.65Z"/>
+        <path d="M4.65 7.05c1.65-.26 3.06.02 4.55.82v1.05c-1.47-.67-2.9-.9-4.55-.62V7.05Zm0 3.1c1.65-.27 3.06.02 4.55.82v1.05c-1.47-.67-2.9-.9-4.55-.62v-1.25Zm14.7-3.1c-1.65-.26-3.06.02-4.55.82v1.05c1.47-.67 2.9-.9 4.55-.62V7.05Zm0 3.1c-1.65-.27-3.06.02-4.55.82v1.05c1.47-.67 2.9-.9 4.55-.62v-1.25Z" fill="#eee6c9" opacity=".82"/>
+      </svg>
+      Источники
+    </h2>
+
+
+    <section class="mention-card" aria-labelledby="source-1">
+
+      <details class="source-details">
+
+        <summary>
+          <span class="source-summary-copy">
+            <span id="source-1" class="source-title">
+              <a href="../../books/belozersky_uezd-1626-27/">
+                Писцовая книга Белозерского уезда (1626/27 г.)
+              </a>
+            </span>
+          </span>
+        </summary>
+
+        <div class="source-body">
+
+<div class="source-content-card">
+            <div class="source-fragment">
+              <section class="source-document-window" aria-label="Пустошь Ялцова" style="height:255px">
+                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=15&end=belozersky-1626-fragment-land-record-31#belozersky-1626-fragment-land-record-31" title="Пустошь Ялцова" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-land-record-31" data-fragment-end-anchor="belozersky-1626-fragment-land-record-31"></iframe>
+              </section>
+              <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
+              <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
+            </div>
+          </div>
+
+        </div>
+
+      </details>
+    </section>
+
+  </div>
+
+  <!-- RIGHT COLUMN -->
+
+  <section
+    class="place-map"
+    aria-label="Карта: Ялцова">
+
+    <div class="map-frame">
+
+      <div
+        id="village-map"
+        aria-label="Интерактивная карта: Ялцова">
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+</article>
+</main>
+
+<footer>
+  © 2026 · Белозерье
+</footer>
+
+<!-- OpenLayers -->
+
+<script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
+<script src="../../js/map-marker-settings.js"></script>
+
+<script>
+  const villageLat = 59.258038989811;
+  const villageLon = 38.597633427041;
+  const activePlaceId = "yaltsova";
+  const placePagePath = "../";
+  const markerContainer = document.querySelector(".map-frame");
+  const markerSettings = window.BelozeryeMapMarkers;
+  const cardMarkerEntries = [];
+  const cardClusterOverlays = [];
+
+  const map = new ol.Map({
+    target: "village-map",
+    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
+    view: new ol.View({
+      center: ol.proj.fromLonLat([villageLon, villageLat]),
+      zoom: 12
+    }),
+    controls: ol.control.defaults.defaults({ attribution: true, zoom: true, rotate: false }).extend([
+      new ol.control.ScaleLine({ units: "metric" }),
+      new ol.control.FullScreen()
+    ])
+  });
+  const updateCardClusters = () => {
+    cardClusterOverlays.splice(0).forEach((overlay) => map.removeOverlay(overlay));
+    cardMarkerEntries.forEach((entry) => {
+      entry.element.style.display = "";
+      entry.labelElement.style.visibility = "";
+    });
+    const visibleLabelBounds = [];
+    const allIconEntries = cardMarkerEntries.map((entry) => ({
+      entry,
+      bounds: entry.iconElement.getBoundingClientRect()
+    }));
+    for (const entry of [...cardMarkerEntries].sort((left, right) => Number(right.active) - Number(left.active))) {
+      const labelBounds = entry.labelElement.getBoundingClientRect();
+      const overlapsIcon = allIconEntries.some((item) => item.entry !== entry
+        && markerSettings.clusters.overlaps(labelBounds, item.bounds));
+      const overlapsLabel = visibleLabelBounds.some((bounds) => markerSettings.clusters.overlaps(labelBounds, bounds));
+      if (overlapsIcon || overlapsLabel) entry.labelElement.style.visibility = "hidden";
+      else visibleLabelBounds.push(labelBounds);
+    }
+    for (const kind of ["place", "church"]) {
+      const entries = cardMarkerEntries.filter((entry) => entry.marker.kind === kind && !entry.active).map((entry) => {
+        const coordinate = ol.proj.fromLonLat([entry.marker.longitude, entry.marker.latitude]);
+        const rect = entry.iconElement.getBoundingClientRect();
+        return { ...entry, kind, coordinate, bounds: {
+          left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom
+        } };
+      });
+      for (const group of markerSettings.clusters.group(entries)) {
+        if (group.length < 2) continue;
+        const members = group;
+        members.forEach((member) => { member.element.style.display = "none"; });
+        const clusterElement = document.createElement("button");
+        clusterElement.type = "button";
+        clusterElement.className = "map-marker-cluster" + (kind === "church" ? " is-church" : "");
+        clusterElement.style.zIndex = String(markerSettings.clusters.zIndex);
+        clusterElement.textContent = String(members.length);
+        clusterElement.setAttribute("aria-label", "Приблизить группу из " + members.length + " объектов");
+        clusterElement.addEventListener("click", () => {
+          const extent = ol.extent.createEmpty();
+          members.forEach((member) => ol.extent.extend(extent, new ol.geom.Point(member.coordinate).getExtent()));
+          map.getView().fit(extent, { padding: [55, 55, 55, 55], maxZoom: 14, duration: 250 });
+        });
+        const center = members.reduce((sum, member) => [sum[0] + member.coordinate[0] / members.length, sum[1] + member.coordinate[1] / members.length], [0, 0]);
+        const clusterOverlay = new ol.Overlay({
+          element: clusterElement,
+          positioning: "center-center",
+          position: center,
+          stopEvent: true
+        });
+        cardClusterOverlays.push(clusterOverlay);
+        map.addOverlay(clusterOverlay);
+      }
+    }
+    const clusterBounds = cardClusterOverlays.map((overlay) => overlay.getElement().getBoundingClientRect());
+    for (const entry of cardMarkerEntries.filter((item) => item.element.style.display !== "none")) {
+      if (!clusterBounds.some((bounds) => markerSettings.clusters.overlaps(entry.labelElement.getBoundingClientRect(), bounds))) continue;
+      entry.labelElement.style.visibility = "hidden";
+    }
+  };
+  map.on("moveend", updateCardClusters);
+
+  const loadMapMarkers = async () => {
+    try {
+      const response = await fetch("../../data/place-markers.json", { cache: "no-store" });
+      if (!response.ok) throw new Error("HTTP " + response.status);
+      const markers = await response.json();
+      markers.sort((left, right) => Number(left.id === activePlaceId) - Number(right.id === activePlaceId));
+
+      for (const marker of markers) {
+        const active = marker.id === activePlaceId;
+        const markerElement = document.createElement("a");
+        markerElement.className = "village-marker-link" + (active ? " is-active" : "") + (marker.kind === "church" ? " is-church" : "");
+        markerElement.style.zIndex = String(active ? markerSettings.active.zIndex : 0);
+        markerElement.style.gap = marker.kind === "church"
+          ? markerSettings.church.labelGap + "px"
+          : markerSettings.place.labelOffsetX - 1 + "px";
+        markerElement.href = active ? "./" : marker.kind === "church"
+          ? "../../churches/" + encodeURIComponent(marker.slug) + "/"
+          : placePagePath + encodeURIComponent(marker.slug) + "/";
+        markerElement.setAttribute("aria-label", (active ? "Открыта страница" : "Открыть страницу") + ": " + marker.name);
+        if (active) markerElement.setAttribute("aria-current", "page");
+
+        const dot = marker.kind === "church"
+          ? (() => {
+              const icon = document.createElement("img");
+              icon.className = "church-marker-icon";
+              icon.src = "../../images/icons/church-marker.png";
+              icon.alt = "";
+              icon.width = markerSettings.church.iconWidth;
+              icon.height = markerSettings.church.iconHeight;
+              icon.style.width = markerSettings.church.iconWidth + "px";
+              icon.style.height = markerSettings.church.iconHeight + "px";
+              return icon;
+            })()
+          : (() => {
+              const icon = document.createElement("span");
+              icon.className = "village-marker-dot";
+              icon.style.width = markerSettings.place.diameter + "px";
+              icon.style.height = markerSettings.place.diameter + "px";
+              icon.style.borderWidth = markerSettings.place.strokeWidth + "px";
+              return icon;
+            })();
+        const label = document.createElement("span");
+        label.className = "village-marker-name";
+        label.textContent = marker.name;
+        if (marker.kind === "church") markerElement.append(label, dot);
+        else markerElement.append(dot, label);
+        markerContainer.append(markerElement);
+
+        const villageOverlay = new ol.Overlay({
+          element: markerElement,
+          positioning: marker.kind === "church" ? "center-right" : "center-left",
+          offset: marker.kind === "church"
+            ? [dot.offsetWidth / 2, markerSettings.church.labelOffsetY]
+            : [-dot.offsetWidth / 2, 0],
+          stopEvent: false
+        });
+        villageOverlay.setPosition(ol.proj.fromLonLat([marker.longitude, marker.latitude]));
+        map.addOverlay(villageOverlay);
+        cardMarkerEntries.push({ marker, element: markerElement, iconElement: dot, labelElement: label, active, overlay: villageOverlay });
+        if (marker.kind === "church") dot.addEventListener("load", () => requestAnimationFrame(updateCardClusters), { once: true });
+      }
+      requestAnimationFrame(updateCardClusters);
+    } catch (error) {
+      console.error("Не удалось загрузить маркеры населённых пунктов.", error);
+    }
+  };
+
+  loadMapMarkers();
+</script><script>
+  (() => {
+    const setFrameHeight = (frame, height) => {
+      if (!Number.isFinite(height) || height <= 0) return;
+      const window = frame.closest(".source-document-window");
+      if (window) {
+        const fragmentHeight = Math.ceil(height);
+        window.dataset.fragmentHeight = String(fragmentHeight);
+        window.style.height = fragmentHeight + "px";
+      }
+    };
+    const resizeToFragment = (frame) => {
+      try {
+        const document = frame.contentDocument;
+        const target = document?.getElementById(frame.dataset.fragmentAnchor);
+        const endTarget = document?.getElementById(frame.dataset.fragmentEndAnchor ?? frame.dataset.fragmentAnchor);
+        const fragment = endTarget?.closest("section.place-record, section.record");
+        if (!target || !fragment) return;
+        const ownHeading = (element) => element?.matches("h1,h2,h3,h4,h5,h6")
+          ? element
+          : element?.querySelector(":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6") ?? element;
+        const targetHeading = ownHeading(target);
+        const endHeading = ownHeading(endTarget);
+        const headings = [...fragment.querySelectorAll("h1,h2,h3,h4,h5,h6")];
+        const endHeadingIndex = headings.indexOf(endHeading);
+        const currentPlaceHeadingIndex = endHeading.classList.contains("place-heading")
+          ? endHeadingIndex
+          : headings.findIndex((heading, index) => index >= endHeadingIndex && heading.classList.contains("place-heading"));
+        const nextHeading = headings
+          .slice(currentPlaceHeadingIndex + 1)
+          .find((heading) => heading.classList.contains("place-heading"));
+        const boundary = nextHeading?.getBoundingClientRect().top;
+        let bottom = targetHeading.getBoundingClientRect().bottom;
+        for (const element of fragment.querySelectorAll("*")) {
+          const rect = element.getBoundingClientRect();
+          if (boundary !== undefined && (rect.top >= boundary || rect.bottom > boundary)) continue;
+          bottom = Math.max(bottom, rect.bottom);
+        }
+        const height = bottom - target.getBoundingClientRect().top + 2;
+        setFrameHeight(frame, height);
+      } catch (error) {
+        console.warn("Не удалось определить высоту фрагмента источника.", error);
+      }
+    };
+    addEventListener("message", (event) => {
+      if (event.origin !== location.origin || event.data?.type !== "belozerye-source-fragment") return;
+      for (const frame of document.querySelectorAll(".source-document-window iframe")) {
+        if (event.source === frame.contentWindow && event.data.anchor === frame.dataset.fragmentAnchor && event.data.endAnchor === (frame.dataset.fragmentEndAnchor ?? frame.dataset.fragmentAnchor)) {
+          setFrameHeight(frame, event.data.height);
+        }
+      }
+    });
+    for (const frame of document.querySelectorAll(".source-document-window iframe")) {
+      frame.addEventListener("load", () => setTimeout(() => resizeToFragment(frame), 550));
+      setTimeout(() => resizeToFragment(frame), 700);
+      setTimeout(() => resizeToFragment(frame), 2000);
+    }
+    document.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-return-to-fragment]");
+      if (!button) return;
+      const frame = button.closest(".source-fragment")?.querySelector("iframe");
+      if (!frame) return;
+      try {
+        const target = frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor);
+        if (target) target.scrollIntoView({ block: "start" });
+      } catch (error) {
+        console.warn("Не удалось вернуться к фрагменту источника.", error);
+      }
+    });
+    for (const handle of document.querySelectorAll("[data-source-resize]")) {
+      handle.addEventListener("pointerdown", (event) => {
+        const window = handle.closest(".source-fragment")?.querySelector(".source-document-window");
+        if (!window) return;
+        event.preventDefault();
+        const startY = event.clientY;
+        const startHeight = window.getBoundingClientRect().height;
+        const minimumHeight = Number(window.dataset.fragmentHeight) || 1;
+        const resize = (moveEvent) => {
+          window.style.height = Math.max(minimumHeight, startHeight + moveEvent.clientY - startY) + "px";
+        };
+        const finish = () => handle.removeEventListener("pointermove", resize);
+        handle.setPointerCapture(event.pointerId);
+        handle.addEventListener("pointermove", resize);
+        handle.addEventListener("pointerup", finish, { once: true });
+        handle.addEventListener("pointercancel", finish, { once: true });
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

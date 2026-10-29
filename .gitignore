@@ -1,3 +1,5 @@
 *.tar.gz
 .sites-checkout/
+.tmp/
+data/backups/
 
