@@ -918,6 +918,10 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
     }));
     for (const entry of [...cardMarkerEntries].sort((left, right) => Number(right.active) - Number(left.active))) {
       const labelBounds = entry.labelElement.getBoundingClientRect();
+      if (entry.active) {
+        visibleLabelBounds.push(labelBounds);
+        continue;
+      }
       const overlapsIcon = allIconEntries.some((item) => item.entry !== entry
         && markerSettings.clusters.overlaps(labelBounds, item.bounds));
       const overlapsLabel = visibleLabelBounds.some((bounds) => markerSettings.clusters.overlaps(labelBounds, bounds));
@@ -940,6 +944,7 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
         clusterElement.type = "button";
         clusterElement.className = "map-marker-cluster" + (kind === "church" ? " is-church" : "");
         clusterElement.style.zIndex = String(markerSettings.clusters.zIndex);
+        clusterElement.style.pointerEvents = "auto";
         clusterElement.textContent = String(members.length);
         clusterElement.setAttribute("aria-label", "Приблизить группу из " + members.length + " объектов");
         clusterElement.addEventListener("click", () => {
@@ -958,8 +963,13 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
         map.addOverlay(clusterOverlay);
       }
     }
+    for (const entry of cardMarkerEntries.filter((item) => item.active)) {
+      map.removeOverlay(entry.overlay);
+      map.addOverlay(entry.overlay);
+    }
     const clusterBounds = cardClusterOverlays.map((overlay) => overlay.getElement().getBoundingClientRect());
     for (const entry of cardMarkerEntries.filter((item) => item.element.style.display !== "none")) {
+      if (entry.active) continue;
       if (!clusterBounds.some((bounds) => markerSettings.clusters.overlaps(entry.labelElement.getBoundingClientRect(), bounds))) continue;
       entry.labelElement.style.visibility = "hidden";
     }
@@ -979,7 +989,7 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
         markerElement.className = "village-marker-link" + (active ? " is-active" : "") + (marker.kind === "church" ? " is-church" : "");
         markerElement.style.zIndex = String(active ? markerSettings.active.zIndex : 0);
         markerElement.style.gap = marker.kind === "church"
-          ? markerSettings.church.labelGap + "px"
+          ? (active ? markerSettings.church.activeLabelGap : markerSettings.church.labelGap) + "px"
           : markerSettings.place.labelOffsetX - 1 + "px";
         markerElement.href = active ? "./" : marker.kind === "church"
           ? "../../churches/" + encodeURIComponent(marker.slug) + "/"
@@ -1020,7 +1030,7 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
           offset: marker.kind === "church"
             ? [dot.offsetWidth / 2, markerSettings.church.labelOffsetY]
             : [-dot.offsetWidth / 2, 0],
-          stopEvent: false
+          stopEvent: active
         });
         villageOverlay.setPosition(ol.proj.fromLonLat([marker.longitude, marker.latitude]));
         map.addOverlay(villageOverlay);

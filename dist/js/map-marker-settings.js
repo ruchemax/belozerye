@@ -13,6 +13,7 @@ window.BelozeryeMapMarkers = Object.freeze({
     iconHeight: 25,
     iconScale: 0.0203,
     labelGap: 1,
+    activeLabelGap: 9,
     labelOffsetX: -14,
     labelOffsetY: -13,
     labelTextAlign: "right",

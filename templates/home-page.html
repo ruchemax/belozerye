@@ -241,10 +241,17 @@
     }
 
     .map-head h2 { font-size: 1.3rem; }
-    .map-head h2 a { color: inherit; text-decoration: none; }
-    .map-head h2 a:hover,
-    .map-head h2 a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
     .map-head p { margin: 3px 0 0; color: var(--muted); font: .75rem/1.4 system-ui, sans-serif; }
+    .map-actions { display: flex; align-items: center; gap: 24px; }
+    .map-explore-link {
+      color: var(--accent);
+      font: 700 .78rem/1.3 system-ui, sans-serif;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .map-explore-link::after { content: " ↗"; font-size: 1.05em; }
+    .map-explore-link:hover,
+    .map-explore-link:focus-visible { color: #7c2d12; }
     .map-controls { display: flex; align-items: center; gap: 7px; }
     .map-controls button {
       padding: 7px 10px;
@@ -388,13 +395,16 @@
       <section class="panel map-panel" id="map-section" aria-labelledby="map-title">
         <div class="map-head">
           <div>
-            <h2 id="map-title"><a href="./map/">Историческая карта</a></h2>
+            <h2 id="map-title">Историческая карта</h2>
             <p>Населённые пункты и церкви с установленным местоположением</p>
           </div>
-          <div class="map-controls" role="group" aria-label="Фильтр объектов карты">
-            <button class="active" type="button" data-map-filter="all">Все</button>
-            <button type="button" data-map-filter="place">Поселения</button>
-            <button type="button" data-map-filter="church">Церкви</button>
+          <div class="map-actions">
+            <a class="map-explore-link" href="./map/">К исследованию</a>
+            <div class="map-controls" role="group" aria-label="Фильтр объектов карты">
+              <button class="active" type="button" data-map-filter="all">Все</button>
+              <button type="button" data-map-filter="place">Поселения</button>
+              <button type="button" data-map-filter="church">Церкви</button>
+            </div>
           </div>
         </div>
         <div id="historical-map" class="map" aria-label="Интерактивная карта населённых пунктов и церквей"></div>
