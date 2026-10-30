@@ -2317,6 +2317,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   font-weight: 600 !important;
   font-style: italic;
 }
+/* Keep the contents rhythm identical across books with different source CSS. */
+.contents-heading {
+  margin: 0 0 1rem !important;
+  line-height: 1.25 !important;
+}
+#document-contents,
+#document-contents .toc-children {
+  display: grid !important;
+  grid-auto-rows: max-content !important;
+  row-gap: 0 !important;
+  margin: 0 !important;
+  padding-block: 0 !important;
+}
+#document-contents .contents-entry {
+  display: flex !important;
+  min-height: 0 !important;
+  margin: 0 0 .35rem !important;
+  padding-block: 0 !important;
+  line-height: 1.5 !important;
+}
+#document-contents .contents-entry > * { margin-block: 0 !important; }
+#document-contents .contents-level-2 { padding-left: 1rem !important; }
+#document-contents .contents-level-3 { padding-left: 2rem !important; }
+#document-contents .contents-entry.contents-level-1 {
+  margin-top: 0 !important;
+}
 </style><style id="embedded-book-style">
 body.embedded-book > header,
 body.embedded-book > footer { display: none !important; }
@@ -2352,7 +2378,7 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <header class="sticky top-0 z-40 border-b border-white/10 bg-black/40 backdrop-blur"><nav class="flex h-16 w-full items-center px-4"><a class="flex items-center gap-2" href="../../"><img alt="Белозерье" class="h-8 w-8" src="../../images/icons/belozerye-monastery-logo.svg"/><span class="font-semibold text-white">Белозерье</span></a></nav></header>
 <main class="flex-1"><section class="w-full text-white" data-astro-cid-zcak6nys=""><div class="parchment-shell mx-auto w-full max-w-[1000px] px-3 pb-12 pt-4 md:px-5" data-astro-cid-zcak6nys=""><article class="bound-parchment" data-astro-cid-zcak6nys=""><div class="relative z-10" data-astro-cid-zcak6nys="">
 
-<p class="text-xs text-gray-800 mb-4 publication-date" data-astro-cid-zcak6nys="">Опубликовано: <time data-astro-cid-zcak6nys="" datetime="2026-10-23">23 октября 2026 г.</time></p>
+<p class="text-xs text-gray-800 mb-4 publication-date" data-astro-cid-zcak6nys="">Опубликовано: <time data-astro-cid-zcak6nys="" datetime="2026-10-29">29 октября 2026 г.</time></p>
 <h1 class="text-2xl font-bold mb-2 text-black book-title" data-astro-cid-zcak6nys="">Сотная из писцовых книг Белозерского уезда (1544 г.)</h1>
 <p class="book-full-title">Сотная из писцовых книг Ф.Ф. Хидырщикова и Г.Л. Клементиева на земли Кирилло-Белозерского монастыря в Белозерском уезде (1544 г.)</p>
 <div class="book-bibliography">

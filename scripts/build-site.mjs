@@ -182,6 +182,32 @@ const bookLayoutStyle = `<style id="book-layout-style">
   font-weight: 600 !important;
   font-style: italic;
 }
+/* Keep the contents rhythm identical across books with different source CSS. */
+.contents-heading {
+  margin: 0 0 1rem !important;
+  line-height: 1.25 !important;
+}
+#document-contents,
+#document-contents .toc-children {
+  display: grid !important;
+  grid-auto-rows: max-content !important;
+  row-gap: 0 !important;
+  margin: 0 !important;
+  padding-block: 0 !important;
+}
+#document-contents .contents-entry {
+  display: flex !important;
+  min-height: 0 !important;
+  margin: 0 0 .35rem !important;
+  padding-block: 0 !important;
+  line-height: 1.5 !important;
+}
+#document-contents .contents-entry > * { margin-block: 0 !important; }
+#document-contents .contents-level-2 { padding-left: 1rem !important; }
+#document-contents .contents-level-3 { padding-left: 2rem !important; }
+#document-contents .contents-entry.contents-level-1 {
+  margin-top: 0 !important;
+}
 </style>`;
 const churchHighlightStyle = `<style id="church-name-highlight-style">
 .church-name-highlight {
