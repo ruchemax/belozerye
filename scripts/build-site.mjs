@@ -1085,6 +1085,21 @@ const renderSourceWindowSizing = () => `<script>
         console.warn("Не удалось определить высоту фрагмента источника.", error);
       }
     };
+    const scrollToFragment = (frame) => {
+      try {
+        const target = frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor);
+        if (!target || !frame.contentWindow) return false;
+        const targetTop = frame.contentWindow.scrollY + target.getBoundingClientRect().top;
+        frame.contentWindow.scrollTo({ top: targetTop, left: 0, behavior: "auto" });
+        return true;
+      } catch (error) {
+        console.warn("Не удалось вернуться к фрагменту источника.", error);
+        return false;
+      }
+    };
+    const revealFrameAtFragment = (frame) => {
+      if (scrollToFragment(frame)) frame.classList.add("source-fragment-ready");
+    };
     addEventListener("message", (event) => {
       if (event.origin !== location.origin || event.data?.type !== "belozerye-source-fragment") return;
       for (const frame of document.querySelectorAll(".source-document-window iframe")) {
@@ -1094,7 +1109,16 @@ const renderSourceWindowSizing = () => `<script>
       }
     });
     for (const frame of document.querySelectorAll(".source-document-window iframe")) {
-      frame.addEventListener("load", () => setTimeout(() => resizeToFragment(frame), 550));
+      const prepareFrame = () => {
+        if (frame.dataset.fragmentPrepareScheduled) return;
+        frame.dataset.fragmentPrepareScheduled = "true";
+        setTimeout(() => {
+          resizeToFragment(frame);
+          requestAnimationFrame(() => revealFrameAtFragment(frame));
+        }, 520);
+      };
+      frame.addEventListener("load", prepareFrame);
+      if (frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor)) prepareFrame();
       setTimeout(() => resizeToFragment(frame), 700);
       setTimeout(() => resizeToFragment(frame), 2000);
     }
@@ -1103,14 +1127,14 @@ const renderSourceWindowSizing = () => `<script>
       if (!button) return;
       const frame = button.closest(".source-fragment")?.querySelector("iframe");
       if (!frame) return;
-      try {
-        const target = frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor);
-        if (target) target.scrollIntoView({ block: "start" });
-      } catch (error) {
-        console.warn("Не удалось вернуться к фрагменту источника.", error);
-      }
+      scrollToFragment(frame);
     });
     for (const handle of document.querySelectorAll("[data-source-resize]")) {
+      handle.addEventListener("dblclick", () => {
+        const window = handle.closest(".source-fragment")?.querySelector(".source-document-window");
+        const initialHeight = Number(window?.dataset.fragmentHeight);
+        if (window && initialHeight > 0) window.style.height = initialHeight + "px";
+      });
       handle.addEventListener("pointerdown", (event) => {
         const window = handle.closest(".source-fragment")?.querySelector(".source-document-window");
         if (!window) return;
