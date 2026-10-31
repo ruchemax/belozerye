@@ -6,7 +6,6 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const errors = [];
 const titles = new Map();
-const descriptions = new Map();
 
 async function listFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -52,20 +51,14 @@ for (const file of htmlFiles) {
   if (!/<html\b[^>]*\blang=["']ru["']/i.test(markup)) report(file, "не задан lang=\"ru\"");
   if (!/<title>\s*[^<]+\s*<\/title>/i.test(markup)) report(file, "нет непустого title");
   if (!/<meta\b[^>]*\bname=["']viewport["'][^>]*>/i.test(markup)) report(file, "нет viewport");
-  if (!/<meta\b[^>]*\bname=["']description["'][^>]*\bcontent=["'][^"']+["'][^>]*>/i.test(markup)
-      && !/<meta\b[^>]*\bcontent=["'][^"']+["'][^>]*\bname=["']description["'][^>]*>/i.test(markup)) {
-    report(file, "нет meta description");
-  }
+  if (/<meta\b[^>]*\bname=["']description["']/i.test(markup)) report(file, "остался meta description");
+  if (/<meta\b[^>]*\bproperty=["']og:description["']/i.test(markup)) report(file, "остался og:description");
   if (!/<h1\b[^>]*>/i.test(markup)) report(file, "нет заголовка h1");
   if (/\{\{[^{}]+\}\}/.test(html)) report(file, "остался незаполненный шаблон {{...}}");
   if (html.includes("�")) report(file, "обнаружен символ повреждённой кодировки �");
 
   const title = markup.match(/<title>\s*([^<]+?)\s*<\/title>/i)?.[1];
   if (title) titles.set(title, [...(titles.get(title) ?? []), file]);
-  const descriptionTag = [...markup.matchAll(/<meta\b[^>]*>/gi)]
-    .find((match) => attribute(match[0], "name")?.toLocaleLowerCase() === "description")?.[0];
-  const description = descriptionTag ? attribute(descriptionTag, "content") : null;
-  if (description) descriptions.set(description, [...(descriptions.get(description) ?? []), file]);
   const noindex = [...markup.matchAll(/<meta\b[^>]*>/gi)].some((match) =>
     attribute(match[0], "name")?.toLocaleLowerCase() === "robots"
     && (attribute(match[0], "content") ?? "").toLocaleLowerCase().split(/\s*,\s*/).includes("noindex")
@@ -75,7 +68,8 @@ for (const file of htmlFiles) {
         && !/<link\b[^>]*\bhref=["']https:\/\/[^"']+["'][^>]*\brel=["']canonical["'][^>]*>/i.test(markup)) {
       report(file, "нет абсолютного canonical URL");
     }
-    for (const property of ["og:title", "og:description", "og:url"]) {
+    const requiredOpenGraphProperties = ["og:title", "og:url"];
+    for (const property of requiredOpenGraphProperties) {
       const present = [...markup.matchAll(/<meta\b[^>]*>/gi)].some((match) =>
         attribute(match[0], "property")?.toLocaleLowerCase() === property && attribute(match[0], "content")
       );
@@ -127,12 +121,6 @@ for (const file of htmlFiles) {
 for (const [title, titleFiles] of titles) {
   if (titleFiles.length > 1) report(titleFiles[0], `title повторяется на ${titleFiles.length} страницах: ${title}`);
 }
-for (const [description, descriptionFiles] of descriptions) {
-  if (descriptionFiles.length > 1) {
-    report(descriptionFiles[0], `meta description повторяется на ${descriptionFiles.length} страницах: ${description}`);
-  }
-}
-
 if (errors.length) {
   console.error(`Аудит публикации обнаружил ошибок: ${errors.length}`);
   for (const error of errors) console.error(`- ${error}`);

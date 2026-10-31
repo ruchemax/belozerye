@@ -1582,7 +1582,6 @@ ${renderOverviewItems(linkedChurches.map((church) => {
     ADMINISTRATIVE_AFFILIATIONS: renderOverviewItems(administrativeAffiliations),
     LAND_OWNERSHIPS: renderOverviewItems(landOwnerships),
     CHURCHES_OVERVIEW: churchesOverview,
-    META_DESCRIPTION: escapeHtml(`${seoName} по историческим источникам Белозерского уезда.`),
     MENTION_SECTIONS: sourceGroups.map((group, index) => renderSourceGroup(group.mentions, index)).join("\n"),
     MAP_SECTION: renderMapSection(place, map),
     MAP_SCRIPTS: `${renderMapScripts(place, map)}${renderSourceWindowSizing()}`
@@ -1650,7 +1649,6 @@ const renderChurchCard = (church) => {
     ADMINISTRATIVE_AFFILIATIONS: "",
     LAND_OWNERSHIPS: "",
     CHURCHES_OVERVIEW: "",
-    META_DESCRIPTION: escapeHtml(`${churchEntity.name} по историческим источникам Белозерского уезда.`),
     MENTION_SECTIONS: source,
     MAP_SECTION: renderMapSection(churchEntity, map),
     MAP_SCRIPTS: `${renderMapScripts(churchEntity, map, true)}${renderSourceWindowSizing()}`
@@ -1795,23 +1793,27 @@ expectedFiles.set(homePath, homeHtml);
 
 const publicPageUrls = [];
 for (const [filePath, sourceHtml] of expectedFiles) {
-  if (path.extname(filePath).toLocaleLowerCase() !== ".html" || path.basename(filePath) === "404.html") continue;
+  if (path.extname(filePath).toLocaleLowerCase() !== ".html") continue;
+  const htmlWithoutDescriptions = sourceHtml
+    .replace(/<meta\b(?=[^>]*\bname=["']description["'])[^>]*>/giu, "")
+    .replace(/<meta\b(?=[^>]*\bproperty=["']og:description["'])[^>]*>/giu, "");
+  if (path.basename(filePath) === "404.html") {
+    expectedFiles.set(filePath, htmlWithoutDescriptions);
+    continue;
+  }
   const relativePath = path.relative(path.join(root, "dist"), filePath).split(path.sep).join("/");
   const pagePath = relativePath === "index.html" ? "/" : `/${relativePath.replace(/index\.html$/u, "")}`;
   const canonicalUrl = `${siteUrl}${pagePath}`;
   const title = sourceHtml.match(/<title>([\s\S]*?)<\/title>/iu)?.[1]?.trim();
-  const descriptionTag = sourceHtml.match(/<meta\b[^>]*\bname=["']description["'][^>]*>/iu)?.[0];
-  const description = descriptionTag?.match(/\bcontent=["']([^"']*)["']/iu)?.[1];
-  if (!title || !description) throw new Error(`Для SEO-разметки не хватает title или description: ${relativePath}`);
+  if (!title) throw new Error(`Для SEO-разметки не хватает title: ${relativePath}`);
   const socialMeta = `<link rel="canonical" href="${canonicalUrl}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:site_name" content="Белозерье">
   <meta property="og:title" content="${title}">
-  <meta property="og:description" content="${description}">
   <meta property="og:url" content="${canonicalUrl}">
   <meta name="twitter:card" content="summary">`;
-  expectedFiles.set(filePath, sourceHtml.replace(/<\/head>/iu, `  ${socialMeta}\n</head>`));
+  expectedFiles.set(filePath, htmlWithoutDescriptions.replace(/<\/head>/iu, `  ${socialMeta}\n</head>`));
   publicPageUrls.push(canonicalUrl);
 }
 
