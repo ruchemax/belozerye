@@ -6,7 +6,7 @@ import { books, fragments, places, mentions, locations, churches, churchSources,
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const checkOnly = process.argv.includes("--check");
-const siteUrl = "https://belozersky.uezd.workers.dev";
+const siteUrl = process.env.SITE_URL ?? "https://belozersky.uezd.workers.dev";
 
 const template = await readFile(path.join(root, "templates/place-page.html"), "utf8");
 const homeTemplate = await readFile(path.join(root, "templates/home-page.html"), "utf8");
