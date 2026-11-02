@@ -26,7 +26,7 @@
   {
     "id": "borisovskaya",
     "slug": "borisovskaya",
-    "name": "Борисовская",
+    "name": "Борисовска",
     "kind": "place",
     "longitude": 38.594704891648,
     "latitude": 59.250057717721
@@ -248,6 +248,14 @@
     "latitude": 59.221335796441
   },
   {
+    "id": "isakovo",
+    "slug": "isakovo",
+    "name": "Исаково",
+    "kind": "place",
+    "longitude": 38.634864444444,
+    "latitude": 59.22924
+  },
+  {
     "id": "ivantsovo",
     "slug": "ivantsovo",
     "name": "Иванцово",
@@ -382,6 +390,22 @@
     "kind": "place",
     "longitude": 38.596948000039,
     "latitude": 59.302267133944
+  },
+  {
+    "id": "loshakova",
+    "slug": "loshakova",
+    "name": "Лошакова",
+    "kind": "place",
+    "longitude": 38.487237222222,
+    "latitude": 59.271234166667
+  },
+  {
+    "id": "loshakovo-monastery",
+    "slug": "loshakovo-monastery",
+    "name": "Лошаково",
+    "kind": "place",
+    "longitude": 38.488950555556,
+    "latitude": 59.267807777778
   },
   {
     "id": "lukino",
@@ -928,6 +952,14 @@
     "latitude": 59.298796095431
   },
   {
+    "id": "trufonovo",
+    "slug": "trufonovo",
+    "name": "Труфоново",
+    "kind": "place",
+    "longitude": 38.646785555556,
+    "latitude": 59.240304444444
+  },
+  {
     "id": "ulushkovo",
     "slug": "ulushkovo",
     "name": "Улушково",
@@ -1038,5 +1070,13 @@
     "kind": "church",
     "longitude": 38.596754773113496,
     "latitude": 59.257138989811
+  },
+  {
+    "id": "rozhdestva-bogoroditsy-churovskaya-1544",
+    "slug": "rozhdestva-bogoroditsy-churovskaya-1544",
+    "name": "Церковь Рождества Богородицы",
+    "kind": "church",
+    "longitude": 38.518646111111,
+    "latitude": 59.241895555556
   }
 ]

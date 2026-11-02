@@ -52,12 +52,33 @@ for (const source of churchSources) {
   churchSourcesByChurchId.set(source.church_id, sources);
 }
 const churchesByLocationPlaceId = new Map();
+const churchesById = byId(churches, "churches.json");
 for (const church of churches) {
   if (!church.location_place_id) continue;
   const linkedChurches = churchesByLocationPlaceId.get(church.location_place_id) ?? [];
   linkedChurches.push(church);
   churchesByLocationPlaceId.set(church.location_place_id, linkedChurches);
 }
+const updateChurchSourceLinks = (html, book) => {
+  let updated = html;
+  for (const source of churchSources) {
+    if (source.book_slug !== book.slug || !source.source_anchor) continue;
+    const church = churchesById.get(source.church_id);
+    if (!church) throw new Error(`Источник церкви ссылается на неизвестную церковь ${source.church_id}.`);
+    const heading = new RegExp(
+      `(<([a-z][a-z0-9]*)\\b[^>]*\\bid="${escapeRegex(source.source_anchor)}"[^>]*>)([\\s\\S]*?)(<\\/\\2>)`,
+      "iu"
+    );
+    updated = updated.replace(heading, (_match, opening, _tag, body, closing) => {
+      const linkedBody = body.replace(
+        /(<a\b[^>]*\bhref=")[^"]*\/churches\/([^"]*)(")/iu,
+        `$1../../churches/${encodeURIComponent(church.slug)}/$3`
+      );
+      return `${opening}${linkedBody}${closing}`;
+    });
+  }
+  return updated;
+};
 byId(mentions, "mentions.json");
 
 for (const book of books) {
@@ -520,6 +541,7 @@ for (const book of books) {
   const bookPath = path.join(root, "dist", "books", book.slug, "index.html");
   let html = bookDocuments.get(book.id);
   if (!html) throw new Error(`В базе нет текста книги ${book.id}. Пересоздайте базу данных.`);
+  html = updateChurchSourceLinks(html, book);
   if (book.id === "belozersky-1626") {
     html = html.replace(
       '<h1 id="church-and-estates" class="primary-section-heading"',
@@ -537,10 +559,6 @@ for (const book of books) {
     html = html.replaceAll(
       "Да Устюговские волости",
       "Да Устюговские [Усть-Угольской] волости"
-    );
-    html = html.replaceAll(
-      "Деревня Борисовска на ручье",
-      "Деревня Борисовска[я] на ручье"
     );
     html = html.replaceAll("Новцо Давыдово", "новцо Давыдово");
     html = html.replace(

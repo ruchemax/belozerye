@@ -1196,7 +1196,13 @@ footer {
           Координаты
         </span>
 
-        <span class="location-coordinates">не установлены</span>
+        <a
+          class="location-coordinates"
+          href="https://www.openstreetmap.org/?mlat=59.240304444444&amp;mlon=38.646785555556#map=14/59.240304444444/38.646785555556"
+          target="_blank"
+          rel="noopener noreferrer">
+          59°14′25″ с. ш., 38°38′48″ в. д.
+        </a>
 
       </div>
 
@@ -1340,8 +1346,8 @@ footer {
 <script src="../../js/map-marker-settings.js"></script>
 
 <script>
-  const villageLat = 59.258038989811;
-  const villageLon = 38.597633427041;
+  const villageLat = 59.240304444444;
+  const villageLon = 38.646785555556;
   const activePlaceId = "trufonovo";
   const placePagePath = "../";
   const markerContainer = document.querySelector(".map-frame");
@@ -1355,7 +1361,7 @@ footer {
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
-      zoom: 12
+      zoom: 14
     }),
     controls: ol.control.defaults.defaults({ attribution: true, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),

@@ -1196,7 +1196,13 @@ footer {
           Координаты
         </span>
 
-        <span class="location-coordinates">не установлены</span>
+        <a
+          class="location-coordinates"
+          href="https://www.openstreetmap.org/?mlat=59.271234166667&amp;mlon=38.487237222222#map=14/59.271234166667/38.487237222222"
+          target="_blank"
+          rel="noopener noreferrer">
+          59°16′16″ с. ш., 38°29′14″ в. д.
+        </a>
 
       </div>
 
@@ -1209,21 +1215,24 @@ footer {
     <details class="overview">
       <summary><span class="overview-label">Названия</span></summary>
       <ul class="overview-value">
-                <li>селище Лошакова (1626/27)</li>
+                <li>починок Лошаково (1544)</li>
+        <li>селище Лошакова (1626/27)</li>
       </ul>
     </details>
 
     <details class="overview">
       <summary><span class="overview-label">Административная принадлежность</span></summary>
       <ul class="overview-value">
-                <li>Белозерский уезд · Надпорожский стан · Чуровская волость (1626/27)</li>
+                <li>Белозерский уезд · волость Угла · Чуровские (1544)</li>
+        <li>Белозерский уезд · Надпорожский стан · Чуровская волость (1626/27)</li>
       </ul>
     </details>
 
     <details class="overview">
       <summary><span class="overview-label">Принадлежность земли</span></summary>
       <ul class="overview-value">
-                <li>Патриаршая (1626/27)</li>
+                <li>Митрополичья (1544)</li>
+        <li>Патриаршая (1626/27)</li>
       </ul>
     </details>
 
@@ -1247,6 +1256,37 @@ footer {
         <summary>
           <span class="source-summary-copy">
             <span id="source-1" class="source-title">
+              <a href="../../books/belozersky_uezd-1544/">
+                Сотная из писцовых книг Белозерского уезда (1544 г.)
+              </a>
+            </span>
+          </span>
+        </summary>
+
+        <div class="source-body">
+
+<div class="source-content-card">
+            <div class="source-fragment">
+              <section class="source-document-window" aria-label="Починок Лошаково против митрополича починка Лошакова" style="height:230px">
+                <iframe src="../../books/belozersky_uezd-1544/?embed=1&view=fragment-layout-8&revision=15&end=place-12-1#place-12-1" title="Починок Лошаково против митрополича починка Лошакова" loading="lazy" data-fragment-anchor="place-12-1" data-fragment-end-anchor="place-12-1"></iframe>
+              </section>
+              <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
+              <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
+            </div>
+          </div>
+
+        </div>
+
+      </details>
+    </section>
+
+    <section class="mention-card" aria-labelledby="source-2">
+
+      <details class="source-details">
+
+        <summary>
+          <span class="source-summary-copy">
+            <span id="source-2" class="source-title">
               <a href="../../books/belozersky_uezd-1626-27/">
                 Писцовая книга Белозерского уезда (1626/27 г.)
               </a>
@@ -1305,8 +1345,8 @@ footer {
 <script src="../../js/map-marker-settings.js"></script>
 
 <script>
-  const villageLat = 59.258038989811;
-  const villageLon = 38.597633427041;
+  const villageLat = 59.271234166667;
+  const villageLon = 38.487237222222;
   const activePlaceId = "loshakova";
   const placePagePath = "../";
   const markerContainer = document.querySelector(".map-frame");
@@ -1320,7 +1360,7 @@ footer {
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
-      zoom: 12
+      zoom: 14
     }),
     controls: ol.control.defaults.defaults({ attribution: true, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
