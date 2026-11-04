@@ -119,6 +119,7 @@
   <script>
     (() => {
       const items = JSON.parse(document.querySelector("#map-filter-data").textContent);
+      let coordinateEditMode = false;
       const bookOptions = JSON.parse(document.querySelector("#book-options").textContent);
       const settings = window.BelozeryeMapMarkers;
       const fields = ["books", "land", "owners"];
@@ -372,7 +373,376 @@
       const placeClusterLayer = new ol.layer.Vector({ source:placeSource, style:styleFor("place",true) });
       const churchClusterLayer = new ol.layer.Vector({ source:churchSource, style:styleFor("church",true) });
       settings.clusters.setVectorLayerOrder([placesLayer,churchesLayer],[placeClusterLayer,churchClusterLayer]);
-      const map = new ol.Map({ target:"filter-map", layers:[new ol.layer.Tile({source:new ol.source.OSM()}),placesLayer,churchesLayer,placeClusterLayer,churchClusterLayer], view:new ol.View({center:initialCenter,zoom:10.5}), controls:ol.control.defaults.defaults({rotate:false}).extend([new ol.control.ScaleLine({units:"metric"})]) });
+      const devImageryEnabled = {{DEV_IMAGERY_ENABLED}};
+      const yandexLayer = new ol.layer.Tile({ source:new ol.source.XYZ({
+        url:`https://tiles.api-maps.yandex.ru/v1/tiles/?x={x}&y={y}&z={z}&lang=ru_RU&l=map&projection=web_mercator&apikey=${encodeURIComponent({{YANDEX_MAPS_API_KEY}})}`,
+        attributions:"© Яндекс"
+      }) });
+      /* DEV_IMAGERY_LAYER_START */
+      const imageryLayer = devImageryEnabled ? new ol.layer.Tile({source:new ol.source.XYZ({url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",attributions:"Sources: Esri, Maxar, Earthstar Geographics, and the GIS User Community"}),visible:false}) : null;
+      /* DEV_IMAGERY_LAYER_END */
+      const map = new ol.Map({ target:"filter-map", layers:[yandexLayer,/* DEV_IMAGERY_SPREAD_START */...(imageryLayer ? [imageryLayer] : []),/* DEV_IMAGERY_SPREAD_END */placesLayer,churchesLayer,placeClusterLayer,churchClusterLayer], view:new ol.View({center:initialCenter,zoom:10.5}), controls:ol.control.defaults.defaults({attribution:false,rotate:false}).extend([new ol.control.ScaleLine({units:"metric"})]) });
+      const yandexAttribution = document.createElement("div");
+      yandexAttribution.style.cssText = "position:absolute;right:0;bottom:0;z-index:1;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:4px 8px;max-width:calc(100% - 8px);box-sizing:border-box;padding:2px 5px;border-radius:3px 0 0 0;background:rgba(255,255,255,.8);font:10px/1.2 Arial,sans-serif;color:#555";
+      const yandexLogoLink = document.createElement("a");
+      yandexLogoLink.href = "https://yandex.ru/maps/";
+      yandexLogoLink.target = "_blank";
+      yandexLogoLink.rel = "noopener noreferrer";
+      yandexLogoLink.setAttribute("aria-label", "Яндекс Карты");
+      const yandexLogo = document.createElement("img");
+      yandexLogo.src = "https://yastatic.net/q/logoaas/v2/%D0%AF%D0%BD%D0%B4%D0%B5%D0%BA%D1%81%20%D0%9A%D0%B0%D1%80%D1%82%D1%8B.svg";
+      yandexLogo.alt = "Яндекс Карты";
+      yandexLogo.style.cssText = "display:block;width:auto;height:15px";
+      yandexLogoLink.append(yandexLogo);
+      const openYandexMaps = document.createElement("a");
+      const updateYandexMapsLink = () => {
+        const center = map.getView().getCenter();
+        if (!center) return;
+        const [longitude, latitude] = ol.proj.toLonLat(center);
+        const zoom = Math.round(map.getView().getZoom() ?? 10);
+        const url = new URL("https://yandex.ru/maps/");
+        url.searchParams.set("ll", `${longitude.toFixed(6)},${latitude.toFixed(6)}`);
+        url.searchParams.set("z", String(zoom));
+        openYandexMaps.href = url.toString();
+      };
+      updateYandexMapsLink();
+      map.on("moveend", updateYandexMapsLink);
+      openYandexMaps.target = "_blank";
+      openYandexMaps.rel = "noopener noreferrer";
+      openYandexMaps.textContent = "Открыть в Картах";
+      openYandexMaps.style.cssText = "color:#333;text-decoration:none;white-space:nowrap";
+      const yandexTerms = document.createElement("a");
+      yandexTerms.href = "https://yandex.ru/legal/maps_termsofuse/";
+      yandexTerms.target = "_blank";
+      yandexTerms.rel = "noopener noreferrer";
+      yandexTerms.textContent = "Условия";
+      yandexTerms.style.cssText = "color:#555;text-decoration:underline;white-space:nowrap";
+      yandexAttribution.append(yandexLogoLink, openYandexMaps, yandexTerms);
+      map.getViewport().append(yandexAttribution);
+      /* DEV_COORD_EDITOR_START */
+      (() => {
+        const panel = document.createElement("details");
+        panel.style.cssText = "position:absolute;top:10px;left:10px;z-index:2;width:min(300px,calc(100% - 20px));padding:8px 10px;border-radius:5px;background:rgba(255,255,255,.96);box-shadow:0 1px 5px #0005;font:12px/1.4 system-ui,sans-serif;color:#1f2937";
+        const heading = document.createElement("summary");
+        heading.textContent = "Коррекция координат · разработчик";
+        heading.style.cssText = "cursor:pointer;font-weight:700";
+        panel.append(heading);
+        const contents = document.createElement("div");
+        contents.style.cssText = "display:grid;gap:6px;margin-top:8px";
+        panel.append(contents);
+        const selectedLabel = document.createElement("strong");
+        selectedLabel.textContent = "Редактирование выключено";
+        contents.append(selectedLabel);
+        const start = document.createElement("button");
+        start.type = "button";
+        start.textContent = "Начать редактирование";
+        start.style.cssText = "padding:6px;background:#2563eb;color:#fff;border:0;border-radius:3px;cursor:pointer";
+        contents.append(start);
+        const finish = document.createElement("button");
+        finish.type = "button";
+        finish.textContent = "Завершить редактирование";
+        finish.disabled = true;
+        finish.style.cssText = "padding:6px;background:#475569;color:#fff;border:0;border-radius:3px;cursor:pointer";
+        contents.append(finish);
+        const makeCoordinateInput = (labelText) => {
+          const label = document.createElement("label");
+          label.textContent = labelText;
+          const input = document.createElement("input");
+          input.type = "number";
+          input.step = "any";
+          input.style.cssText = "float:right;width:68%;padding:4px;border:1px solid #cbd5e1;border-radius:3px";
+          label.append(input);
+          contents.append(label);
+          return input;
+        };
+        const longitudeInput = makeCoordinateInput("Долгота (восток +)");
+        const latitudeInput = makeCoordinateInput("Широта (север +)");
+        longitudeInput.disabled = true;
+        latitudeInput.disabled = true;
+        const actions = document.createElement("div");
+        actions.style.cssText = "display:flex;gap:6px";
+        contents.append(actions);
+        const cancel = document.createElement("button");
+        cancel.type = "button";
+        cancel.textContent = "Отменить";
+        cancel.disabled = true;
+        cancel.style.cssText = "padding:6px;background:#e5e7eb;color:#1f2937;border:0;border-radius:3px;cursor:pointer";
+        actions.append(cancel);
+        const save = document.createElement("button");
+        save.type = "button";
+        save.textContent = "Сохранить изменения";
+        save.disabled = true;
+        save.style.cssText = "padding:6px;background:#2563eb;color:#fff;border:0;border-radius:3px;cursor:pointer";
+        actions.append(save);
+        const status = document.createElement("div");
+        status.setAttribute("role", "status");
+        contents.append(status);
+        map.getViewport().append(panel);
+
+        const source = new ol.source.Vector();
+        const editLayer = new ol.layer.Vector({source, visible:false, style:new ol.style.Style({image:new ol.style.Circle({radius:8,fill:new ol.style.Fill({color:"#f97316"}),stroke:new ol.style.Stroke({color:"#fff",width:3})})})});
+        map.addLayer(editLayer);
+        const modify = new ol.interaction.Modify({source});
+        modify.setActive(false);
+        map.addInteraction(modify);
+        let selected = null;
+        let point = null;
+        const pendingChanges = new Map();
+        const undoHistory = [];
+        let activeHistorySnapshot = null;
+        let restoringSnapshot = false;
+        const pendingKey = (kind,id) => `${kind}:${id}`;
+        const copyPendingChanges = () => new Map([...pendingChanges].map(([key,value]) => [key,{...value}]));
+        const snapshotsEqual = (left,right) => left.size === right.size && [...left].every(([key,value]) => {
+          const other = right.get(key);
+          return other && value.longitude === other.longitude && value.latitude === other.latitude;
+        });
+        const beginHistoryAction = () => {
+          if (!activeHistorySnapshot) activeHistorySnapshot = copyPendingChanges();
+          cancel.disabled = false;
+        };
+        const finishHistoryAction = () => {
+          if (!activeHistorySnapshot) return;
+          const current = copyPendingChanges();
+          if (!snapshotsEqual(activeHistorySnapshot,current)) undoHistory.push(activeHistorySnapshot);
+          activeHistorySnapshot = null;
+          refreshSaveButton();
+        };
+        const refreshSaveButton = () => {
+          save.disabled = pendingChanges.size === 0;
+          cancel.disabled = undoHistory.length === 0 && !activeHistorySnapshot;
+          if (pendingChanges.size) status.textContent = `Несохранённых объектов: ${pendingChanges.size}. Их можно сохранить вместе.`;
+        };
+        const finishEditing = () => {
+          coordinateEditMode = false;
+          selected = null;
+          point = null;
+          source.clear();
+          pendingChanges.clear();
+          undoHistory.length = 0;
+          activeHistorySnapshot = null;
+          editLayer.setVisible(false);
+          modify.setActive(false);
+          map.getViewport().style.cursor = "";
+          start.disabled = false;
+          finish.disabled = true;
+          cancel.disabled = true;
+          save.disabled = true;
+          longitudeInput.disabled = true;
+          latitudeInput.disabled = true;
+          longitudeInput.value = "";
+          latitudeInput.value = "";
+        };
+        const syncInputsFromPoint = () => {
+          if (!point) return;
+          const [longitude, latitude] = ol.proj.toLonLat(point.getGeometry().getCoordinates());
+          longitudeInput.value = longitude.toFixed(6);
+          latitudeInput.value = latitude.toFixed(6);
+        };
+        const updatePointFromInputs = () => {
+          if (!point) return;
+          const longitude = Number(longitudeInput.value);
+          const latitude = Number(latitudeInput.value);
+          if (Number.isFinite(longitude) && Number.isFinite(latitude) && Math.abs(longitude) <= 180 && Math.abs(latitude) <= 90) {
+            point.getGeometry().setCoordinates(ol.proj.fromLonLat([longitude,latitude]));
+          }
+        };
+        const trackLivePosition = () => {
+          if (restoringSnapshot || !selected || !point) return;
+          const [longitude,latitude] = ol.proj.toLonLat(point.getGeometry().getCoordinates());
+          if (!(Number.isFinite(longitude) && Math.abs(longitude) <= 180 && Number.isFinite(latitude) && Math.abs(latitude) <= 90)) return;
+          const key = pendingKey(selected.kind,selected.id);
+          const previous = pendingChanges.get(key);
+          const originalLongitude = previous?.originalLongitude ?? selected.longitude;
+          const originalLatitude = previous?.originalLatitude ?? selected.latitude;
+          selected.longitude = longitude;
+          selected.latitude = latitude;
+          if (Math.abs(longitude - originalLongitude) < 1e-8 && Math.abs(latitude - originalLatitude) < 1e-8) {
+            pendingChanges.delete(key);
+          } else {
+            pendingChanges.set(key,{kind:selected.kind,id:selected.id,originalLongitude,originalLatitude,longitude,latitude});
+          }
+          update(false);
+          refreshSaveButton();
+        };
+        const selectObject = (feature) => {
+          const kind = feature.get("kind");
+          const id = feature.get("id");
+          selected = items.find((item) => item.kind === kind && item.id === id) ?? null;
+          if (!selected) return;
+          source.clear();
+          selectedLabel.textContent = `${selected.name} · ${selected.kind === "place" ? "поселение" : "церковь"}`;
+          longitudeInput.value = Number(selected.longitude).toFixed(6);
+          latitudeInput.value = Number(selected.latitude).toFixed(6);
+          longitudeInput.disabled = false;
+          latitudeInput.disabled = false;
+          cancel.disabled = false;
+          save.disabled = false;
+          point = new ol.Feature(new ol.geom.Point(ol.proj.fromLonLat([selected.longitude,selected.latitude])));
+          source.addFeature(point);
+          point.getGeometry().on("change", trackLivePosition);
+          editLayer.setVisible(true);
+          modify.setActive(true);
+          status.textContent = "Перетащите оранжевую точку или введите координаты.";
+        };
+        start.addEventListener("click", () => {
+          coordinateEditMode = true;
+          start.disabled = true;
+          finish.disabled = false;
+          cancel.disabled = true;
+          map.getViewport().style.cursor = "crosshair";
+          status.textContent = "Нажмите на деревню или церковь, которую нужно переместить.";
+        });
+        map.on("singleclick", (event) => {
+          if (!coordinateEditMode) return;
+          const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate, {
+            layerFilter: (layer) => [placesLayer,churchesLayer,placeClusterLayer,churchClusterLayer].includes(layer)
+          });
+          if (!feature) return;
+          const members = feature.get("features") ?? [];
+          if (members.length > 1) {
+            const extent = ol.extent.createEmpty();
+            members.forEach((member) => ol.extent.extend(extent, member.getGeometry().getExtent()));
+            map.getView().fit(extent,{padding:[55,55,55,55],maxZoom:16,duration:250});
+            status.textContent = "Приблизьте карту и нажмите на нужный объект.";
+            return;
+          }
+          const marker = members[0] ?? feature;
+          if (marker.get("kind") !== "place" && marker.get("kind") !== "church") return;
+          selectObject(marker);
+          event.preventDefault();
+          event.stopPropagation();
+        });
+        const applyCoordinateInputs = () => {
+          beginHistoryAction();
+          updatePointFromInputs();
+          finishHistoryAction();
+        };
+        longitudeInput.addEventListener("change", applyCoordinateInputs);
+        latitudeInput.addEventListener("change", applyCoordinateInputs);
+        modify.on("modifystart", beginHistoryAction);
+        modify.on("modifyend", () => {
+          syncInputsFromPoint();
+          finishHistoryAction();
+        });
+        finish.addEventListener("click", () => {
+          if (pendingChanges.size) {
+            status.textContent = "Сначала сохраните изменения или отмените их.";
+            return;
+          }
+          finishEditing();
+          selectedLabel.textContent = "Редактирование выключено";
+          status.textContent = "Режим редактирования завершён.";
+        });
+        cancel.addEventListener("click", () => {
+          if (!undoHistory.length) {
+            status.textContent = "Нет действий для отмены.";
+            return;
+          }
+          const snapshot = undoHistory.pop();
+          const previousPositions = new Map();
+          for (const [key,change] of pendingChanges) {
+            const previous = snapshot.get(key);
+            previousPositions.set(key, previous
+              ? {kind:change.kind,id:change.id,longitude:previous.longitude,latitude:previous.latitude}
+              : {kind:change.kind,id:change.id,longitude:change.originalLongitude,latitude:change.originalLatitude});
+          }
+          for (const [key,change] of snapshot) {
+            previousPositions.set(key,{kind:change.kind,id:change.id,longitude:change.longitude,latitude:change.latitude});
+          }
+          restoringSnapshot = true;
+          for (const change of previousPositions.values()) {
+            const item = items.find((candidate) => candidate.kind === change.kind && candidate.id === change.id);
+            if (item) {
+              item.longitude = change.longitude;
+              item.latitude = change.latitude;
+            }
+          }
+          pendingChanges.clear();
+          for (const [key,change] of snapshot) pendingChanges.set(key,{...change});
+          update(false);
+          if (selected && point) {
+            point.getGeometry().setCoordinates(ol.proj.fromLonLat([selected.longitude,selected.latitude]));
+            longitudeInput.value = Number(selected.longitude).toFixed(6);
+            latitudeInput.value = Number(selected.latitude).toFixed(6);
+          }
+          restoringSnapshot = false;
+          refreshSaveButton();
+          status.textContent = undoHistory.length
+            ? "Последнее перемещение отменено. Можно отменить предыдущее."
+            : "Последнее перемещение отменено до сохранённого состояния.";
+        });
+        save.addEventListener("click", async () => {
+          if (!pendingChanges.size) return;
+          save.disabled = true;
+          status.textContent = `Сохраняю ${pendingChanges.size} объект(а) и пересобираю карту…`;
+          try {
+            const coordinates = [...pendingChanges.values()].map(({kind,id,longitude,latitude}) => ({kind,id,longitude,latitude}));
+            const response = await fetch("http://127.0.0.1:4174/api/coordinates", {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify({coordinates})});
+            const result = await response.json();
+            if (!response.ok || !result.ok) throw new Error(result.error ?? "Не удалось пересобрать карту.");
+            pendingChanges.clear();
+            undoHistory.length = 0;
+            activeHistorySnapshot = null;
+            refreshSaveButton();
+            status.textContent = `Сохранено. Резервная копия: ${result.backupFile}`;
+          } catch (error) {
+            status.textContent = `Ошибка: ${error.message}. Запущен ли редактор базы на порту 4174?`;
+          } finally {
+            save.disabled = pendingChanges.size === 0;
+          }
+        });
+      })();
+      /* DEV_COORD_EDITOR_END */
+      /* DEV_IMAGERY_UI_START */
+      if (devImageryEnabled) {
+      const esriAttribution = document.createElement("div");
+      esriAttribution.hidden = true;
+      esriAttribution.style.cssText = "position:absolute;right:0;bottom:0;z-index:1;max-width:calc(100% - 8px);box-sizing:border-box;padding:2px 5px;border-radius:3px 0 0 0;background:rgba(255,255,255,.8);font:10px/1.2 Arial,sans-serif;text-align:right";
+      const esriAttributionLink = document.createElement("a");
+      esriAttributionLink.href = "https://www.arcgis.com/home/item.html?id=10df2279f9684e4a9f6a7f08febac2a9";
+      esriAttributionLink.target = "_blank";
+      esriAttributionLink.rel = "noopener noreferrer";
+      esriAttributionLink.textContent = "Sources: Esri, Maxar, Earthstar Geographics, and the GIS User Community";
+      esriAttributionLink.style.cssText = "color:#555;text-decoration:none";
+      esriAttribution.append(esriAttributionLink);
+      esriAttribution.style.display = "none";
+      map.getViewport().append(esriAttribution);
+      const basemapControl = document.createElement("div");
+      basemapControl.setAttribute("aria-label", "Выбор подложки");
+      basemapControl.style.cssText = "position:absolute;top:0.5em;right:0.5em;z-index:1;display:flex;overflow:hidden;border-radius:3px;box-shadow:0 1px 4px #0005";
+      const createBasemapButton = (label, satellite) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.style.cssText = "padding:0.45em 0.65em;border:0;cursor:pointer;font:600 12px system-ui,sans-serif";
+        button.addEventListener("click", () => setBasemap(satellite));
+        basemapControl.append(button);
+        return button;
+      };
+      const mapButton = createBasemapButton("Карта", false);
+      const imageryButton = createBasemapButton("Спутник", true);
+      const setBasemap = (satellite) => {
+        const visible = satellite;
+        try { localStorage.setItem("belozerye-map-basemap", visible ? "satellite" : "map"); } catch {}
+        imageryLayer.setVisible(visible);
+        yandexLayer.setVisible(!visible);
+        yandexAttribution.hidden = visible;
+        yandexAttribution.style.display = visible ? "none" : "flex";
+        esriAttribution.hidden = !visible;
+        esriAttribution.style.display = visible ? "block" : "none";
+        for (const [button, active] of [[mapButton, !visible], [imageryButton, visible]]) {
+          button.setAttribute("aria-pressed", String(active));
+          button.style.background = active ? "#2563eb" : "#fff";
+          button.style.color = active ? "#fff" : "#1f2937";
+        }
+      };
+      map.getViewport().append(basemapControl);
+      let savedSatellite = false;
+      try { savedSatellite = localStorage.getItem("belozerye-map-basemap") === "satellite"; } catch {}
+      setBasemap(savedSatellite);
+      }
+      /* DEV_IMAGERY_UI_END */
       const recolorChurchIcons = () => {
         const image = new Image();
         image.addEventListener("load", () => {
@@ -590,7 +960,7 @@
         selectedChurchesTab.setAttribute("aria-selected", String(kind === "church"));
         renderSelectedObjects(selectedVisibleObjects);
       };
-      const update = () => {
+      const update = (fitMap = true) => {
         const values = Object.fromEntries(fields.map((field) => [field, selects[field].value]));
         const hasAdministrativeFilter = administrativeUezd.value || administrativePrikaz.value || administrativeVolost.value || administrativeChild.value;
         const currentVisible = items.filter((item) => (!objectKind.value || item.kind === objectKind.value) && fields.every((field) => {
@@ -620,7 +990,7 @@
         source.addFeatures([...mapMarkers.values()].map((item) => new ol.Feature({ geometry:new ol.geom.Point(ol.proj.fromLonLat([item.longitude,item.latitude])), ...item })));
         rebuildClusters();
         clearTimeout(filterFitTimer);
-        if (visible.length) {
+        if (fitMap && visible.length) {
           filterFitTimer = setTimeout(() => {
             map.once("moveend", () => {
               rebuildClusters();
@@ -714,7 +1084,7 @@
         }
         document.querySelector("#filter-map").style.cursor = feature ? "pointer" : "";
       });
-      map.on("singleclick", (event) => { const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate); if (!feature) return; const members=feature.get("features") ?? []; if(members.length>1){const extent=ol.extent.createEmpty();members.forEach((member)=>ol.extent.extend(extent,member.getGeometry().getExtent()));map.getView().fit(extent,{padding:[55,55,55,55],maxZoom:14,duration:250});return;}const marker=members[0];if(!marker)return;location.href = `../${marker.get("kind") === "church" ? "churches" : "places"}/${encodeURIComponent(marker.get("slug"))}/`; });
+      map.on("singleclick", (event) => { if (coordinateEditMode) return; const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate); if (!feature) return; const members=feature.get("features") ?? []; if(members.length>1){const extent=ol.extent.createEmpty();members.forEach((member)=>ol.extent.extend(extent,member.getGeometry().getExtent()));map.getView().fit(extent,{padding:[55,55,55,55],maxZoom:14,duration:250});return;}const marker=members[0];if(!marker)return;location.href = `../${marker.get("kind") === "church" ? "churches" : "places"}/${encodeURIComponent(marker.get("slug"))}/`; });
       map.once("postrender", () => {
         requestAnimationFrame(() => fitToVisibleFeatures(source.getFeatures().length));
       });

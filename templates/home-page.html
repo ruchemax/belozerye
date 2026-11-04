@@ -410,7 +410,7 @@
         <div class="map-legend">
           <span><span class="legend-dot"></span>Населённые пункты</span>
           <span><img class="legend-church-icon" src="./images/icons/church-marker.png" alt="">Церкви</span>
-          <span class="map-count">На карте: {{LOCATED_COUNT}}</span>
+          <span id="map-count" class="map-count">На карте: {{LOCATED_COUNT}}</span>
         </div>
       </section>
     </section>
@@ -418,11 +418,15 @@
   </main>
 
   <script id="place-search-data" type="application/json">{{PLACE_SEARCH_DATA}}</script>
+  <script id="map-count-data" type="application/json">{{MAP_COUNT_DATA}}</script>
   <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
   <script src="./js/map-marker-settings.js"></script>
+  <script src="./js/yandex-map.js"></script>
   <script>
     (() => {
       const places = JSON.parse(document.querySelector("#place-search-data").textContent);
+      const mapCounts = JSON.parse(document.querySelector("#map-count-data").textContent);
+      const mapCount = document.querySelector("#map-count");
       const search = document.querySelector("#place-search");
       const results = document.querySelector("#search-results");
       const normalize = (value) => String(value).toLocaleLowerCase("ru-RU").replaceAll("ё", "е").trim();
@@ -523,10 +527,11 @@
       );
       const map = new ol.Map({
         target: mapElement,
-        layers: [new ol.layer.Tile({ source: new ol.source.OSM() }), placesLayer, churchesLayer, placeClusterLayer, churchClusterLayer],
+        layers: [window.BelozeryeYandexMaps.createLayer(), placesLayer, churchesLayer, placeClusterLayer, churchClusterLayer],
         view: new ol.View({ center: ol.proj.fromLonLat([38.35, 59.55]), zoom: 9 }),
-        controls: ol.control.defaults.defaults({ attribution: true, rotate: false }).extend([new ol.control.ScaleLine({ units: "metric" })])
+        controls: ol.control.defaults.defaults({ attribution: false, rotate: false }).extend([new ol.control.ScaleLine({ units: "metric" })])
       });
+      window.BelozeryeYandexMaps.addAttribution(map);
       const placeHoverLabel = document.createElement("span");
       placeHoverLabel.className = "map-hover-label";
       const churchHoverLabel = document.createElement("span");
@@ -605,6 +610,7 @@
         churchesLayer.setVisible(filter === "all" || filter === "church");
         placeClusterLayer.setVisible(filter === "all" || filter === "place");
         churchClusterLayer.setVisible(filter === "all" || filter === "church");
+        mapCount.textContent = `На карте: ${mapCounts[filter]}`;
         document.querySelectorAll("[data-map-filter]").forEach((button) => button.classList.toggle("active", button.dataset.mapFilter === filter));
       };
 

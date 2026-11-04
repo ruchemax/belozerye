@@ -136,6 +136,7 @@ export const places = db.prepare(`
 }));
 export const mentions = db.prepare("SELECT * FROM mentions ORDER BY rowid").all().map((row) => ({
   id: row.id, place_id: row.place_id, fragment_id: row.fragment_id,
+  match_reliability: row.match_reliability,
   source_name: row.source_name,
   historical_name_override: row.historical_name_override,
   source_context: {

@@ -35,7 +35,14 @@ const readBody = async (request) => {
   return JSON.parse(body || "{}");
 };
 const send = (response, status, data) => {
-  response.writeHead(status, { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" });
+  const headers = { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" };
+  if (response.req?.headers.origin === "http://127.0.0.1:4173") {
+    headers["Access-Control-Allow-Origin"] = "http://127.0.0.1:4173";
+    headers["Access-Control-Allow-Methods"] = "GET, PUT, OPTIONS";
+    headers["Access-Control-Allow-Headers"] = "Content-Type";
+    headers.Vary = "Origin";
+  }
+  response.writeHead(status, headers);
   response.end(JSON.stringify(data));
 };
 const sendPage = (response) => {
@@ -56,7 +63,7 @@ const valueForStorage = (value, type) => {
   return String(value);
 };
 const runBuild = () => new Promise((resolve) => {
-  const child = spawn("npm.cmd", ["run", "build"], {
+  const child = spawn("npm.cmd", ["run", "build:dev"], {
     cwd: root,
     windowsHide: true,
     shell: process.platform === "win32"
@@ -68,9 +75,63 @@ const runBuild = () => new Promise((resolve) => {
 });
 
 const server = createServer(async (request, response) => {
+  response.req = request;
   try {
     const url = new URL(request.url, `http://${host}:${port}`);
+    if (request.method === "OPTIONS" && url.pathname === "/api/coordinates") {
+      if (request.headers.origin !== "http://127.0.0.1:4173") return send(response, 403, { error: "Local map origin required." });
+      return send(response, 204, {});
+    }
     if (request.method === "GET" && url.pathname === "/") return sendPage(response);
+    if (request.method === "GET" && url.pathname === "/api/coordinates") {
+      if (request.headers.origin !== "http://127.0.0.1:4173") return send(response, 403, { error: "Local map origin required." });
+      const database = db();
+      const places = database.prepare(`
+        SELECT p.id, p.name, 'place' AS kind, g.longitude, g.latitude
+        FROM places AS p JOIN place_geometries AS g ON g.place_id = p.id ORDER BY p.name
+      `).all();
+      const churches = database.prepare(`
+        SELECT c.id, c.name, 'church' AS kind, g.longitude, g.latitude
+        FROM churches AS c JOIN church_geometries AS g ON g.church_id = c.id ORDER BY c.name
+      `).all();
+      database.close();
+      return send(response, 200, [...places, ...churches]);
+    }
+    if (request.method === "PUT" && url.pathname === "/api/coordinates") {
+      if (request.headers.origin !== "http://127.0.0.1:4173") return send(response, 403, { error: "Local map origin required." });
+      const { coordinates } = await readBody(request);
+      if (!Array.isArray(coordinates) || coordinates.length === 0 || coordinates.length > 1000) {
+        throw new Error("Expected between 1 and 1000 coordinate changes.");
+      }
+      const seen = new Set();
+      for (const change of coordinates) {
+        if (!((change.kind === "place" || change.kind === "church") && typeof change.id === "string" && change.id.length <= 200)) throw new Error("Invalid object.");
+        if (!(Number.isFinite(change.longitude) && change.longitude >= -180 && change.longitude <= 180 && Number.isFinite(change.latitude) && change.latitude >= -90 && change.latitude <= 90)) throw new Error("Coordinates are outside valid ranges.");
+        const key = `${change.kind}:${change.id}`;
+        if (seen.has(key)) throw new Error("Duplicate object in coordinate changes.");
+        seen.add(key);
+      }
+      const database = db();
+      const backupFile = await backup();
+      database.exec("BEGIN IMMEDIATE");
+      try {
+        for (const change of coordinates) {
+          const table = change.kind === "place" ? "place_geometries" : "church_geometries";
+          const idColumn = change.kind === "place" ? "place_id" : "church_id";
+          const result = database.prepare(`UPDATE ${table} SET longitude = ?, latitude = ? WHERE ${idColumn} = ?`)
+            .run(change.longitude, change.latitude, change.id);
+          if (result.changes !== 1) throw new Error(`Coordinates not found for ${change.kind}:${change.id}.`);
+        }
+        database.exec("COMMIT");
+      } catch (error) {
+        database.exec("ROLLBACK");
+        database.close();
+        throw error;
+      }
+      database.close();
+      const build = await runBuild();
+      return send(response, build.ok ? 200 : 500, { ok: build.ok, backupFile, buildOutput: build.output });
+    }
     if (request.method === "GET" && url.pathname === "/api/tables") {
       const database = db();
       const tables = [...tableNames(database)].sort().map((name) => ({ name, count: database.prepare(`SELECT COUNT(*) AS count FROM ${quote(name)}`).get().count }));

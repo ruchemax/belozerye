@@ -1198,10 +1198,10 @@ footer {
 
         <a
           class="location-coordinates"
-          href="https://www.openstreetmap.org/?mlat=59.276230108148&amp;mlon=38.670918536181#map=14/59.276230108148/38.670918536181"
+          href="https://yandex.ru/maps/?ll=38.67008785907357%2C59.2766333474311&amp;z=14&amp;pt=38.67008785907357%2C59.2766333474311"
           target="_blank"
           rel="noopener noreferrer">
-          59°16′34″ с. ш., 38°40′15″ в. д.
+          59°16′36″ с. ш., 38°40′12″ в. д.
         </a>
 
       </div>
@@ -1309,10 +1309,11 @@ footer {
 
 <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
 <script src="../../js/map-marker-settings.js"></script>
+<script src="../../js/yandex-map.js"></script>
 
 <script>
-  const villageLat = 59.276230108148;
-  const villageLon = 38.670918536181;
+  const villageLat = 59.2766333474311;
+  const villageLon = 38.67008785907357;
   const activePlaceId = "pleshchakovo";
   const placePagePath = "../";
   const markerContainer = document.querySelector(".map-frame");
@@ -1322,17 +1323,18 @@ footer {
 
   const map = new ol.Map({
     target: "village-map",
-    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    layers: [window.BelozeryeYandexMaps.createLayer()],
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
       zoom: 14
     }),
-    controls: ol.control.defaults.defaults({ attribution: true, zoom: true, rotate: false }).extend([
+    controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
       new ol.control.FullScreen()
     ])
   });
+  window.BelozeryeYandexMaps.addAttribution(map);
   const updateCardClusters = () => {
     cardClusterOverlays.splice(0).forEach((overlay) => map.removeOverlay(overlay));
     cardMarkerEntries.forEach((entry) => {

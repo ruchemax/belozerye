@@ -17,7 +17,8 @@
     "db:set-statuses-unknown": "node scripts/set-all-statuses-unknown.mjs",
     "db:name-model": "node scripts/create-place-name-model.mjs",
     "db:rename-place-ids": "node scripts/rename-place-ids-to-public-slugs.mjs",
-    "build": "node scripts/build-site.mjs && node scripts/audit-book-navigation.mjs",
+    "build": "node scripts/build-site.mjs --public && node scripts/audit-book-navigation.mjs",
+    "build:dev": "node scripts/build-site.mjs --dev-imagery && node scripts/audit-book-navigation.mjs",
     "audit:release": "node scripts/audit-release.mjs",
     "check": "node scripts/build-site.mjs --check && node scripts/audit-book-navigation.mjs && node scripts/audit-book-anchors.mjs && node scripts/audit-mention-anchors.mjs && node scripts/audit-place-links.mjs && node scripts/audit-place-name-model.mjs && node scripts/audit-place-card-names.mjs && node scripts/audit-release.mjs && node scripts/audit-english-comments.mjs"
   }

@@ -29,8 +29,9 @@ books → fragments → mentions ← places ← place_geometries
        administrative units / land categories / name variants
 ```
 
-One settlement can be mentioned in many fragments from different books. A row in
-`mentions` connects a settlement to a specific source and its historical spelling.
+`mentions` records each source occurrence and connects it to a settlement through
+`place_id`. One settlement can have many mentions from different books.
+`match_reliability` stores the editorial assessment of that correspondence.
 
 ## Tables
 
@@ -177,6 +178,11 @@ Mentions of a settlement in a particular source fragment.
 | `fragment_id` | `TEXT`, FK → `fragments.id` | Source fragment. |
 | `source_name` | `TEXT` | Name exactly as it appears in the source. |
 | `historical_name_override` | `TEXT`, nullable | Editorial clarification of the historical name. |
+| `match_reliability` | `TEXT` | `exact` (точное), `probable` (предположительное), or `unreviewed` (не проверено). |
+
+The reliability field is used only for editorial database work and is not shown
+on cards or maps. Existing assessments were preserved when the separate
+assignment table was removed. Older entries default to `unreviewed`.
 
 ### `place_name_states`
 
@@ -300,7 +306,7 @@ Book text exists in a single copy in `book_documents.html`. A mention is linked
 to its fragment through `mentions.fragment_id`; the same identifier is used as
 the HTML anchor in the generated book text.
 
-All 239 current mentions have anchors for their fragments. The consistency check
+All current mentions have anchors for their fragments. The consistency check
 runs as part of `npm.cmd run check`.
 
 Cards currently show both the previous quotation and an **Open fragment in

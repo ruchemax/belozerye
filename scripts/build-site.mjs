@@ -7,11 +7,16 @@ import { books, fragments, places, mentions, locations, churches, churchSources,
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const checkOnly = process.argv.includes("--check");
 const siteUrl = process.env.SITE_URL ?? "https://belozersky.uezd.workers.dev";
+const devImageryEnabled = process.argv.includes("--dev-imagery") && process.env.DEV_IMAGERY_ENABLED !== "false";
+const yandexKeyFile = await readFile(path.join(root, ".я"), "utf8");
+const yandexMapsApiKey = yandexKeyFile.trim().replace(/^(?:YANDEX_MAPS_API_KEY|apikey)\s*[:=]\s*/iu, "");
+if (!yandexMapsApiKey) throw new Error("Добавьте ключ Tiles API Яндекса в файл .я.");
 
 const template = await readFile(path.join(root, "templates/place-page.html"), "utf8");
 const homeTemplate = await readFile(path.join(root, "templates/home-page.html"), "utf8");
 const mapPageTemplate = await readFile(path.join(root, "templates/map-page.html"), "utf8");
 const mapMarkerSettings = await readFile(path.join(root, "templates/map-marker-settings.js"), "utf8");
+const yandexMapTemplate = await readFile(path.join(root, "templates/yandex-map.js"), "utf8");
 const notFoundTemplate = await readFile(path.join(root, "templates/not-found.html"), "utf8");
 const responseHeaders = await readFile(path.join(root, "templates/headers.txt"), "utf8");
 const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -622,6 +627,7 @@ for (const book of books) {
 
 for (const mention of mentions) {
   if (!placesById.has(mention.place_id)) throw new Error(`Упоминание ${mention.id} ссылается на неизвестное поселение.`);
+  if (!["exact", "probable", "unreviewed"].includes(mention.match_reliability)) throw new Error(`Упоминание ${mention.id} имеет недопустимую надёжность соответствия.`);
   if (!fragmentsById.has(mention.fragment_id)) throw new Error(`Упоминание ${mention.id} ссылается на неизвестный фрагмент.`);
   if (!mention.source_name) throw new Error(`В упоминании ${mention.id} не заполнено название из источника.`);
   for (const field of ["uezd", "volost"]) {
@@ -776,7 +782,7 @@ const renderMap = (placeLocation, fallbackLocation = null) => {
       latitude,
       zoom: 14,
       coordinatesText: `${formatCoordinate(latitude, "с. ш.", "ю. ш.")}, ${formatCoordinate(longitude, "в. д.", "з. д.")}`,
-      linkUrl: `https://www.openstreetmap.org/?mlat=${latitude}&mlon=${longitude}#map=14/${latitude}/${longitude}`,
+      linkUrl: `https://yandex.ru/maps/?ll=${longitude}%2C${latitude}&z=14&pt=${longitude}%2C${latitude}`,
       known: true
     };
   }
@@ -899,6 +905,7 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
 
 <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
 <script src="../../js/map-marker-settings.js"></script>
+<script src="../../js/yandex-map.js"></script>
 
 <script>
   const villageLat = ${map.latitude};
@@ -912,17 +919,18 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
 
   const map = new ol.Map({
     target: "village-map",
-    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    layers: [window.BelozeryeYandexMaps.createLayer()],
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
       zoom: ${map.zoom}
     }),
-    controls: ol.control.defaults.defaults({ attribution: true, zoom: true, rotate: false }).extend([
+    controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
       new ol.control.FullScreen()
     ])
   });
+  window.BelozeryeYandexMaps.addAttribution(map);
   const updateCardClusters = () => {
     cardClusterOverlays.splice(0).forEach((overlay) => map.removeOverlay(overlay));
     cardMarkerEntries.forEach((entry) => {
@@ -1455,11 +1463,24 @@ expectedFiles.set(
   path.join(root, "dist", "data", "place-markers.json"),
   `${JSON.stringify(mapMarkerData, null, 2)}\n`
 );
+const homeMapCounts = {
+  all: mapMarkerData.length,
+  place: mapMarkerData.filter((marker) => marker.kind === "place").length,
+  church: mapMarkerData.filter((marker) => marker.kind === "church").length
+};
 expectedFiles.set(path.join(root, "dist", "js", "map-marker-settings.js"), mapMarkerSettings);
-const mapPageHtml = fillTemplate(mapPageTemplate, {
+expectedFiles.set(path.join(root, "dist", "js", "yandex-map.js"), fillTemplate(yandexMapTemplate, {
+  YANDEX_MAPS_API_KEY: JSON.stringify(yandexMapsApiKey).replaceAll("<", "\\u003c")
+}));
+let mapPageHtml = fillTemplate(mapPageTemplate, {
   MAP_FILTER_DATA: JSON.stringify(mapFilterData).replaceAll("<", "\\u003c"),
-  BOOK_OPTIONS: JSON.stringify(books.map((book) => ({ value: book.id, label: book.short_title }))).replaceAll("<", "\\u003c")
+  BOOK_OPTIONS: JSON.stringify(books.map((book) => ({ value: book.id, label: book.short_title }))).replaceAll("<", "\\u003c"),
+  YANDEX_MAPS_API_KEY: JSON.stringify(yandexMapsApiKey).replaceAll("<", "\\u003c"),
+  DEV_IMAGERY_ENABLED: JSON.stringify(devImageryEnabled)
 });
+if (!devImageryEnabled) {
+  mapPageHtml = mapPageHtml.replace(/\/\* DEV_(?:IMAGERY_(?:LAYER|SPREAD|UI)|COORD_EDITOR)_START \*\/[\s\S]*?\/\* DEV_(?:IMAGERY_(?:LAYER|SPREAD|UI)|COORD_EDITOR)_END \*\//gu, "");
+}
 expectedFiles.set(path.join(root, "dist", "map", "index.html"), mapPageHtml);
 
 const churovskoyeLocation = locations.features.find(
@@ -1607,27 +1628,6 @@ ${renderOverviewItems(linkedChurches.map((church) => {
   expectedFiles.set(path.join(root, "dist", "places", place.slug, "index.html"), html);
 }
 
-const renderChurchPage = (church) => {
-  const sourceUrl = `../../books/${encodeURIComponent(church.book_slug)}/${church.source_anchor ? `#${encodeURIComponent(church.source_anchor)}` : ""}`;
-  const hasCoordinates = Number.isFinite(church.longitude) && Number.isFinite(church.latitude);
-  const coordinate = hasCoordinates ? `<a href="https://www.openstreetmap.org/?mlat=${church.latitude}&mlon=${church.longitude}#map=14/${church.latitude}/${church.longitude}" target="_blank" rel="noopener">${escapeHtml(formatCoordinate(church.latitude, "с. ш.", "ю. ш."))}, ${escapeHtml(formatCoordinate(church.longitude, "в. д.", "з. д."))}</a>` : "не установлены";
-  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Церковь ${escapeHtml(church.name)} — Белозерье</title><style>body{margin:0;color:#33281f;font:18px/1.55 Georgia,serif;background:#eee6c9 url('../../images/textures/parchment-seamless-v13.webp')}main{max-width:760px;margin:auto;padding:3rem 1.25rem}a{color:#9a3412}h1{line-height:1.15}dt{font:700 .75rem system-ui,sans-serif;text-transform:uppercase;color:#80664f;margin-top:1.4rem}dd{margin:.2rem 0}</style></head><body><main><a href="../../">Белозерье</a><h1>Церковь ${escapeHtml(church.name)}</h1><dl><dt>Координаты</dt><dd>${coordinate}</dd><dt>Источник</dt><dd><a href="${sourceUrl}">${escapeHtml(church.source_title)}</a></dd></dl></main></body></html>`;
-};
-const renderChurchCardLegacy = (church) => {
-  const anchor = church.source_anchor ? `#${encodeURIComponent(church.source_anchor)}` : "";
-  const sourceUrl = `../../books/${encodeURIComponent(church.book_slug)}/${anchor}`;
-  const hasCoordinates = Number.isFinite(church.longitude) && Number.isFinite(church.latitude);
-  const map = hasCoordinates
-    ? `<iframe class="map" title="Карта" src="https://www.openstreetmap.org/export/embed.html?marker=${church.latitude}%2C${church.longitude}&layer=mapnik"></iframe>`
-    : `<div class="map empty">Координаты не установлены</div>`;
-  const fragment = church.source_anchor
-    ? `<iframe class="fragment" title="Фрагмент источника" src="../../books/${encodeURIComponent(church.book_slug)}/?embed=1#${encodeURIComponent(church.source_anchor)}"></iframe>`
-    : "";
-  const coordinate = hasCoordinates
-    ? `<a href="https://www.openstreetmap.org/?mlat=${church.latitude}&mlon=${church.longitude}" target="_blank" rel="noopener">${escapeHtml(formatCoordinate(church.latitude, "с. ш.", "ю. ш."))}, ${escapeHtml(formatCoordinate(church.longitude, "в. д.", "з. д."))}</a>`
-    : "не установлены";
-  return `<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Церковь ${escapeHtml(church.name)} — Белозерье</title><style>body{margin:0;color:#33281f;font:18px/1.55 Georgia,serif;background:#eee6c9 url('../../images/textures/parchment-seamless-v13.webp')}main{max-width:1100px;margin:auto;padding:2rem 1.25rem}.grid{display:grid;grid-template-columns:minmax(0,40fr) minmax(0,60fr);gap:2rem}a{color:#9a3412}h1{line-height:1.15}.map{width:100%;height:300px;border:0;background:#ddd}.empty{display:grid;place-items:center;color:#80664f}.fragment{width:100%;height:300px;border:1px solid #c9b890;background:#fffdf4}@media(max-width:700px){.grid{grid-template-columns:1fr}}</style></head><body><main><a href="../../">Белозерье</a><div class="grid"><section><h1>Церковь ${escapeHtml(church.name)}</h1><p><strong>Координаты:</strong> ${coordinate}</p><h2>Источник</h2><p><a href="${sourceUrl}">${escapeHtml(church.source_title)}</a></p>${fragment}</section><section>${map}</section></div></main></body></html>`;
-};
 const renderChurchCard = (church) => {
   const churchEntity = {
     id: church.id,
@@ -1805,7 +1805,8 @@ const homeHtml = fillTemplate(homeTemplate, {
   CHURCH_COUNT: String(churches.length),
   LOCATED_COUNT: String(mapMarkerData.length),
   BOOK_ITEMS: homeBookItems,
-  PLACE_SEARCH_DATA: JSON.stringify(homePlaceSearch).replaceAll("<", "\\u003c")
+  PLACE_SEARCH_DATA: JSON.stringify(homePlaceSearch).replaceAll("<", "\\u003c"),
+  MAP_COUNT_DATA: JSON.stringify(homeMapCounts)
 });
 expectedFiles.set(homePath, homeHtml);
 
@@ -1834,6 +1835,10 @@ for (const [filePath, sourceHtml] of expectedFiles) {
   expectedFiles.set(filePath, htmlWithoutDescriptions.replace(/<\/head>/iu, `  ${socialMeta}\n</head>`));
   publicPageUrls.push(canonicalUrl);
 }
+
+// Preserve the URL of the settlement card merged into Dor.
+expectedFiles.set(path.join(root, "dist", "places", "dor-levashev", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Дор</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/dor/"><meta http-equiv="refresh" content="0;url=../dor/"></head><body><a href="../dor/">Дор — объединённая карточка</a></body></html>\n`);
 
 publicPageUrls.sort((left, right) => left.localeCompare(right, "ru-RU"));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

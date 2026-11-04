@@ -1219,10 +1219,10 @@ footer {
 
         <a
           class="location-coordinates"
-          href="https://www.openstreetmap.org/?mlat=59.258938989811&amp;mlon=38.597633427041#map=14/59.258938989811/38.597633427041"
+          href="https://yandex.ru/maps/?ll=38.59650686639084%2C59.25715718691333&amp;z=14&amp;pt=38.59650686639084%2C59.25715718691333"
           target="_blank"
           rel="noopener noreferrer">
-          59°15′32″ с. ш., 38°35′51″ в. д.
+          59°15′26″ с. ш., 38°35′47″ в. д.
         </a>
 
       </div>
@@ -1279,10 +1279,11 @@ footer {
 
 <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
 <script src="../../js/map-marker-settings.js"></script>
+<script src="../../js/yandex-map.js"></script>
 
 <script>
-  const villageLat = 59.258938989811;
-  const villageLon = 38.597633427041;
+  const villageLat = 59.25715718691333;
+  const villageLon = 38.59650686639084;
   const activePlaceId = "rozhdestva-bogoroditsy-churovskaya";
   const placePagePath = "../../places/";
   const markerContainer = document.querySelector(".map-frame");
@@ -1292,17 +1293,18 @@ footer {
 
   const map = new ol.Map({
     target: "village-map",
-    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    layers: [window.BelozeryeYandexMaps.createLayer()],
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
       zoom: 14
     }),
-    controls: ol.control.defaults.defaults({ attribution: true, zoom: true, rotate: false }).extend([
+    controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
       new ol.control.FullScreen()
     ])
   });
+  window.BelozeryeYandexMaps.addAttribution(map);
   const updateCardClusters = () => {
     cardClusterOverlays.splice(0).forEach((overlay) => map.removeOverlay(overlay));
     cardMarkerEntries.forEach((entry) => {

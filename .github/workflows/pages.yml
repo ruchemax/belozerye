@@ -23,6 +23,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     env:
       SITE_URL: https://ruchemax.github.io/belozerye
+      DEV_IMAGERY_ENABLED: "false"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

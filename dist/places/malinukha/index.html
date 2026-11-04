@@ -1198,10 +1198,10 @@ footer {
 
         <a
           class="location-coordinates"
-          href="https://www.openstreetmap.org/?mlat=59.275299849343&amp;mlon=38.525951149928#map=14/59.275299849343/38.525951149928"
+          href="https://yandex.ru/maps/?ll=38.5251353058004%2C59.27553439443693&amp;z=14&amp;pt=38.5251353058004%2C59.27553439443693"
           target="_blank"
           rel="noopener noreferrer">
-          59°16′31″ с. ш., 38°31′33″ в. д.
+          59°16′32″ с. ш., 38°31′30″ в. д.
         </a>
 
       </div>
@@ -1309,10 +1309,11 @@ footer {
 
 <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
 <script src="../../js/map-marker-settings.js"></script>
+<script src="../../js/yandex-map.js"></script>
 
 <script>
-  const villageLat = 59.275299849343;
-  const villageLon = 38.525951149928;
+  const villageLat = 59.27553439443693;
+  const villageLon = 38.5251353058004;
   const activePlaceId = "malinukha";
   const placePagePath = "../";
   const markerContainer = document.querySelector(".map-frame");
@@ -1322,17 +1323,18 @@ footer {
 
   const map = new ol.Map({
     target: "village-map",
-    layers: [new ol.layer.Tile({ source: new ol.source.OSM() })],
+    layers: [window.BelozeryeYandexMaps.createLayer()],
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
       zoom: 14
     }),
-    controls: ol.control.defaults.defaults({ attribution: true, zoom: true, rotate: false }).extend([
+    controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
       new ol.control.FullScreen()
     ])
   });
+  window.BelozeryeYandexMaps.addAttribution(map);
   const updateCardClusters = () => {
     cardClusterOverlays.splice(0).forEach((overlay) => map.removeOverlay(overlay));
     cardMarkerEntries.forEach((entry) => {

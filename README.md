@@ -29,7 +29,7 @@ the complete static website.
 | Area | Technology |
 | --- | --- |
 | Front end | Semantic HTML, modern CSS, vanilla JavaScript |
-| Maps | [OpenLayers 10](https://openlayers.org/) with OpenStreetMap tiles |
+| Maps | [OpenLayers 10](https://openlayers.org/) with Yandex Tiles API |
 | Data | SQLite, accessed through Node.js `node:sqlite` |
 | Static-site generation | Custom Node.js ES module scripts |
 | Local editorial tools | Node.js HTTP server and database administration UI |
@@ -75,9 +75,10 @@ books → fragments → mentions ↔ places ↔ place_geometries
 Additional tables describe churches, church coordinates, and their links to
 source fragments. Reference tables define settlement types and statuses.
 
-This normalization makes it possible for one settlement to have multiple source
-mentions, historical spellings, locations, and administrative contexts without
-duplicating the underlying record. The full schema, field descriptions, foreign
+`mentions.place_id` assigns each mention to its settlement card.
+`mentions.match_reliability` records whether the correspondence is exact,
+probable, or still unreviewed. This editorial field is not displayed on the site.
+The full schema, field descriptions, foreign
 keys, editing guidance, and migration notes are in [DATABASE.md](DATABASE.md).
 
 ## Repository layout
@@ -112,6 +113,15 @@ npm run build
 
 The generated website is written to `dist/`. Serve that directory with any
 static HTTP server for local preview.
+
+The public build omits the development-only satellite layer. To preview the
+satellite layer locally, use `npm run build:dev` instead.
+
+The local map build also includes a coordinate editor. Start the database
+admin server with `npm run db:admin`, then open the map on port 4173, expand
+“Коррекция координат · разработчик”, choose an object, enter coordinates or
+drag its orange point, and save. Saving backs up the database and rebuilds the
+local development site. The editor is stripped from public builds.
 
 Run the full project verification suite:
 
