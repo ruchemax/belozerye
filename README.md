@@ -57,8 +57,10 @@ SQLite database + HTML templates
 
 `data/belozerye.sqlite` is the only active editorial data source. The builder
 reads it together with files in `templates/` and writes the deployable site to
-`dist/`. Files in `content/books/` are retained as archival source material and
-are not used by the build.
+`dist/`. HTML files in `content/books/` are retained as archival source material.
+Each book also has a manually maintained `CHANGELOG.md` recording publication
+and subsequent text additions. The builder reads these journals for the home
+page's Updates section; archival HTML is not used by the build.
 
 ## Database model
 
@@ -88,7 +90,7 @@ data/          SQLite database and local backups
 templates/     Source templates and shared map-marker configuration
 scripts/       Builder, local database editor, migrations, and quality checks
 migrations/    Versioned SQL database migrations
-content/books/ Archived source-book HTML (not read by the builder)
+content/books/ Archived source-book HTML and per-book text addition logs
 dist/          Generated site ready for deployment
 ```
 
@@ -144,6 +146,11 @@ npm run db:admin
 Open [http://127.0.0.1:4174](http://127.0.0.1:4174), make editorial changes,
 then rebuild the site. Create a copy of `data/belozerye.sqlite` before major
 edits. See [DATABASE.md](DATABASE.md) for the schema and editing workflow.
+
+When committing or pushing newly added book text, update that book's
+`content/books/<slug>/CHANGELOG.md` with the date and what was added. The first
+entry is the publication date. Log only text additions, not formatting changes
+or other editorial corrections; see [AGENTS.md](AGENTS.md).
 
 ## Deployment
 

@@ -1265,7 +1265,7 @@ footer {
 <div class="source-content-card">
             <div class="source-fragment">
               <section class="source-document-window" aria-label="Деревня Высокое" style="height:230px">
-                <iframe src="../../books/belozersky_uezd-1544/?embed=1&view=fragment-layout-8&revision=15&end=belozersky-1544-place-1-16#belozersky-1544-place-1-16" title="Деревня Высокое" loading="lazy" data-fragment-anchor="belozersky-1544-place-1-16" data-fragment-end-anchor="belozersky-1544-place-1-16"></iframe>
+                <iframe src="../../books/belozersky_uezd-1544/?embed=1&view=fragment-layout-8&revision=cd8cecfba501&end=belozersky-1544-place-1-16#belozersky-1544-place-1-16" title="Деревня Высокое" loading="lazy" data-fragment-anchor="belozersky-1544-place-1-16" data-fragment-end-anchor="belozersky-1544-place-1-16"></iframe>
               </section>
               <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
               <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
@@ -1476,8 +1476,10 @@ footer {
   loadMapMarkers();
 </script><script>
   (() => {
+    const frameIsVisible = (frame) => frame.getBoundingClientRect().width > 0
+      && frame.getBoundingClientRect().height > 0;
     const setFrameHeight = (frame, height) => {
-      if (!Number.isFinite(height) || height <= 0) return;
+      if (!frameIsVisible(frame) || !Number.isFinite(height) || height <= 2) return;
       const window = frame.closest(".source-document-window");
       if (window) {
         const fragmentHeight = Math.ceil(height);
@@ -1486,6 +1488,7 @@ footer {
       }
     };
     const resizeToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return;
       try {
         const document = frame.contentDocument;
         const target = document?.getElementById(frame.dataset.fragmentAnchor);
@@ -1519,6 +1522,7 @@ footer {
       }
     };
     const scrollToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return false;
       try {
         const target = frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor);
         if (!target || !frame.contentWindow) return false;
@@ -1542,18 +1546,22 @@ footer {
       }
     });
     for (const frame of document.querySelectorAll(".source-document-window iframe")) {
+      let preparationTimers = [];
       const prepareFrame = () => {
-        if (frame.dataset.fragmentPrepareScheduled) return;
-        frame.dataset.fragmentPrepareScheduled = "true";
-        setTimeout(() => {
+        preparationTimers.forEach(clearTimeout);
+        const prepare = () => {
+          if (!frameIsVisible(frame)) return;
           resizeToFragment(frame);
           requestAnimationFrame(() => revealFrameAtFragment(frame));
-        }, 520);
+        };
+        requestAnimationFrame(() => requestAnimationFrame(prepare));
+        preparationTimers = [150, 550, 1500].map(delay => setTimeout(prepare, delay));
       };
       frame.addEventListener("load", prepareFrame);
+      frame.closest(".source-details")?.addEventListener("toggle", (event) => {
+        if (event.currentTarget.open) prepareFrame();
+      });
       if (frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor)) prepareFrame();
-      setTimeout(() => resizeToFragment(frame), 700);
-      setTimeout(() => resizeToFragment(frame), 2000);
     }
     document.addEventListener("click", (event) => {
       const button = event.target.closest("[data-return-to-fragment]");

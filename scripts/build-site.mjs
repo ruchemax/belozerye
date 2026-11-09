@@ -1,8 +1,10 @@
 import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { books, fragments, places, mentions, locations, churches, churchSources, bookDocuments } from "./load-database.mjs";
+import { loadBookUpdates } from "./book-updates.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const checkOnly = process.argv.includes("--check");
@@ -18,6 +20,11 @@ const mapPageTemplate = await readFile(path.join(root, "templates/map-page.html"
 const mapMarkerSettings = await readFile(path.join(root, "templates/map-marker-settings.js"), "utf8");
 const yandexMapTemplate = await readFile(path.join(root, "templates/yandex-map.js"), "utf8");
 const notFoundTemplate = await readFile(path.join(root, "templates/not-found.html"), "utf8");
+const bookReadingPositionScript = await readFile(path.join(root, "templates/book-reading-position.js"), "utf8");
+const bookRefreshScript = await readFile(path.join(root, "templates/book-refresh.js"), "utf8");
+const bookRendererRevision = createHash("sha256")
+  .update(await readFile(fileURLToPath(import.meta.url)))
+  .update(bookReadingPositionScript).update(bookRefreshScript).digest("hex");
 const responseHeaders = await readFile(path.join(root, "templates/headers.txt"), "utf8");
 const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const decodeHtml = (value) => String(value)
@@ -48,7 +55,22 @@ const byId = (items, label) => {
 };
 
 const booksById = byId(books, "books.json");
+const bookUpdateEntries = await loadBookUpdates(root, books);
+const latestBookUpdates = new Map();
+for (const entry of bookUpdateEntries) {
+  if (!latestBookUpdates.has(entry.book.id)) latestBookUpdates.set(entry.book.id, entry.date);
+}
 const fragmentsById = byId(fragments, "fragments.json");
+const bookRevisions = new Map(books.map((book) => [book.id, createHash("sha256").update(JSON.stringify({
+  renderer: bookRendererRevision,
+  book,
+  updated: latestBookUpdates.get(book.id),
+  document: bookDocuments.get(book.id),
+  fragments: fragments.filter((fragment) => fragment.book_id === book.id),
+  mentions: mentions.filter((mention) => fragmentsById.get(mention.fragment_id)?.book_id === book.id),
+  churchSources: churchSources.filter((source) => source.book_slug === book.slug),
+  churches: churches.map(({ id, slug }) => ({ id, slug }))
+})).digest("hex").slice(0, 12)]));
 const placesById = byId(places, "places.json");
 const churchSourcesByChurchId = new Map();
 for (const source of churchSources) {
@@ -64,26 +86,14 @@ for (const church of churches) {
   linkedChurches.push(church);
   churchesByLocationPlaceId.set(church.location_place_id, linkedChurches);
 }
-const updateChurchSourceLinks = (html, book) => {
-  let updated = html;
-  for (const source of churchSources) {
-    if (source.book_slug !== book.slug || !source.source_anchor) continue;
-    const church = churchesById.get(source.church_id);
-    if (!church) throw new Error(`Источник церкви ссылается на неизвестную церковь ${source.church_id}.`);
-    const heading = new RegExp(
-      `(<([a-z][a-z0-9]*)\\b[^>]*\\bid="${escapeRegex(source.source_anchor)}"[^>]*>)([\\s\\S]*?)(<\\/\\2>)`,
-      "iu"
-    );
-    updated = updated.replace(heading, (_match, opening, _tag, body, closing) => {
-      const linkedBody = body.replace(
-        /(<a\b[^>]*\bhref=")[^"]*\/churches\/([^"]*)(")/iu,
-        `$1../../churches/${encodeURIComponent(church.slug)}/$3`
-      );
-      return `${opening}${linkedBody}${closing}`;
-    });
+const updateChurchSourceLinks = (html) => html.replace(
+  /(<a\b[^>]*\bhref=")[^"]*\/churches\/([^/"?#]+)\/("[^>]*>)/giu,
+  (link, opening, reference, closing) => {
+    const church = churchesById.get(decodeURIComponent(reference))
+      ?? churches.find((item) => item.slug === decodeURIComponent(reference));
+    return church ? `${opening}../../churches/${encodeURIComponent(church.slug)}/${closing}` : link;
   }
-  return updated;
-};
+);
 byId(mentions, "mentions.json");
 
 for (const book of books) {
@@ -122,6 +132,59 @@ const bookLayoutStyle = `<style id="book-layout-style">
   --book-prose-margin-after: 0rem;
   --book-prose-indent: 2rem;
 }
+.document-body :is(a.place-title-link, a.place-name, a.church-fragment-link, a[href*="/churches/"]) {
+  color: #9a3412 !important;
+  text-decoration-line: underline !important;
+  text-decoration-color: rgba(154, 52, 18, .55) !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: .14em !important;
+}
+.document-body :is(a.place-title-link, a.place-name, a.church-fragment-link, a[href*="/churches/"]):hover,
+.document-body :is(a.place-title-link, a.place-name, a.church-fragment-link, a[href*="/churches/"]):focus-visible {
+  color: #7c2d12 !important;
+  text-decoration-color: currentColor !important;
+  text-decoration-thickness: 2px !important;
+}
+.document-body .page-mark {
+  color: #2563eb !important;
+  font-size: .9375rem !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  white-space: nowrap !important;
+}
+.document-body .book-place-location {
+  display: inline-block;
+  width: .9em;
+  height: 1em;
+  margin-inline-start: .2em;
+  vertical-align: -.15em;
+  color: #9a3412;
+  line-height: 1;
+  text-indent: 0;
+}
+.document-body .book-place-location svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.document-body .heading-with-prose { display: inline !important; }
+.document-body .heading-with-prose::after { content: " " !important; }
+.document-body .heading-with-prose + .heading-continuation { display: inline !important; }
+.document-body .primary-heading-prose-flow {
+  margin-block: var(--book-h1-margin-before) var(--book-h1-margin-after);
+  padding-inline-start: var(--book-prose-indent);
+  text-indent: calc(-1 * var(--book-prose-indent));
+}
+.document-body .primary-heading-prose-flow > h1 {
+  display: inline !important;
+  margin: 0 !important;
+}
+.document-body .primary-heading-prose-flow > h1::after { content: " " !important; }
+.document-body .primary-heading-prose-flow > .heading-continuation {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
 .document-body h1:not(.place-heading) {
   margin-block: var(--book-h1-margin-before) var(--book-h1-margin-after) !important;
   margin-inline: var(--book-h1-indent) 0 !important;
@@ -133,6 +196,19 @@ const bookLayoutStyle = `<style id="book-layout-style">
 .document-body h3:not(.place-heading) {
   margin-block: var(--book-h3-margin-before) var(--book-h3-margin-after) !important;
   margin-inline: var(--book-h3-indent) 0 !important;
+}
+.document-body .place-record > h4 {
+  margin-block: var(--book-prose-margin-before) var(--book-prose-margin-after) !important;
+  margin-inline: 0 !important;
+  padding: 0 !important;
+  color: #9a3412 !important;
+  font-weight: 600 !important;
+  line-height: 1.65 !important;
+  text-align: justify !important;
+  text-indent: 0 !important;
+}
+.document-body .place-record > h4.place-heading {
+  font-size: 1.0625rem !important;
 }
 .document-body :is(h1, h2, h3):not(.place-heading) > .heading-toggle {
   position: static;
@@ -222,15 +298,31 @@ const bookLayoutStyle = `<style id="book-layout-style">
   padding-block: 0 !important;
 }
 #document-contents .contents-entry {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: 1.1em minmax(0, 1fr) !important;
+  column-gap: .3rem !important;
+  align-items: start !important;
   min-height: 0 !important;
   margin: 0 0 .35rem !important;
   padding-block: 0 !important;
   line-height: 1.5 !important;
 }
+#document-contents .contents-entry[hidden] { display: none !important; }
 #document-contents .contents-entry > * { margin-block: 0 !important; }
+#document-contents .contents-entry::before { content: none !important; }
+#document-contents .contents-link {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+}
+#document-contents .contents-level-toggle {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  margin: 0 !important;
+  width: 1.1em !important;
+}
 #document-contents .contents-level-2 { padding-left: 1rem !important; }
 #document-contents .contents-level-3 { padding-left: 2rem !important; }
+#document-contents .contents-level-4 { padding-left: 3rem !important; }
 #document-contents .contents-entry.contents-level-1 {
   margin-top: 0 !important;
 }
@@ -240,6 +332,9 @@ const churchHighlightStyle = `<style id="church-name-highlight-style">
   color: #9a3412;
   font-weight: 600;
   font-style: italic;
+  text-decoration-line: underline;
+  text-decoration-color: rgba(154, 52, 18, .55);
+  text-decoration-thickness: 1px;
   text-underline-offset: .12em;
 }
 .document-body #church-and-estates {
@@ -260,6 +355,17 @@ const churchHighlightStyle = `<style id="church-name-highlight-style">
 .document-body > h1.primary-section-heading {
   margin-inline-start: var(--book-prose-indent) !important;
 }
+.document-body #folios-547-561 {
+  display: inline !important;
+  margin-block: 0 !important;
+}
+.document-body #folios-547-561 + .record-prose {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}
+.document-body #folios-547-561 + .record-prose::before { content: " "; }
 .document-body #krushkova-record {
   display: inline;
   margin: 0;
@@ -290,6 +396,51 @@ const churchHighlightStyle = `<style id="church-name-highlight-style">
   font-size: 1rem;
   font-weight: 400;
 }
+.document-body .no-indent { text-indent: 0 !important; }
+.document-body .first-line-indent { text-indent: var(--book-prose-indent) !important; }
+.document-body .summary-hanging-flow {
+  display: block !important;
+  margin: 0 !important;
+  padding-inline-start: var(--book-prose-indent) !important;
+  text-indent: calc(-1 * var(--book-prose-indent)) !important;
+}
+.document-body #folios-547-561-summary-old-empty-villages {
+  display: inline !important;
+  margin: 0 !important;
+  margin-inline-start: var(--book-h2-indent) !important;
+  padding: 0 !important;
+}
+.document-body #folios-547-561-summary-old-empty-villages::after { content: none; }
+.document-body #folios-547-561-summary-old-empty-villages + .summary-paragraph {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}
+.document-body #folios-547-561-place-48 > .group-heading {
+  margin-block: var(--book-prose-margin-before) var(--book-prose-margin-after) !important;
+  margin-inline-start: var(--book-h2-indent) !important;
+  margin-inline-end: 0 !important;
+  padding: 0 !important;
+  color: #9a3412 !important;
+  font-weight: 600 !important;
+  line-height: 1.65 !important;
+}
+.document-body .place-record.no-newline-first > .village-lines { display: contents !important; }
+.document-body .place-record.no-newline-first > :is(.place-heading, .record-owner-heading) { display: inline !important; margin: 0 !important; padding: 0 !important; }
+.document-body h2#folios-547-561-place-1-heading,
+.document-body h2#folios-547-561-place-18-heading {
+  position: relative !important;
+  inset-inline-start: calc(var(--book-h2-indent) - var(--book-prose-indent)) !important;
+  margin-inline-end: calc(var(--book-h2-indent) - var(--book-prose-indent)) !important;
+}
+.document-body .place-record.no-newline-first > .place-heading::after,
+.document-body .place-record.no-newline-first > .record-owner-heading::after { content: " "; }
+.document-body .place-record.no-newline-first > .village-lines > p.inline-continuation {
+  display: inline !important;
+  margin: 0 !important;
+  text-indent: 0 !important;
+}
 .document-body #church-lands-luzhkovo .place-title-link { color: #9a3412 !important; }
 .document-body #belozersky-1626-fragment-church-lands-luzhkovo {
   margin-left: 0 !important;
@@ -311,6 +462,29 @@ const churchHighlightScript = `<script id="church-name-highlight-script">
 (() => {
   const root = document.querySelector(".document-body");
   if (!root) return;
+  const villageGroupId = "body-folios-547-561-place-48";
+  const villageGroup = document.getElementById(villageGroupId);
+  const villageGroupButton = [...document.querySelectorAll("[aria-controls]")].find((button) => button.getAttribute("aria-controls") === villageGroupId);
+  if (villageGroup && villageGroupButton) {
+    villageGroupButton.addEventListener("click", () => {
+      const expanded = villageGroupButton.getAttribute("aria-expanded") === "true";
+      villageGroupButton.setAttribute("aria-expanded", String(!expanded));
+      villageGroupButton.setAttribute("aria-label", expanded ? "\u0420\u0430\u0437\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043f\u043e\u0434\u0440\u0430\u0437\u0434\u0435\u043b" : "\u0421\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043f\u043e\u0434\u0440\u0430\u0437\u0434\u0435\u043b");
+      villageGroup.hidden = expanded;
+    });
+    const revealVillageGroup = () => {
+      let targetId = location.hash.slice(1);
+      try { targetId = decodeURIComponent(targetId); } catch {}
+      const target = document.getElementById(targetId);
+      if (target && villageGroup.contains(target) && villageGroup.hidden) {
+        villageGroup.hidden = false;
+        villageGroupButton.setAttribute("aria-expanded", "true");
+        villageGroupButton.setAttribute("aria-label", "\u0421\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043f\u043e\u0434\u0440\u0430\u0437\u0434\u0435\u043b");
+      }
+    };
+    window.addEventListener("hashchange", revealVillageGroup);
+    revealVillageGroup();
+  }
   const starayaSection = document.getElementById("belozersky-1626-fragment-staraya");
   const starayaHeadingRow = starayaSection?.previousElementSibling;
   if (starayaHeadingRow?.classList.contains("heading-row")) {
@@ -350,6 +524,46 @@ const churchHighlightScript = `<script id="church-name-highlight-script">
   }
 })();
 </script>`;
+const addContentsLevelToggles = (html) => {
+  const entryPattern = /<div\b(?=[^>]*\bdata-contents-entry\b)(?=[^>]*\bdata-contents-level="(\d+)")[^>]*>[\s\S]*?<\/div>/gu;
+  const entries = [...html.matchAll(entryPattern)].map((match) => ({
+    start: match.index,
+    end: match.index + match[0].length,
+    level: Number(match[1]),
+    html: match[0],
+  }));
+  let result = html;
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    if (entry.html.includes("data-contents-level-toggle")) continue;
+    const hasChildren = entries.slice(index + 1).some((candidate, offset, following) => {
+      const boundary = following.findIndex((next) => next.level <= entry.level);
+      const end = boundary === -1 ? following.length : boundary;
+      return offset < end && candidate.level > entry.level;
+    });
+    if (!hasChildren) continue;
+    const scope = entry.html.match(/data-astro-cid-[\w-]+/u)?.[0] ?? "";
+    const toggle = `<button type="button" class="heading-toggle contents-level-toggle" aria-expanded="true" aria-label="\u0421\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043f\u043e\u0434\u0440\u0430\u0437\u0434\u0435\u043b\u044b" data-contents-level-toggle ${scope}><span class="heading-toggle-icon" aria-hidden="true" ${scope}>\u25BE</span></button>`;
+    const next = entry.html.replace(/(<div\b[^>]*>)/u, `$1${toggle}`);
+    result = result.slice(0, entry.start) + next + result.slice(entry.end);
+    const delta = next.length - entry.html.length;
+    for (let later = index + 1; later < entries.length; later += 1) {
+      entries[later].start += delta;
+      entries[later].end += delta;
+    }
+  }
+  return result;
+};
+const stripContentsTerminalPeriods = (html) => html.replace(
+  /<div\b(?=[^>]*\bdata-contents-entry\b)[^>]*>[\s\S]*?<\/div>/gu,
+  (contentsEntry) => contentsEntry
+    .replace(/<span\b(?=[^>]*\bclass="[^"]*\b(?:page-mark|heading-comma)\b)[^>]*>[\s\S]*?<\/span>/giu, "")
+    .replace(/,+(\s*<\/div>)$/iu, "$1")
+    .replace(
+      /<a\b(?=[^>]*\bclass="[^"]*\bcontents-link\b)[^>]*>([\s\S]*?)<\/a>/gu,
+      (entry, label) => `<a${entry.slice(2, entry.indexOf(">"))}>${label.replace(/[,.]+(?=(?:\s*<\/[a-z][^>]*>)*\s*$)/iu, "")}</a>`
+    )
+);
 const addBookLayout = (html) => html.includes('id="book-layout-style"')
   ? html.replace(/<style id="book-layout-style">[\s\S]*?<\/style>/u, bookLayoutStyle)
   : html.replace("</head>", `${bookLayoutStyle}</head>`);
@@ -380,7 +594,15 @@ const applyBookTitles = (html, book) => {
   if (!headingMatch) throw new Error(`Main heading for book ${book.id} was not found.`);
 
   const publicationDatePattern = /<p\b[^>]*>\s*Опубликовано:[\s\S]*?<\/p>/iu;
-  const publicationDate = publicationDatePattern.exec(html)?.[0] ?? "";
+  let publicationDate = publicationDatePattern.exec(html)?.[0] ?? "";
+  const updated = latestBookUpdates.get(book.id);
+  if (updated && publicationDate) {
+    const updatedText = new Intl.DateTimeFormat("ru-RU", {
+      day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Berlin"
+    }).format(new Date(`${updated}T12:00:00Z`));
+    publicationDate = publicationDate.replace(/<\/p>$/u,
+      `<br>Обновлено: <time class="book-updated-date" datetime="${updated}">${escapeHtml(updatedText)}</time></p>`);
+  }
   const publicationUrl = /<p\b[^>]*>\s*Публикация:\s*<a\b[^>]*href="([^"]+)"/iu.exec(html)?.[1];
   let beforeHeading = html.slice(0, headingMatch.index).replace(publicationDatePattern, "");
   let afterHeading = html.slice(headingMatch.index + headingMatch[0].length);
@@ -429,9 +651,11 @@ const addEmbeddedBookMode = (html) => {
   let result = html.includes('id="embedded-book-style"')
     ? html.replace(/<style id="embedded-book-style">[\s\S]*?<\/style>/u, embeddedBookStyle)
     : html.replace("</head>", `${embeddedBookStyle}</head>`);
-const script = `<script id="embedded-book-script">if (new URLSearchParams(location.search).get("embed") === "1") { document.body.classList.add("embedded-book"); const parameters = new URLSearchParams(location.search); const targetId = decodeURIComponent(location.hash.slice(1)); const endId = parameters.get("end") || targetId; const target = () => document.getElementById(targetId); const fragment = () => target()?.closest("section.place-record, section.record"); const ownHeading = (element) => element?.matches("h1,h2,h3,h4,h5,h6") ? element : element?.querySelector(":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6") ?? element; const fragmentHeight = () => { const targetElement = target(); const endElement = document.getElementById(endId); const anchor = ownHeading(targetElement); const endAnchor = ownHeading(endElement); const record = endElement?.closest("section.place-record, section.record"); if (!targetElement || !anchor || !endAnchor || !record) return 0; const headings = [...record.querySelectorAll("h1,h2,h3,h4,h5,h6")]; const nextHeading = headings.slice(headings.indexOf(endAnchor) + 1).find((heading) => heading.classList.contains("place-heading")); const boundary = nextHeading?.getBoundingClientRect().top; let bottom = anchor.getBoundingClientRect().bottom; for (const element of record.querySelectorAll("*")) { const rect = element.getBoundingClientRect(); if (boundary !== undefined && rect.top >= boundary) continue; bottom = Math.max(bottom, rect.bottom); } return bottom - targetElement.getBoundingClientRect().top + 2; }; const scrollToAnchor = () => { const element = target(); if (element) scrollTo(0, scrollY + element.getBoundingClientRect().top); }; const replaceFragmentLinks = () => document.querySelectorAll(".place-title-link, a[href*='/churches/']").forEach((link) => { const churchLink = link.matches("a[href*='/churches/']"); const record = link.closest("section.place-record, section.record"); if (!record?.id) return; if (churchLink) link.classList.add("church-fragment-link"); link.href = location.pathname + "#" + encodeURIComponent(record.id); link.target = "_top"; }); const reportFragmentHeight = () => { const height = fragmentHeight(); if (height > 0) parent.postMessage({ type: "belozerye-source-fragment", anchor: targetId, endAnchor: endId, height: Math.ceil(height) }, location.origin); }; addEventListener("load", () => { replaceFragmentLinks(); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 150); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 500); }); }</script>`;
+const script = `<script id="embedded-book-script">if (new URLSearchParams(location.search).get("embed") === "1") { document.body.classList.add("embedded-book"); const parameters = new URLSearchParams(location.search); const targetId = decodeURIComponent(location.hash.slice(1)); const endId = parameters.get("end") || targetId; const target = () => document.getElementById(targetId); const fragment = () => target()?.closest("section.place-record, section.record"); const ownHeading = (element) => element?.matches("h1,h2,h3,h4,h5,h6") ? element : element?.querySelector(":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6") ?? element; const fragmentHeight = () => { const targetElement = target(); const endElement = document.getElementById(endId); const anchor = ownHeading(targetElement); const endAnchor = ownHeading(endElement); const record = endElement?.closest("section.place-record, section.record"); if (!targetElement || !anchor || !endAnchor || !record || anchor.getBoundingClientRect().height <= 0) return 0; const headings = [...record.querySelectorAll("h1,h2,h3,h4,h5,h6")]; const nextHeading = headings.slice(headings.indexOf(endAnchor) + 1).find((heading) => heading.classList.contains("place-heading")); const boundary = nextHeading?.getBoundingClientRect().top; let bottom = anchor.getBoundingClientRect().bottom; for (const element of record.querySelectorAll("*")) { const rect = element.getBoundingClientRect(); if (boundary !== undefined && rect.top >= boundary) continue; bottom = Math.max(bottom, rect.bottom); } return bottom - targetElement.getBoundingClientRect().top + 2; }; const scrollToAnchor = () => { const element = target(); if (element) scrollTo(0, scrollY + element.getBoundingClientRect().top); }; const replaceFragmentLinks = () => document.querySelectorAll(".place-title-link, a[href*='/churches/']").forEach((link) => { const churchLink = link.matches("a[href*='/churches/']"); const record = link.closest("section.place-record, section.record"); if (!record?.id) return; if (churchLink) link.classList.add("church-fragment-link"); link.href = location.pathname + "#" + encodeURIComponent(record.id); link.target = "_top"; }); const reportFragmentHeight = () => { const height = fragmentHeight(); if (height > 0) parent.postMessage({ type: "belozerye-source-fragment", anchor: targetId, endAnchor: endId, height: Math.ceil(height) }, location.origin); }; addEventListener("load", () => { replaceFragmentLinks(); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 150); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 500); }); }</script>`;
   if (!result.includes('id="embedded-book-script"')) {
     result = result.replace(/<body\b[^>]*>/iu, (opening) => `${opening}${script}`);
+  } else {
+    result = result.replace(/<script id="embedded-book-script">[\s\S]*?<\/script>/u, script);
   }
   return result;
 };
@@ -443,7 +667,7 @@ for (const mention of mentions) {
 
 const extractFragmentFromBook = (html, fragment, book) => {
   const sectionIdMatch = new RegExp(`\\bid="(?:${escapeRegex(fragment.id)}|${escapeRegex(fragment.source_heading_id)})"`, "iu").exec(html);
-  const headingPattern = new RegExp(`<h([123])\\b[^>]*\\bid="${escapeRegex(fragment.source_heading_id)}"[^>]*>[\\s\\S]*?<\\/h\\1>`, "iu");
+  const headingPattern = new RegExp(`<h([1-6])\\b[^>]*\\bid="${escapeRegex(fragment.source_heading_id)}"[^>]*>[\\s\\S]*?<\\/h\\1>`, "iu");
   const initialHeadingMatch = headingPattern.exec(html);
   const markerIndex = sectionIdMatch?.index ?? initialHeadingMatch?.index ?? -1;
   const sectionStart = markerIndex === -1 ? -1 : html.lastIndexOf("<section", markerIndex);
@@ -460,7 +684,7 @@ const extractFragmentFromBook = (html, fragment, book) => {
 
   const sectionBody = html.slice(sectionOpenEnd + 1, sectionCloseStart);
   const headingMatch = headingPattern.exec(sectionBody)
-    ?? /<h([123])\b[^>]*class="[^"]*\b(?:place-heading|record-title)\b[^"]*"[^>]*>[\s\S]*?<\/h\1>/iu.exec(sectionBody);
+    ?? /<h([1-6])\b[^>]*class="[^"]*\b(?:place-heading|record-title)\b[^"]*"[^>]*>[\s\S]*?<\/h\1>/iu.exec(sectionBody);
   if (!headingMatch) {
     throw new Error(`Не найден исходный заголовок ${fragment.source_heading_id} для фрагмента ${fragment.id}.`);
   }
@@ -542,6 +766,22 @@ const addContentFragmentAnchor = (html, fragment) => {
   return html.replace(pattern, `$1 id="${fragment.id}"$3>`);
 };
 
+const addBookReadingPosition = (html) => {
+  const script = `<script id="book-reading-position-script">${bookReadingPositionScript}</script>`;
+  let updated = html.replace(/<script\b[^>]*>[\s\S]*?<\/script>/giu, (existing) =>
+    existing.includes("const scrollToHashTarget =") && existing.includes("const scheduleHashScroll =") ? "" : existing
+  );
+  return updated.includes('id="book-reading-position-script"')
+    ? updated.replace(/<script id="book-reading-position-script">[\s\S]*?<\/script>/u, script)
+    : updated.replace("</body>", `${script}</body>`);
+};
+
+const addBookRefresh = (html, book) => {
+  const metadata = `<meta name="belozerye-book-revision" content="${bookRevisions.get(book.id)}" data-book-slug="${escapeHtml(book.slug)}">`;
+  const script = `<script id="book-refresh-script">${bookRefreshScript}</script>`;
+  return html.replace("</head>", `${metadata}</head>`).replace("</body>", `${script}</body>`);
+};
+
 for (const book of books) {
   const bookPath = path.join(root, "dist", "books", book.slug, "index.html");
   let html = bookDocuments.get(book.id);
@@ -596,9 +836,14 @@ for (const book of books) {
       '$1<span class="church-name-highlight">церковь страстотерпца Христова Георгия</span>'
     );
   }
-  html = addEmbeddedBookMode(addChurchHighlighting(addBookLayout(applyBookTitles(html, book))));
+  html = stripContentsTerminalPeriods(html);
+  html = addContentsLevelToggles(html);
+  html = addBookRefresh(addBookReadingPosition(addEmbeddedBookMode(addChurchHighlighting(addBookLayout(applyBookTitles(html, book))))), book);
   for (const fragment of fragments.filter((item) => item.book_id === book.id)) {
-    if (fragment.church_source_only) continue;
+    if (fragment.church_source_only) {
+      html = addContentFragmentAnchor(html, fragment);
+      continue;
+    }
     const extracted = extractFragmentFromBook(html, fragment, book);
     fragment.html = extracted.fragmentHtml;
     fragment.folio = extracted.folio;
@@ -630,8 +875,11 @@ for (const mention of mentions) {
   if (!["exact", "probable", "unreviewed"].includes(mention.match_reliability)) throw new Error(`Упоминание ${mention.id} имеет недопустимую надёжность соответствия.`);
   if (!fragmentsById.has(mention.fragment_id)) throw new Error(`Упоминание ${mention.id} ссылается на неизвестный фрагмент.`);
   if (!mention.source_name) throw new Error(`В упоминании ${mention.id} не заполнено название из источника.`);
-  for (const field of ["uezd", "volost"]) {
+  for (const field of ["uezd"]) {
     if (!mention.source_context?.[field]) throw new Error(`В упоминании ${mention.id} не заполнено поле source_context.${field}.`);
+  }
+  if (!mention.source_context?.volost && !mention.source_context?.subdivision) {
+    throw new Error(`В упоминании ${mention.id} не задана волость или другое административное подразделение.`);
   }
   const landCategories = mention.source_context?.land_categories ?? [mention.source_context?.land_category];
   if (landCategories.length === 0 || landCategories.some((category) => !category?.label)) {
@@ -756,12 +1004,18 @@ const formatSubdivision = (subdivision) => ({
   "Чароме": "Чарома",
   "Тове": "Това"
 }[subdivision] ?? subdivision);
+const formatSubdivisionHierarchy = (context) => {
+  const paths = context.subdivision_paths ?? [context.subdivision ?? []].flat().map((name) => [name]);
+  return paths.filter((path) => !paths.some((other) =>
+    other.length > path.length && path.every((name, index) => other[index] === name)))
+    .map((path) => path.map((name) => context.subdivision_labels?.[name] ?? formatSubdivision(name)).join(" · ")).join(" / ");
+};
 const formatSourceContext = (context) => [
   `${context.uezd} уезд`,
   context.stan ? `${context.stan} стан` : null,
   context.prikaz ? `${context.prikaz} приказ` : null,
-  context.volost_label ?? `${context.volost} волость`,
-  formatSubdivision(context.subdivision) ?? null
+  context.volost_label ?? (context.volost ? `${context.volost} волость` : null),
+  formatSubdivisionHierarchy(context) || null
 ].filter(Boolean).join(" · ");
 const formatFolioMark = (folio) => `(л. ${folio.replace(/\s+(об\.)$/iu, "$1")})`;
 const formatCoordinate = (value, positive, negative) => {
@@ -1105,8 +1359,10 @@ const renderSourceViewer = () => `
 </script>`;
 const renderSourceWindowSizing = () => `<script>
   (() => {
+    const frameIsVisible = (frame) => frame.getBoundingClientRect().width > 0
+      && frame.getBoundingClientRect().height > 0;
     const setFrameHeight = (frame, height) => {
-      if (!Number.isFinite(height) || height <= 0) return;
+      if (!frameIsVisible(frame) || !Number.isFinite(height) || height <= 2) return;
       const window = frame.closest(".source-document-window");
       if (window) {
         const fragmentHeight = Math.ceil(height);
@@ -1115,6 +1371,7 @@ const renderSourceWindowSizing = () => `<script>
       }
     };
     const resizeToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return;
       try {
         const document = frame.contentDocument;
         const target = document?.getElementById(frame.dataset.fragmentAnchor);
@@ -1148,6 +1405,7 @@ const renderSourceWindowSizing = () => `<script>
       }
     };
     const scrollToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return false;
       try {
         const target = frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor);
         if (!target || !frame.contentWindow) return false;
@@ -1171,18 +1429,22 @@ const renderSourceWindowSizing = () => `<script>
       }
     });
     for (const frame of document.querySelectorAll(".source-document-window iframe")) {
+      let preparationTimers = [];
       const prepareFrame = () => {
-        if (frame.dataset.fragmentPrepareScheduled) return;
-        frame.dataset.fragmentPrepareScheduled = "true";
-        setTimeout(() => {
+        preparationTimers.forEach(clearTimeout);
+        const prepare = () => {
+          if (!frameIsVisible(frame)) return;
           resizeToFragment(frame);
           requestAnimationFrame(() => revealFrameAtFragment(frame));
-        }, 520);
+        };
+        requestAnimationFrame(() => requestAnimationFrame(prepare));
+        preparationTimers = [150, 550, 1500].map(delay => setTimeout(prepare, delay));
       };
       frame.addEventListener("load", prepareFrame);
+      frame.closest(".source-details")?.addEventListener("toggle", (event) => {
+        if (event.currentTarget.open) prepareFrame();
+      });
       if (frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor)) prepareFrame();
-      setTimeout(() => resizeToFragment(frame), 700);
-      setTimeout(() => resizeToFragment(frame), 2000);
     }
     document.addEventListener("click", (event) => {
       const button = event.target.closest("[data-return-to-fragment]");
@@ -1325,7 +1587,7 @@ const renderSourceGroup = (sourceMentions, index) => {
       return total + plainText(itemFragment.html ?? "").length + String(item.source_name ?? "").length;
     }, 0);
     const windowHeight = Math.max(230, Math.min(540, 135 + Math.ceil(textLength / 52) * 24));
-    const bookUrl = `../../books/${encodeURIComponent(book.slug)}/?embed=1&view=fragment-layout-8&revision=15&end=${encodeURIComponent(endAnchor)}#${encodeURIComponent(targetAnchor)}`;
+    const bookUrl = `../../books/${encodeURIComponent(book.slug)}/?embed=1&view=fragment-layout-8&revision=${bookRevisions.get(book.id)}&end=${encodeURIComponent(endAnchor)}#${encodeURIComponent(targetAnchor)}`;
     return `<div class="source-content-card">
             <div class="source-fragment">
               <section class="source-document-window" aria-label="${escapeHtml(label)}" style="height:${windowHeight}px">
@@ -1363,6 +1625,9 @@ ${sourceContent}
 };
 
 const expectedFiles = new Map();
+expectedFiles.set(path.join(root, "dist", "book-revisions.json"), JSON.stringify(
+  Object.fromEntries(books.map((book) => [book.slug, bookRevisions.get(book.id)])), null, 2
+) + "\n");
 expectedFiles.set(path.join(root, "dist", "404.html"), notFoundTemplate);
 expectedFiles.set(path.join(root, "dist", "_headers"), responseHeaders);
 const book1544 = books.find((book) => book.id === "belozersky-1544");
@@ -1399,19 +1664,33 @@ const mapFilterMetadata = (placeId) => {
     const fragment = fragmentsById.get(mention.fragment_id);
     if (fragment) booksForPlace.add(fragment.book_id);
     const context = mention.source_context ?? {};
-    for (const key of ["uezd", "prikaz", "volost", "subdivision"]) if (context[key]) administrative.add(context[key]);
-    const hasAdministrativeContext = context.uezd || context.prikaz || context.volost || context.subdivision;
-    if (fragment && hasAdministrativeContext) administrativeRecords.push({
-      book: fragment.book_id,
-      uezd: context.uezd ?? null,
-      uezd_label: context.uezd ? `${context.uezd} уезд` : null,
-      prikaz: context.prikaz ?? null,
-      prikaz_label: context.prikaz ? `${context.prikaz} приказ` : null,
-      volost: context.volost ?? null,
-      volost_label: context.volost ? (context.volost_label ? `${context.volost_label[0].toLocaleUpperCase("ru-RU")}${context.volost_label.slice(1)}` : `${context.volost} волость`) : null,
-      child: context.subdivision ?? null,
-      child_label: context.subdivision ?? null
-    });
+    for (const key of ["uezd", "stan", "prikaz", "volost", "subdivision"]) {
+      for (const value of [context[key] ?? []].flat()) administrative.add(value);
+    }
+    const hasAdministrativeContext = context.uezd || context.stan || context.prikaz || context.volost || context.subdivision;
+    if (fragment && hasAdministrativeContext) {
+      const subdivisions = [context.subdivision ?? []].flat();
+      for (const subdivision of subdivisions.length ? subdivisions : [null]) {
+        const path = (context.subdivision_paths ?? []).find((path) => path.at(-1) === subdivision) ?? [subdivision];
+        const selo = path.length > 1 && /^село /iu.test(path.at(-1)) ? path.at(-1) : null;
+        const child = selo ? path.at(-2) : subdivision;
+        administrativeRecords.push({
+          book: fragment.book_id,
+          uezd: context.uezd ?? null,
+          uezd_label: context.uezd ? `${context.uezd} уезд` : null,
+          stan: context.stan ?? null,
+          stan_label: context.stan ? `${context.stan} стан` : null,
+          prikaz: context.prikaz ?? null,
+          prikaz_label: context.prikaz ? `${context.prikaz} приказ` : null,
+          volost: context.volost ?? null,
+          volost_label: context.volost ? (context.volost_label ? `${context.volost_label[0].toLocaleUpperCase("ru-RU")}${context.volost_label.slice(1)}` : `${context.volost} волость`) : null,
+          child: child ? context.subdivision_labels?.[child] ?? child : null,
+          child_label: child ? context.subdivision_labels?.[child] ?? formatSubdivision(child) : null,
+          selo,
+          selo_label: selo
+        });
+      }
+    }
     for (const category of context.land_categories ?? []) {
       if (category.label) {
         land.add(category.label);
@@ -1479,7 +1758,8 @@ let mapPageHtml = fillTemplate(mapPageTemplate, {
   DEV_IMAGERY_ENABLED: JSON.stringify(devImageryEnabled)
 });
 if (!devImageryEnabled) {
-  mapPageHtml = mapPageHtml.replace(/\/\* DEV_(?:IMAGERY_(?:LAYER|SPREAD|UI)|COORD_EDITOR)_START \*\/[\s\S]*?\/\* DEV_(?:IMAGERY_(?:LAYER|SPREAD|UI)|COORD_EDITOR)_END \*\//gu, "");
+  mapPageHtml = mapPageHtml.replace(/\/\* DEV_(?:IMAGERY_(?:LAYER|SPREAD|UI)|COORD_EDITOR)_START \*\/[\s\S]*?\/\* DEV_(?:IMAGERY_(?:LAYER|SPREAD|UI)|COORD_EDITOR)_END \*\//gu, "")
+    .replace(/^[\t ]+(?=\r?$)/gmu, "");
 }
 expectedFiles.set(path.join(root, "dist", "map", "index.html"), mapPageHtml);
 
@@ -1549,17 +1829,19 @@ for (const place of places) {
   for (const state of place.name_states ?? []) {
     const period = state.display_period ?? state.observed_year;
     if (!period || state.assertion_kind === "editorial") continue;
-    const label = `${state.type_label ? `${state.type_label.toLocaleLowerCase("ru-RU")} ` : ""}${state.name}`;
+    const typeLabel = state.type_label?.toLocaleLowerCase("ru-RU");
+    const suffixPogost = state.type_code === "pogost" && /(?:ск|ц)ий$/iu.test(state.name);
+    const label = suffixPogost ? `${state.name} ${typeLabel}` : `${typeLabel ? `${typeLabel} ` : ""}${state.name}`;
     const group = groupedNameStates.get(label) ?? { label, periods: [], position: state.position, year: Infinity };
     if (!group.periods.includes(period)) group.periods.push(period);
     group.position = Math.min(group.position, state.position);
-    group.year = Math.min(group.year, state.assertion_kind === "inferred" ? -Infinity : Number(String(period).match(/\d{4}/u)?.[0] ?? Infinity));
+    group.year = Math.min(group.year, sourceYearValue(period));
     groupedNameStates.set(label, group);
   }
   const stateNames = [...groupedNameStates.values()]
     .sort((left, right) => left.year - right.year || left.position - right.position)
     .map(({ label, periods }) => `${label} (${periods.sort((left, right) =>
-      Number(String(left).match(/\d{4}/u)?.[0] ?? Infinity) - Number(String(right).match(/\d{4}/u)?.[0] ?? Infinity)
+      sourceYearValue(left) - sourceYearValue(right)
     ).join(", ")})`);
   const historicalNameParts = stateNames.length > 0
     ? [...new Set(stateNames)]
@@ -1644,7 +1926,7 @@ const renderChurchCard = (church) => {
   const source = sources.map((sourceItem) => {
     const fragmentAnchor = sourceItem.fragment_id;
     const encodedFragmentAnchor = encodeURIComponent(fragmentAnchor);
-    const sourceUrl = `../../books/${encodeURIComponent(sourceItem.book_slug)}/?embed=1&view=fragment-layout-8&revision=15&end=${encodedFragmentAnchor}#${encodedFragmentAnchor}`;
+    const sourceUrl = `../../books/${encodeURIComponent(sourceItem.book_slug)}/?embed=1&view=fragment-layout-8&revision=${bookRevisions.get(fragmentsById.get(sourceItem.fragment_id).book_id)}&end=${encodedFragmentAnchor}#${encodedFragmentAnchor}`;
     const sourceLink = `../../books/${encodeURIComponent(sourceItem.book_slug)}/#${encodeURIComponent(sourceItem.source_anchor)}`;
     return `<section class="mention-card"><details class="source-details"><summary><span class="source-summary-copy"><span class="source-title"><a href="${sourceLink}">${escapeHtml(sourceItem.source_title)}</a></span></span></summary><div class="source-body"><div class="source-content-card"><div class="source-fragment"><section class="source-document-window" aria-label="Фрагмент источника" style="height:320px"><iframe src="${sourceUrl}" title="Фрагмент источника" loading="lazy" data-fragment-anchor="${escapeHtml(fragmentAnchor)}" data-fragment-end-anchor="${escapeHtml(fragmentAnchor)}"></iframe></section><div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div><button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button></div></div></div></details></section>`;
   }).join("\n");
@@ -1716,7 +1998,7 @@ for (const mention of mentions) {
   const bookPath = path.join(root, "dist", "books", book.slug, "index.html");
   let html = bookUpdates.get(bookPath) ?? bookHtmlByPath.get(bookPath);
   const headingId = fragment.source_heading_id ?? place.slug;
-  const headingPattern = new RegExp(`<h([123])\\b[^>]*\\bid="${escapeRegex(headingId)}"[^>]*>`, "iu");
+  const headingPattern = new RegExp(`<h([1-6])\\b[^>]*\\bid="${escapeRegex(headingId)}"[^>]*>`, "iu");
   const headingMatch = headingPattern.exec(html);
   if (!headingMatch) throw new Error(`Не найден заголовок ${headingId} в книге ${book.id}.`);
 
@@ -1773,10 +2055,39 @@ for (const mention of mentions) {
   bookUpdates.set(bookPath, html);
 }
 
+const locatedPlaceSlugs = new Set(locations.features
+  .filter((feature) => feature.geometry.coordinates.every(Number.isFinite))
+  .map((feature) => placesById.get(feature.properties.place_id)?.slug)
+  .filter(Boolean));
+const bookLocationMarker = '<span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>';
+const addBookLocationMarkers = (html) => html.replace(/<a\b[^>]*>[\s\S]*?<\/a>/gu, (link) => {
+  const href = /\bhref="([^"]+)"/u.exec(link)?.[1];
+  const slug = href && /(?:^|\/)places\/([^/?#]+)\/$/u.exec(href)?.[1];
+  return slug && locatedPlaceSlugs.has(decodeURIComponent(slug)) ? `${link}${bookLocationMarker}` : link;
+});
+const ensureBookCommaSpacing = (html) => {
+  const tokens = html.match(/<script\b[^>]*>[\s\S]*?<\/script>|<style\b[^>]*>[\s\S]*?<\/style>|<[^>]*>|[^<]+/giu) ?? [];
+  let precedingComma = -1;
+  const startsWord = (text) => /^[\p{L}\p{N}(«“"']/u.test(text);
+  const decimalBoundary = (before, after) => /\p{N},$/u.test(before) && /^\p{N}/u.test(after);
+  for (let index = 0; index < tokens.length; index++) {
+    const token = tokens[index];
+    if (/^<(?:script|style)\b/iu.test(token)) { precedingComma = -1; continue; }
+    if (token.startsWith("<")) continue;
+    if (precedingComma !== -1 && startsWord(token) && !decimalBoundary(tokens[precedingComma], token)) {
+      tokens[precedingComma] += " ";
+    }
+    tokens[index] = token.replace(/,(?=[\p{L}\p{N}(«“"'])/gu, (comma, offset) =>
+      /\p{N}/u.test(token[offset - 1] ?? "") && /\p{N}/u.test(token[offset + 1]) ? comma : ", ");
+    precedingComma = tokens[index].endsWith(",") ? index : -1;
+  }
+  return tokens.join("");
+};
+
 for (const [bookPath, html] of bookUpdates) expectedFiles.set(bookPath, html);
 for (const book of books) {
   const bookPath = path.join(root, "dist", "books", book.slug, "index.html");
-  expectedFiles.set(bookPath, bookUpdates.get(bookPath) ?? bookHtmlByPath.get(bookPath));
+  expectedFiles.set(bookPath, ensureBookCommaSpacing(addBookLocationMarkers(bookUpdates.get(bookPath) ?? bookHtmlByPath.get(bookPath))));
 }
 
 const homePath = path.join(root, "dist", "index.html");
@@ -1799,21 +2110,55 @@ const homePlaceSearch = [...places]
       ...(place.name_states ?? []).map((state) => state.name)
     ].filter(Boolean))]
   }));
+const normalizeUpdateHeading = (value) => plainText(value).replace(/[▾▸]/gu, "").replace(/[.,:;]+$/u, "").trim();
+const homeUpdates = bookUpdateEntries.map((entry) => {
+  const bookHref = `./books/${encodeURIComponent(entry.book.slug)}/`;
+  const headings = [...bookDocuments.get(entry.book.id).matchAll(/<h1\b([^>]*)>([\s\S]*?)<\/h1>/gu)]
+    .map((match) => ({ id: /\bid="([^"]+)"/u.exec(match[1])?.[1], title: normalizeUpdateHeading(match[2]) }));
+  const sections = entry.sections.map((section) => {
+    const heading = headings.find((heading) => heading.title === normalizeUpdateHeading(section.title));
+    const href = heading?.id ? `${bookHref}#${encodeURIComponent(heading.id)}` : bookHref;
+    return `<li class="update-section"><a href="${href}">${escapeHtml(section.title)}</a><span class="update-folios">Листы ${escapeHtml(section.folios)}</span></li>`;
+  }).join("");
+  return `<li class="update-item"><div class="update-meta"><time datetime="${entry.date}">${entry.displayDate}</time>${entry.status ? `<span class="update-status">${escapeHtml(entry.status)}</span>` : ""}</div><article><h3><a href="${bookHref}">${escapeHtml(entry.book.short_title)}</a></h3><ul class="update-sections">${sections}</ul></article></li>`;
+}).join("\n");
 const homeHtml = fillTemplate(homeTemplate, {
   BOOK_COUNT: String(books.length),
   PLACE_COUNT: String(places.length),
   CHURCH_COUNT: String(churches.length),
   LOCATED_COUNT: String(mapMarkerData.length),
   BOOK_ITEMS: homeBookItems,
+  BOOK_UPDATES: homeUpdates,
   PLACE_SEARCH_DATA: JSON.stringify(homePlaceSearch).replaceAll("<", "\\u003c"),
   MAP_COUNT_DATA: JSON.stringify(homeMapCounts)
 });
 expectedFiles.set(homePath, homeHtml);
 
+const pageTitleCounts = new Map();
+for (const [filePath, html] of expectedFiles) {
+  if (path.extname(filePath) !== ".html") continue;
+  const title = /<title>([\s\S]*?)<\/title>/iu.exec(html)?.[1]?.trim();
+  if (title) pageTitleCounts.set(title, (pageTitleCounts.get(title) ?? 0) + 1);
+}
+const pageSourceQualifier = (relativePath) => {
+  const [directory, slug] = relativePath.split("/");
+  const place = directory === "places" ? places.find((place) => place.slug === slug) : null;
+  const church = directory === "churches" ? churches.find((church) => church.slug === slug) : null;
+  const fragmentId = place ? mentions.find((mention) => mention.place_id === place.id)?.fragment_id
+    : church ? churchSourcesByChurchId.get(church.id)?.[0]?.fragment_id : null;
+  const fragment = fragmentsById.get(fragmentId);
+  if (!fragment) throw new Error(`No source reference for duplicate page title: ${relativePath}`);
+  const book = booksById.get(fragment.book_id);
+  const source = bookDocuments.get(book.id);
+  const headingIndex = source.indexOf(`id="${fragment.source_heading_id}"`);
+  const precedingFolios = [...source.slice(0, Math.max(0, headingIndex)).matchAll(/\(л\.\s*([^<)]+)\)/gu)];
+  const folio = fragment.folio ?? precedingFolios.at(-1)?.[1];
+  return `${book.year}${folio ? `, л. ${folio}` : ""}`;
+};
 const publicPageUrls = [];
 for (const [filePath, sourceHtml] of expectedFiles) {
   if (path.extname(filePath).toLocaleLowerCase() !== ".html") continue;
-  const htmlWithoutDescriptions = sourceHtml
+  let htmlWithoutDescriptions = sourceHtml
     .replace(/<meta\b(?=[^>]*\bname=["']description["'])[^>]*>/giu, "")
     .replace(/<meta\b(?=[^>]*\bproperty=["']og:description["'])[^>]*>/giu, "");
   if (path.basename(filePath) === "404.html") {
@@ -1823,8 +2168,12 @@ for (const [filePath, sourceHtml] of expectedFiles) {
   const relativePath = path.relative(path.join(root, "dist"), filePath).split(path.sep).join("/");
   const pagePath = relativePath === "index.html" ? "/" : `/${relativePath.replace(/index\.html$/u, "")}`;
   const canonicalUrl = `${siteUrl}${pagePath}`;
-  const title = sourceHtml.match(/<title>([\s\S]*?)<\/title>/iu)?.[1]?.trim();
+  let title = sourceHtml.match(/<title>([\s\S]*?)<\/title>/iu)?.[1]?.trim();
   if (!title) throw new Error(`Для SEO-разметки не хватает title: ${relativePath}`);
+  if (pageTitleCounts.get(title) > 1) {
+    title = title.replace(/ — Белозерье$/u, ` — ${escapeHtml(pageSourceQualifier(relativePath))} — Белозерье`);
+    htmlWithoutDescriptions = htmlWithoutDescriptions.replace(/<title>[\s\S]*?<\/title>/iu, `<title>${title}</title>`);
+  }
   const socialMeta = `<link rel="canonical" href="${canonicalUrl}">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ru_RU">
@@ -1840,6 +2189,57 @@ for (const [filePath, sourceHtml] of expectedFiles) {
 expectedFiles.set(path.join(root, "dist", "places", "dor-levashev", "index.html"), `<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><title>Дор</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/dor/"><meta http-equiv="refresh" content="0;url=../dor/"></head><body><a href="../dor/">Дор — объединённая карточка</a></body></html>\n`);
 
+expectedFiles.set(path.join(root, "dist", "places", "v-kolentse-na-reke-na-sheksne-pogost-1626-18", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Коленецкий погост</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/pishchalinskoe/"><meta http-equiv="refresh" content="0;url=../pishchalinskoe/"></head><body><a href="../pishchalinskoe/">Коленецкий погост — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "derevnya-eremeykova-1626-22", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Еремейкова</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/eremeevskoe/"><meta http-equiv="refresh" content="0;url=../eremeevskoe/"></head><body><a href="../eremeevskoe/">Еремейкова — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "derevnya-bavykino-na-rechke-na-chyurovke-1626-31", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Бавыкино</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/bovynin/"><meta http-equiv="refresh" content="0;url=../bovynin/"></head><body><a href="../bovynin/">Бавыкино — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "derevnya-bessonovo-na-rechke-na-pustoy-na-chyurovke-1626-46", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Бессоново</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/bezsoloe/"><meta http-equiv="refresh" content="0;url=../bezsoloe/"></head><body><a href="../bezsoloe/">Бессоново — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "derevnya-romannitsovo-1626-53", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Романницово</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/romanovo/"><meta http-equiv="refresh" content="0;url=../romanovo/"></head><body><a href="../romanovo/">Романницово — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "derevnya-pachinok-pochinok-1626-54", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Пачинок</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/pochinok-ugla/"><meta http-equiv="refresh" content="0;url=../pochinok-ugla/"></head><body><a href="../pochinok-ugla/">Пачинок — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-fominskkoe-1626-69", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Фоминское</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/fomkin/"><meta http-equiv="refresh" content="0;url=../fomkin/"></head><body><a href="../fomkin/">Фоминское — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-grishnevo-1626-76", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Гришнево</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/grishiev/"><meta http-equiv="refresh" content="0;url=../grishiev/"></head><body><a href="../grishiev/">Гришнево — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "derevnya-olekseeva-1626-7", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Олексеева</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/oleksino/"><meta http-equiv="refresh" content="0;url=../oleksino/"></head><body><a href="../oleksino/">Олексеева — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-savunino-1626-90", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Савунино</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/saunkin/"><meta http-equiv="refresh" content="0;url=../saunkin/"></head><body><a href="../saunkin/">Савунино — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-vereshchigino-vereshchagino-1626-98", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Верещигино</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/voroshnino/"><meta http-equiv="refresh" content="0;url=../voroshnino/"></head><body><a href="../voroshnino/">Верещигино — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-timshino-1626-106", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Тимшино</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/timoshin/"><meta http-equiv="refresh" content="0;url=../timoshin/"></head><body><a href="../timoshin/">Тимшино — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-bollshoy-bolshoy-dvor-na-rechke-na-pizdavke-1626-39", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Большой Двор</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/savinskoe/"><meta http-equiv="refresh" content="0;url=../savinskoe/"></head><body><a href="../savinskoe/">Большой Двор — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "ramene-sheksna", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Раменье</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/ramene/"><meta http-equiv="refresh" content="0;url=../ramene/"></head><body><a href="../ramene/">Раменье — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "uvarova-gorka", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Горка</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/derevnya-gorka-na-rechke-na-ulomke-1626-4/"><meta http-equiv="refresh" content="0;url=../derevnya-gorka-na-rechke-na-ulomke-1626-4/"></head><body><a href="../derevnya-gorka-na-rechke-na-ulomke-1626-4/">Горка — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "mervyatino", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Мордвиново</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/pustosh-mordvinovo-1626-88/"><meta http-equiv="refresh" content="0;url=../pustosh-mordvinovo-1626-88/"></head><body><a href="../pustosh-mordvinovo-1626-88/">Мордвиново — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "moshkov", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Мушково</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/pustosh-mushkovo-1626-75/"><meta http-equiv="refresh" content="0;url=../pustosh-mushkovo-1626-75/"></head><body><a href="../pustosh-mushkovo-1626-75/">Мушково — объединённая карточка</a></body></html>\n`);
+
 publicPageUrls.sort((left, right) => left.localeCompare(right, "ru-RU"));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -1848,6 +2248,15 @@ ${publicPageUrls.map((url) => `  <url><loc>${url}</loc></url>`).join("\n")}
 `;
 expectedFiles.set(path.join(root, "dist", "sitemap.xml"), sitemap);
 expectedFiles.set(path.join(root, "dist", "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
+
+for (const [filePath, html] of expectedFiles) {
+  if (path.extname(filePath) !== ".html" || !/<meta\b[^>]*http-equiv="refresh"/iu.test(html)) continue;
+  const title = /<title>([\s\S]*?)<\/title>/iu.exec(html)?.[1] ?? "Переход";
+  const withViewport = /<meta\b[^>]*name="viewport"/iu.test(html) ? html
+    : html.replace("</head>", '<meta name="viewport" content="width=device-width, initial-scale=1"></head>');
+  expectedFiles.set(filePath, /<h1\b/iu.test(withViewport) ? withViewport
+    : withViewport.replace("<body>", `<body><h1>${title}</h1>`));
+}
 
 let changed = 0;
 for (const [filePath, expected] of expectedFiles) {

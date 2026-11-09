@@ -3,12 +3,12 @@ export const up = (db) => {
   const sourceMentionId = "mention-belozersky-1544-place-12-1-monastery";
   const nameId = "attested:loshakova:pochinok-1544";
 
-  // The newest observed form is the 1626/27 source form, Лошакова.
+  // The newest observed form is the 1626/27 source form, Loshakova.
   db.prepare("UPDATE places SET name = ?, name_origin = 'observed' WHERE id = ?")
     .run("Лошакова", placeId);
 
   // Restore the 1544 form to the name history on the metropolitan card. Its
-  // type is stored separately so the card renders “починок Лошаково”.
+  // type is stored separately so the card renders the settlement type before its name.
   db.prepare(`
     INSERT INTO place_names (id, place_id, name, language, name_kind)
     VALUES (?, ?, 'Лошаково', 'ru', 'attested')

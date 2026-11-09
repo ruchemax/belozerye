@@ -2149,6 +2149,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   color: #9a3412;
   font-weight: 600;
   font-style: italic;
+  text-decoration-line: underline;
+  text-decoration-color: rgba(154, 52, 18, .55);
+  text-decoration-thickness: 1px;
   text-underline-offset: .12em;
 }
 .document-body #church-and-estates {
@@ -2169,6 +2172,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .document-body > h1.primary-section-heading {
   margin-inline-start: var(--book-prose-indent) !important;
 }
+.document-body #folios-547-561 {
+  display: inline !important;
+  margin-block: 0 !important;
+}
+.document-body #folios-547-561 + .record-prose {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}
+.document-body #folios-547-561 + .record-prose::before { content: " "; }
 .document-body #krushkova-record {
   display: inline;
   margin: 0;
@@ -2198,6 +2212,51 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   color: #33281f !important;
   font-size: 1rem;
   font-weight: 400;
+}
+.document-body .no-indent { text-indent: 0 !important; }
+.document-body .first-line-indent { text-indent: var(--book-prose-indent) !important; }
+.document-body .summary-hanging-flow {
+  display: block !important;
+  margin: 0 !important;
+  padding-inline-start: var(--book-prose-indent) !important;
+  text-indent: calc(-1 * var(--book-prose-indent)) !important;
+}
+.document-body #folios-547-561-summary-old-empty-villages {
+  display: inline !important;
+  margin: 0 !important;
+  margin-inline-start: var(--book-h2-indent) !important;
+  padding: 0 !important;
+}
+.document-body #folios-547-561-summary-old-empty-villages::after { content: none; }
+.document-body #folios-547-561-summary-old-empty-villages + .summary-paragraph {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}
+.document-body #folios-547-561-place-48 > .group-heading {
+  margin-block: var(--book-prose-margin-before) var(--book-prose-margin-after) !important;
+  margin-inline-start: var(--book-h2-indent) !important;
+  margin-inline-end: 0 !important;
+  padding: 0 !important;
+  color: #9a3412 !important;
+  font-weight: 600 !important;
+  line-height: 1.65 !important;
+}
+.document-body .place-record.no-newline-first > .village-lines { display: contents !important; }
+.document-body .place-record.no-newline-first > :is(.place-heading, .record-owner-heading) { display: inline !important; margin: 0 !important; padding: 0 !important; }
+.document-body h2#folios-547-561-place-1-heading,
+.document-body h2#folios-547-561-place-18-heading {
+  position: relative !important;
+  inset-inline-start: calc(var(--book-h2-indent) - var(--book-prose-indent)) !important;
+  margin-inline-end: calc(var(--book-h2-indent) - var(--book-prose-indent)) !important;
+}
+.document-body .place-record.no-newline-first > .place-heading::after,
+.document-body .place-record.no-newline-first > .record-owner-heading::after { content: " "; }
+.document-body .place-record.no-newline-first > .village-lines > p.inline-continuation {
+  display: inline !important;
+  margin: 0 !important;
+  text-indent: 0 !important;
 }
 .document-body #church-lands-luzhkovo .place-title-link { color: #9a3412 !important; }
 .document-body #belozersky-1626-fragment-church-lands-luzhkovo {
@@ -2231,6 +2290,59 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   --book-prose-margin-after: 0rem;
   --book-prose-indent: 2rem;
 }
+.document-body :is(a.place-title-link, a.place-name, a.church-fragment-link, a[href*="/churches/"]) {
+  color: #9a3412 !important;
+  text-decoration-line: underline !important;
+  text-decoration-color: rgba(154, 52, 18, .55) !important;
+  text-decoration-thickness: 1px !important;
+  text-underline-offset: .14em !important;
+}
+.document-body :is(a.place-title-link, a.place-name, a.church-fragment-link, a[href*="/churches/"]):hover,
+.document-body :is(a.place-title-link, a.place-name, a.church-fragment-link, a[href*="/churches/"]):focus-visible {
+  color: #7c2d12 !important;
+  text-decoration-color: currentColor !important;
+  text-decoration-thickness: 2px !important;
+}
+.document-body .page-mark {
+  color: #2563eb !important;
+  font-size: .9375rem !important;
+  font-style: italic !important;
+  font-weight: 400 !important;
+  white-space: nowrap !important;
+}
+.document-body .book-place-location {
+  display: inline-block;
+  width: .9em;
+  height: 1em;
+  margin-inline-start: .2em;
+  vertical-align: -.15em;
+  color: #9a3412;
+  line-height: 1;
+  text-indent: 0;
+}
+.document-body .book-place-location svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.document-body .heading-with-prose { display: inline !important; }
+.document-body .heading-with-prose::after { content: " " !important; }
+.document-body .heading-with-prose + .heading-continuation { display: inline !important; }
+.document-body .primary-heading-prose-flow {
+  margin-block: var(--book-h1-margin-before) var(--book-h1-margin-after);
+  padding-inline-start: var(--book-prose-indent);
+  text-indent: calc(-1 * var(--book-prose-indent));
+}
+.document-body .primary-heading-prose-flow > h1 {
+  display: inline !important;
+  margin: 0 !important;
+}
+.document-body .primary-heading-prose-flow > h1::after { content: " " !important; }
+.document-body .primary-heading-prose-flow > .heading-continuation {
+  display: inline !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
 .document-body h1:not(.place-heading) {
   margin-block: var(--book-h1-margin-before) var(--book-h1-margin-after) !important;
   margin-inline: var(--book-h1-indent) 0 !important;
@@ -2242,6 +2354,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
 .document-body h3:not(.place-heading) {
   margin-block: var(--book-h3-margin-before) var(--book-h3-margin-after) !important;
   margin-inline: var(--book-h3-indent) 0 !important;
+}
+.document-body .place-record > h4 {
+  margin-block: var(--book-prose-margin-before) var(--book-prose-margin-after) !important;
+  margin-inline: 0 !important;
+  padding: 0 !important;
+  color: #9a3412 !important;
+  font-weight: 600 !important;
+  line-height: 1.65 !important;
+  text-align: justify !important;
+  text-indent: 0 !important;
+}
+.document-body .place-record > h4.place-heading {
+  font-size: 1.0625rem !important;
 }
 .document-body :is(h1, h2, h3):not(.place-heading) > .heading-toggle {
   position: static;
@@ -2331,15 +2456,31 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica N
   padding-block: 0 !important;
 }
 #document-contents .contents-entry {
-  display: flex !important;
+  display: grid !important;
+  grid-template-columns: 1.1em minmax(0, 1fr) !important;
+  column-gap: .3rem !important;
+  align-items: start !important;
   min-height: 0 !important;
   margin: 0 0 .35rem !important;
   padding-block: 0 !important;
   line-height: 1.5 !important;
 }
+#document-contents .contents-entry[hidden] { display: none !important; }
 #document-contents .contents-entry > * { margin-block: 0 !important; }
+#document-contents .contents-entry::before { content: none !important; }
+#document-contents .contents-link {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+}
+#document-contents .contents-level-toggle {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  margin: 0 !important;
+  width: 1.1em !important;
+}
 #document-contents .contents-level-2 { padding-left: 1rem !important; }
 #document-contents .contents-level-3 { padding-left: 2rem !important; }
+#document-contents .contents-level-4 { padding-left: 3rem !important; }
 #document-contents .contents-entry.contents-level-1 {
   margin-top: 0 !important;
 }
@@ -2365,7 +2506,7 @@ body.embedded-book .document-body {
 }
 html:has(body.embedded-book) { scroll-padding-top: 0 !important; }
 body.embedded-book [id] { scroll-margin-top: 0 !important; }
-</style>  <link rel="canonical" href="https://belozersky.uezd.workers.dev/books/belozersky_uezd-1544/">
+</style><meta name="belozerye-book-revision" content="cd8cecfba501" data-book-slug="belozersky_uezd-1544">  <link rel="canonical" href="https://belozersky.uezd.workers.dev/books/belozersky_uezd-1544/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:site_name" content="Белозерье">
@@ -2373,11 +2514,11 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
   <meta property="og:url" content="https://belozersky.uezd.workers.dev/books/belozersky_uezd-1544/">
   <meta name="twitter:card" content="summary">
 </head>
-<body class="m-0 flex min-h-screen flex-col text-white bg-fixed bg-cover bg-center bg-no-repeat" style="background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)), url('../../images/background/local-history-map-bg.webp');background-color:#0b1220"><script id="embedded-book-script">if (new URLSearchParams(location.search).get("embed") === "1") { document.body.classList.add("embedded-book"); const parameters = new URLSearchParams(location.search); const targetId = decodeURIComponent(location.hash.slice(1)); const endId = parameters.get("end") || targetId; const target = () => document.getElementById(targetId); const fragment = () => target()?.closest("section.place-record, section.record"); const ownHeading = (element) => element?.matches("h1,h2,h3,h4,h5,h6") ? element : element?.querySelector(":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6") ?? element; const fragmentHeight = () => { const targetElement = target(); const endElement = document.getElementById(endId); const anchor = ownHeading(targetElement); const endAnchor = ownHeading(endElement); const record = endElement?.closest("section.place-record, section.record"); if (!targetElement || !anchor || !endAnchor || !record) return 0; const headings = [...record.querySelectorAll("h1,h2,h3,h4,h5,h6")]; const nextHeading = headings.slice(headings.indexOf(endAnchor) + 1).find((heading) => heading.classList.contains("place-heading")); const boundary = nextHeading?.getBoundingClientRect().top; let bottom = anchor.getBoundingClientRect().bottom; for (const element of record.querySelectorAll("*")) { const rect = element.getBoundingClientRect(); if (boundary !== undefined && rect.top >= boundary) continue; bottom = Math.max(bottom, rect.bottom); } return bottom - targetElement.getBoundingClientRect().top + 2; }; const scrollToAnchor = () => { const element = target(); if (element) scrollTo(0, scrollY + element.getBoundingClientRect().top); }; const replaceFragmentLinks = () => document.querySelectorAll(".place-title-link, a[href*='/churches/']").forEach((link) => { const churchLink = link.matches("a[href*='/churches/']"); const record = link.closest("section.place-record, section.record"); if (!record?.id) return; if (churchLink) link.classList.add("church-fragment-link"); link.href = location.pathname + "#" + encodeURIComponent(record.id); link.target = "_top"; }); const reportFragmentHeight = () => { const height = fragmentHeight(); if (height > 0) parent.postMessage({ type: "belozerye-source-fragment", anchor: targetId, endAnchor: endId, height: Math.ceil(height) }, location.origin); }; addEventListener("load", () => { replaceFragmentLinks(); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 150); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 500); }); }</script>
+<body class="m-0 flex min-h-screen flex-col text-white bg-fixed bg-cover bg-center bg-no-repeat" style="background-image:linear-gradient(rgba(0,0,0,0),rgba(0,0,0,0)), url('../../images/background/local-history-map-bg.webp');background-color:#0b1220"><script id="embedded-book-script">if (new URLSearchParams(location.search).get("embed") === "1") { document.body.classList.add("embedded-book"); const parameters = new URLSearchParams(location.search); const targetId = decodeURIComponent(location.hash.slice(1)); const endId = parameters.get("end") || targetId; const target = () => document.getElementById(targetId); const fragment = () => target()?.closest("section.place-record, section.record"); const ownHeading = (element) => element?.matches("h1,h2,h3,h4,h5,h6") ? element : element?.querySelector(":scope > h1, :scope > h2, :scope > h3, :scope > h4, :scope > h5, :scope > h6") ?? element; const fragmentHeight = () => { const targetElement = target(); const endElement = document.getElementById(endId); const anchor = ownHeading(targetElement); const endAnchor = ownHeading(endElement); const record = endElement?.closest("section.place-record, section.record"); if (!targetElement || !anchor || !endAnchor || !record || anchor.getBoundingClientRect().height <= 0) return 0; const headings = [...record.querySelectorAll("h1,h2,h3,h4,h5,h6")]; const nextHeading = headings.slice(headings.indexOf(endAnchor) + 1).find((heading) => heading.classList.contains("place-heading")); const boundary = nextHeading?.getBoundingClientRect().top; let bottom = anchor.getBoundingClientRect().bottom; for (const element of record.querySelectorAll("*")) { const rect = element.getBoundingClientRect(); if (boundary !== undefined && rect.top >= boundary) continue; bottom = Math.max(bottom, rect.bottom); } return bottom - targetElement.getBoundingClientRect().top + 2; }; const scrollToAnchor = () => { const element = target(); if (element) scrollTo(0, scrollY + element.getBoundingClientRect().top); }; const replaceFragmentLinks = () => document.querySelectorAll(".place-title-link, a[href*='/churches/']").forEach((link) => { const churchLink = link.matches("a[href*='/churches/']"); const record = link.closest("section.place-record, section.record"); if (!record?.id) return; if (churchLink) link.classList.add("church-fragment-link"); link.href = location.pathname + "#" + encodeURIComponent(record.id); link.target = "_top"; }); const reportFragmentHeight = () => { const height = fragmentHeight(); if (height > 0) parent.postMessage({ type: "belozerye-source-fragment", anchor: targetId, endAnchor: endId, height: Math.ceil(height) }, location.origin); }; addEventListener("load", () => { replaceFragmentLinks(); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 150); setTimeout(() => { scrollToAnchor(); reportFragmentHeight(); }, 500); }); }</script>
 <header class="sticky top-0 z-40 border-b border-white/10 bg-black/40 backdrop-blur"><nav class="flex h-16 w-full items-center px-4"><a class="flex items-center gap-2" href="../../"><img alt="Белозерье" class="h-8 w-8" src="../../images/icons/belozerye-monastery-logo.svg"/><span class="font-semibold text-white">Белозерье</span></a></nav></header>
 <main class="flex-1"><section class="w-full text-white" data-astro-cid-zcak6nys=""><div class="parchment-shell mx-auto w-full max-w-[1000px] px-3 pb-12 pt-4 md:px-5" data-astro-cid-zcak6nys=""><article class="bound-parchment" data-astro-cid-zcak6nys=""><div class="relative z-10" data-astro-cid-zcak6nys="">
 
-<p class="text-xs text-gray-800 mb-4 publication-date" data-astro-cid-zcak6nys="">Опубликовано: <time data-astro-cid-zcak6nys="" datetime="2026-10-29">29 октября 2026 г.</time></p>
+<p class="text-xs text-gray-800 mb-4 publication-date" data-astro-cid-zcak6nys="">Опубликовано: <time data-astro-cid-zcak6nys="" datetime="2026-10-29">29 октября 2026 г.</time><br>Обновлено: <time class="book-updated-date" datetime="2026-10-29">29 октября 2026 г.</time></p>
 <h1 class="text-2xl font-bold mb-2 text-black book-title" data-astro-cid-zcak6nys="">Сотная из писцовых книг Белозерского уезда (1544 г.)</h1>
 <p class="book-full-title">Сотная из писцовых книг Ф.Ф. Хидырщикова и Г.Л. Клементиева на земли Кирилло-Белозерского монастыря в Белозерском уезде (1544 г.)</p>
 <div class="book-bibliography">
@@ -2392,66 +2533,66 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="group-content" data-astro-cid-zcak6nys="" id="body-section-1">
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-1">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/sintsovskoe/" data-astro-cid-zcak6nys>Деревня Синцовское</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/sintsovskoe/" data-astro-cid-zcak6nys>Деревня Синцовское</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Орех Онисимов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Андрейко <span class="page-mark" data-astro-cid-zcak6nys="">(л. 498)</span> Милятин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Овдокимов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-2">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/okoemovo/" data-astro-cid-zcak6nys>Деревня Окоемово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/okoemovo/" data-astro-cid-zcak6nys>Деревня Окоемово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сноп Исаков</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Нифонтко Мочалов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Рыжик Исаков</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-3">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/perkhino/" data-astro-cid-zcak6nys>Деревня Перхино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/perkhino/" data-astro-cid-zcak6nys>Деревня Перхино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Елсуф</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Харитон Полутины</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сенка Патракеев</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-4">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pestovo/" data-astro-cid-zcak6nys>Деревня Пестово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pestovo/" data-astro-cid-zcak6nys>Деревня Пестово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
-<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Чир</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Первунька Панков</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Симанко Кочюров</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Онцыферко Углин</strong>.</p><p id="belozersky-1544-place-1-4-krushkova" class="record-prose" data-astro-cid-zcak6nys="">А межа учинена  той деревне от великого князя черные <a class="place-name" data-astro-cid-zcak6nys="" href="../../places/krushkova/">деревни от Крушкова</a> крутой [о]враг да через дорошку, что лежит к Палшме к осеку к Вымслу, да осеком Замостище в ручей, да ручьем к осеку к Вымслу, да осеком Замостище в ручей, да ручьем к осеку <span class="page-mark" data-astro-cid-zcak6nys="">(л. 498об.)</span> и к воротцам, а от воротец осеком же в первой ручей, а ручьем к речке к Чюраве. Направе земля и лес Кирилова монастыря, а налеве земля и луги, и лес великого князя черные деревни Крушкова.</p></div>
+<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Чир</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Первунька Панков</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Симанко Кочюров</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Онцыферко Углин</strong>.</p><p id="belozersky-1544-place-1-4-krushkova" class="record-prose" data-astro-cid-zcak6nys="">А межа учинена  той деревне от великого князя черные <a class="place-name" data-astro-cid-zcak6nys="" href="../../places/krushkova/">деревни от Крушкова</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span> крутой [о]враг да через дорошку, что лежит к Палшме к осеку к Вымслу, да осеком Замостище в ручей, да ручьем к осеку к Вымслу, да осеком Замостище в ручей, да ручьем к осеку <span class="page-mark" data-astro-cid-zcak6nys="">(л. 498об.)</span> и к воротцам, а от воротец осеком же в первой ручей, а ручьем к речке к Чюраве. Направе земля и лес Кирилова монастыря, а налеве земля и луги, и лес великого князя черные деревни Крушкова.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-5">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/seltsa/" data-astro-cid-zcak6nys>Деревня Сельца</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/seltsa/" data-astro-cid-zcak6nys>Деревня Сельца</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Кузька</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федько Кистеневы</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-6">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/ovinets/" data-astro-cid-zcak6nys>Деревня Овинец</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/ovinets/" data-astro-cid-zcak6nys>Деревня Овинец</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Шарап Филин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Митя Паньков</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Титко Лупанда</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-7">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/sofonovo/" data-astro-cid-zcak6nys>Деревня Софоново, Кистенево</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/sofonovo/" data-astro-cid-zcak6nys>Деревня Софоново, Кистенево</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федюнка Кистенев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сенька Микитин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-8">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/chyuravskaya-nov/" data-astro-cid-zcak6nys>Деревня Чюравская Новь, а зовут Черепановым</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/chyuravskaya-nov/" data-astro-cid-zcak6nys>Деревня Чюравская Новь, а зовут Черепановым</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Окиня Савин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сенька Иванов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-9">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/ivantsovo/" data-astro-cid-zcak6nys>Деревня Иванцово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/ivantsovo/" data-astro-cid-zcak6nys>Деревня Иванцово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Егуня Омосов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе брат его <strong class="person-name" data-astro-cid-zcak6nys="">Фомка </strong>.</p><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 499)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гаврилко Кучин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Куземка Олешин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-10">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kolyshino/" data-astro-cid-zcak6nys>Деревня Колышино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kolyshino/" data-astro-cid-zcak6nys>Деревня Колышино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Невзорка</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Ерема Истомины</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Лихачко Чернышев</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-11">
-<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/charoma/" data-astro-cid-zcak6nys>Деревня Чарома</a><span class="record-punctuation" data-astro-cid-zcak6nys="">,</span></h3><span class="heading-inline-prose" data-astro-cid-zcak6nys=""> а в ней <a href="../../churches/ili-proroka-charoma/">церковь Илья Пророк</a>.</span></div>
+<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/charoma/" data-astro-cid-zcak6nys>Деревня Чарома</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">,</span></h3><span class="heading-inline-prose" data-astro-cid-zcak6nys=""> а в ней <a href="../../churches/ili-proroka-charoma/">церковь Илья Пророк</a>.</span></div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе поп <strong class="person-name" data-astro-cid-zcak6nys="">Иван</strong>.</p><p class="record-prose parish-lead" data-astro-cid-zcak6nys="">А крестьян:</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Нечайко Долгополов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Исачко Ларин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-12">
@@ -2462,7 +2603,7 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-13">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/tarasova/" data-astro-cid-zcak6nys>Деревня Тарасовы [Тарасова]</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/tarasova/" data-astro-cid-zcak6nys>Деревня Тарасовы [Тарасова]</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Родя Золотихов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Куземка</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федко</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Мелех Тереховы</strong>.</p></div>
 </section>
@@ -2474,13 +2615,13 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-15">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/oleksino/" data-astro-cid-zcak6nys>Деревня Олексино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/oleksino/" data-astro-cid-zcak6nys>Деревня Олексино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Малец Иванов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Ульянко Лыков</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-1-16">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/vysokoe-ugla/" data-astro-cid-zcak6nys>Деревня Высокое</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/vysokoe-ugla/" data-astro-cid-zcak6nys>Деревня Высокое</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Олешка Андреев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Митька Панков</strong>.</p></div>
 </section>
@@ -2490,21 +2631,21 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="group-content" data-astro-cid-zcak6nys="" id="body-section-2">
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-2-1">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/larino/" data-astro-cid-zcak6nys>Деревня Ларино, <span class="page-mark" data-astro-cid-zcak6nys="">(л. 499об.)</span> а называют Заречьем</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/larino/" data-astro-cid-zcak6nys>Деревня Ларино, <span class="page-mark" data-astro-cid-zcak6nys="">(л. 499об.)</span> а называют Заречьем</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федько Карпов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Некраско Бородатого</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-2-2">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/selishche/" data-astro-cid-zcak6nys>Деревня Селище</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/selishche/" data-astro-cid-zcak6nys>Деревня Селище</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Дема Останин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Якуш</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гридька Демины дети</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-2-3">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/poteryaevo/" data-astro-cid-zcak6nys>Деревня Потеряево</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/poteryaevo/" data-astro-cid-zcak6nys>Деревня Потеряево</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
-<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Рупос Игнатов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Климко Приходец</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Илейка Харламов</strong>.</p></div>
+<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Рупос Игнатов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Климко</strong> Приходец.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Илейка Харламов</strong>.</p></div>
 </section>
 </div>
 </section><section aria-labelledby="section-3" class="record-group" data-astro-cid-zcak6nys="">
@@ -2520,25 +2661,25 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
 <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/okunevo/" data-astro-cid-zcak6nys>Деревня Окунево</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
-<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гридька Сысоев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Самойлик Приходец</strong>.</p></div>
+<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гридька Сысоев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Самойлик</strong> Приходец.</p></div>
 </section>
 </div>
 </section><section aria-labelledby="section-4" class="record-group" data-astro-cid-zcak6nys="">
 <h2 class="group-heading" data-astro-cid-zcak6nys="" id="section-4"><button aria-controls="body-section-4" aria-expanded="true" aria-label="Свернуть подраздел" class="heading-toggle" data-astro-cid-zcak6nys="" data-body-toggle="" type="button"><span aria-hidden="true" class="heading-toggle-icon" data-astro-cid-zcak6nys="">▾</span></button>А у Коленца.</h2>
 <div class="group-content" data-astro-cid-zcak6nys="" id="body-section-4">
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-4-1">
-<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pishchalinskoe/" data-astro-cid-zcak6nys>Деревня Пищалинское на Шехсне</a><span class="record-punctuation" data-astro-cid-zcak6nys=""></span></h3><span class="heading-inline-prose" data-astro-cid-zcak6nys="">, у езу, а в ней <a href="../../churches/kirilla-belozerskogo-pishchalinskoe/">церковь Кирил Белозерской Чюдотворец</a>.</span></div>
+<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pishchalinskoe/" data-astro-cid-zcak6nys>Деревня Пищалинское на Шехсне</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys=""></span></h3><span class="heading-inline-prose" data-astro-cid-zcak6nys="">, у езу, а в ней <a href="../../churches/kirilla-belozerskogo-pishchalinskoe/">церковь Кирил Белозерской Чюдотворец</a>.</span></div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе поп <strong class="person-name" data-astro-cid-zcak6nys="">Нестер</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Парфенко</strong> да <strong class="person-name" data-astro-cid-zcak6nys="">Филипко Митины</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-4-2">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<span class="page-mark" data-astro-cid-zcak6nys="">(л. 500)</span> <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/savinskoe/" data-astro-cid-zcak6nys>Деревня Савинское, называют Великим Двором</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<span class="page-mark" data-astro-cid-zcak6nys="">(л. 500)</span> <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/savinskoe/" data-astro-cid-zcak6nys>Деревня Савинское, называют Великим Двором</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федюня Карпов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Трушко Чяников</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-4-3">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/ramene/" data-astro-cid-zcak6nys>Деревня Раменье</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/ramene/" data-astro-cid-zcak6nys>Деревня Раменье</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Васко Рославль</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сенька Климов</strong>.</p></div>
 </section>
@@ -2554,71 +2695,71 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="group-content" data-astro-cid-zcak6nys="" id="body-section-5">
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-1">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/eremeevskoe/" data-astro-cid-zcak6nys>Деревня Еремеевское на Уломе</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/eremeevskoe/" data-astro-cid-zcak6nys>Деревня Еремеевское на Уломе</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Бориско Кузьмин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Тиханко Офонин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-2">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/malchino/" data-astro-cid-zcak6nys>Деревня Малчино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/malchino/" data-astro-cid-zcak6nys>Деревня Малчино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванько Постник</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Васко Филин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-3">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/knyazhe/" data-astro-cid-zcak6nys>Деревня Княжье</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/knyazhe/" data-astro-cid-zcak6nys>Деревня Княжье</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Захарко Васильев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федко Титов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-4">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/mervyatino/" data-astro-cid-zcak6nys>Деревня Мервятино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pustosh-mordvinovo-1626-88/" data-astro-cid-zcak6nys>Деревня Мервятино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Куземка Оргемов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-5">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/sokolovo/" data-astro-cid-zcak6nys>Деревня Соколово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/sokolovo/" data-astro-cid-zcak6nys>Деревня Соколово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Демка Емельянов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Иванов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-6">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<span class="page-mark" data-astro-cid-zcak6nys="">(л. 500об.)</span> <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/brykino/" data-astro-cid-zcak6nys>Деревня Брыкино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<span class="page-mark" data-astro-cid-zcak6nys="">(л. 500об.)</span> <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/brykino/" data-astro-cid-zcak6nys>Деревня Брыкино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Савка Иванов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Коротыга Шарапов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Некраско Иванов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-7">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/lukino/" data-astro-cid-zcak6nys>Деревня Лукино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/lukino/" data-astro-cid-zcak6nys>Деревня Лукино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Кузнецов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Ивашко Одоев</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-8">
-<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/romanovskoe/" data-astro-cid-zcak6nys>Деревня Романовское, Раменье Дупельное</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3></div>
+<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/romanovskoe/" data-astro-cid-zcak6nys>Деревня Романовское, Раменье Дупельное</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3></div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Дороня Малахов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Филатко Паунин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-9">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/romanovo/" data-astro-cid-zcak6nys>Деревня Романово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/romanovo/" data-astro-cid-zcak6nys>Деревня Романово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Исачко Оксенов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Лазук Тинин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Еремка Тихонов</strong> да <strong class="person-name" data-astro-cid-zcak6nys="">Обакумко Лазунин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-10">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/koshcheevo/" data-astro-cid-zcak6nys>Деревня Кощеево на речке на Уломке</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/koshcheevo/" data-astro-cid-zcak6nys>Деревня Кощеево на речке на Уломке</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Фомин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Демка Кирилов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Юрька Тихонов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-11">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/uvarova-gorka/" data-astro-cid-zcak6nys>Деревня Уварова Горка</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/derevnya-gorka-na-rechke-na-ulomke-1626-4/" data-astro-cid-zcak6nys>Деревня Уварова Горка</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Соня Карпов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гаврилко Якимов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-5-12">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/bronnikovo/" data-astro-cid-zcak6nys>Деревня Бронниково</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/bronnikovo/" data-astro-cid-zcak6nys>Деревня Бронниково</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 501)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Офонька Никонов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Злобка Якимов</strong>.</p></div>
 </section>
@@ -2650,13 +2791,13 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="group-content" data-astro-cid-zcak6nys="" id="body-section-7">
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-1">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/durakov/" data-astro-cid-zcak6nys>Починок Дураков на речке на Палшме</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/durakov/" data-astro-cid-zcak6nys>Починок Дураков на речке на Палшме</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Офонька Дураков</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сенка Михалев</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-2">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/bovynin/" data-astro-cid-zcak6nys>Починок Бовынин</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/bovynin/" data-astro-cid-zcak6nys>Починок Бовынин</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Мижуйко Якушев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федко Еманов</strong>.</p></div>
 </section>
@@ -2668,43 +2809,43 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-4">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/obukhovo-ugla/" data-astro-cid-zcak6nys>Починок Обухово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/obukhovo-ugla/" data-astro-cid-zcak6nys>Починок Обухово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Останя Ондреев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Истомка Насонов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-5">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kurgany/" data-astro-cid-zcak6nys>Починок Курганы</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kurgany/" data-astro-cid-zcak6nys>Починок Курганы</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 501об.)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сенька Демин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Петрунька Василев</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-6">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/mizhuevo/" data-astro-cid-zcak6nys>Починок Мижуево</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/mizhuevo/" data-astro-cid-zcak6nys>Починок Мижуево</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Левушка Василев</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-7">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/voroshnino/" data-astro-cid-zcak6nys>Починок Ворошнино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/voroshnino/" data-astro-cid-zcak6nys>Починок Ворошнино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Воршня Климов сосновец</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Олешка Еремин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Ребро</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Розвоп Молчановы</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-8">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/golodyaevo/" data-astro-cid-zcak6nys>Починок Голодяево</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/golodyaevo/" data-astro-cid-zcak6nys>Починок Голодяево</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Елисеев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Поздейко Иевль</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-9">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/bezsoloe/" data-astro-cid-zcak6nys>Починок Безсолое</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/bezsoloe/" data-astro-cid-zcak6nys>Починок Безсолое</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Лихач Давыдов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-7-10">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/oksenovo/" data-astro-cid-zcak6nys>Починок Оксеново</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/oksenovo/" data-astro-cid-zcak6nys>Починок Оксеново</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Оксен Фомин</strong>.</p></div>
 </section>
@@ -2728,17 +2869,17 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
 <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/dmitrokovo/" data-astro-cid-zcak6nys>Починок Дмитроково</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
-<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Митя Приходец</strong>.</p></div>
+<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Митя</strong> Приходец.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-8-4">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/aristov/" data-astro-cid-zcak6nys>Починок Аристов</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/aristov/" data-astro-cid-zcak6nys>Починок Аристов</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Аристко Бобров</strong> да сын его <strong class="person-name" data-astro-cid-zcak6nys="">Есюк</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-8-5">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/na-shchuche/" data-astro-cid-zcak6nys>Починок на Щучье</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/na-shchuche/" data-astro-cid-zcak6nys>Починок на Щучье</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 502/1)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Онтонко Бодров</strong>.</p></div>
 </section>
@@ -2748,13 +2889,13 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="group-content" data-astro-cid-zcak6nys="" id="body-section-9">
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-1">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/krushkovo/" data-astro-cid-zcak6nys>Починок Крушково</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/krushkovo/" data-astro-cid-zcak6nys>Починок Крушково</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
-<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Олексейко Иванов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Приходец</strong>.</p></div>
+<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Олексейко Иванов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко</strong> Приходец.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-2">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kotovo/" data-astro-cid-zcak6nys>Починок Котово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kotovo/" data-astro-cid-zcak6nys>Починок Котово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Андрейко</strong> да <strong class="person-name" data-astro-cid-zcak6nys="">Парфенко Малаховы</strong>.</p></div>
 </section>
@@ -2766,7 +2907,7 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-4">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/peshkov/" data-astro-cid-zcak6nys>Починок Пешков</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/peshkov/" data-astro-cid-zcak6nys>Починок Пешков</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Костя</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Омелька Оксеновы</strong>.</p></div>
 </section>
@@ -2778,13 +2919,13 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-6">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/krutets/" data-astro-cid-zcak6nys>Починок Крутец</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/krutets/" data-astro-cid-zcak6nys>Починок Крутец</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федонько Окушев</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-7">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/rodino/" data-astro-cid-zcak6nys>Починок Родино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/rodino/" data-astro-cid-zcak6nys>Починок Родино</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Жук Родин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Дема Гаврилов</strong>.</p></div>
 </section>
@@ -2796,43 +2937,43 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-9">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/nazarovo/" data-astro-cid-zcak6nys>Починок Назарово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/nazarovo/" data-astro-cid-zcak6nys>Починок Назарово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Ломака Назаров</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Суровец Гридин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-10">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/timoshin/" data-astro-cid-zcak6nys>Починок Тимошин</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/timoshin/" data-astro-cid-zcak6nys>Починок Тимошин</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Микитка Логинов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Сенька Ивонин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-11">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/borisovo/" data-astro-cid-zcak6nys>Починок Борисово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/borisovo/" data-astro-cid-zcak6nys>Починок Борисово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 502об.)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Терешко Киселев</strong> да <strong class="person-name" data-astro-cid-zcak6nys="">Лучка Федюнин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-12">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/grishiev/" data-astro-cid-zcak6nys>Починок Гришиев</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/grishiev/" data-astro-cid-zcak6nys>Починок Гришиев</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Мудыга</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Васко Ивановы</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-13">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/krasnoe/" data-astro-cid-zcak6nys>Починок Красное</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/krasnoe/" data-astro-cid-zcak6nys>Починок Красное</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Орефа Гришин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-14">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/igaya/" data-astro-cid-zcak6nys>Починок Игая</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/igaya/" data-astro-cid-zcak6nys>Починок Игая</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Игнашко Онофреев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гридя Филин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-15">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/fedotov/" data-astro-cid-zcak6nys>Починок Федотов</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/fedotov/" data-astro-cid-zcak6nys>Починок Федотов</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Герасимко</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Лихач Федотовы</strong>.</p></div>
 </section>
@@ -2844,7 +2985,7 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-17">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/gologuzovo-ugla/" data-astro-cid-zcak6nys>Починок Гологузово</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/gologuzovo-ugla/" data-astro-cid-zcak6nys>Починок Гологузово</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Бориско</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гридька Митины</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Останица Иванов</strong>.</p></div>
 </section>
@@ -2858,13 +2999,13 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
 <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/ananino/" data-astro-cid-zcak6nys>Починок Ананьино</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
-<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Тимоха Приходец</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Панько Корнилов</strong>.</p></div>
+<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Тимоха</strong> Приходец.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Панько Корнилов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-20">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
 <h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/senkin/" data-astro-cid-zcak6nys>Починок Сенькин</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
-<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 502/2)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Рябинка Якушев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Офонька Приходец</strong>.</p></div>
+<div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 502/2)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Рябинка Якушев</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Офонька</strong> Приходец.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-21">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
@@ -2874,25 +3015,25 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-22">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/telyatnik/" data-astro-cid-zcak6nys>Починок Телятник</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/telyatnik/" data-astro-cid-zcak6nys>Починок Телятник</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Мелех Титов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Омоско Шарапов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-23">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/fomkin/" data-astro-cid-zcak6nys>Починок Фомкин</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/fomkin/" data-astro-cid-zcak6nys>Починок Фомкин</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Фомка Иванов</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-24">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/modenov/" data-astro-cid-zcak6nys>Починок Моденов</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/modenov/" data-astro-cid-zcak6nys>Починок Моденов</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Нечайко Ефанов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Зеновко Олюнин</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-25">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pochinok-ugla/" data-astro-cid-zcak6nys>Деревня Починок</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pochinok-ugla/" data-astro-cid-zcak6nys>Деревня Починок</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Иванко Лабунин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Поминко Онтонов</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Нечайко Конанов</strong>.</p></div>
 </section>
@@ -2910,13 +3051,13 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-28">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kuleberovo/" data-astro-cid-zcak6nys>Починок Кулеберово на Уломе</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/kuleberovo/" data-astro-cid-zcak6nys>Починок Кулеберово на Уломе</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Онтипка</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Зык Самсоновы</strong>.</p></div>
 </section>
 <section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-9-29">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/saunkin/" data-astro-cid-zcak6nys>Починок Саункин</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/saunkin/" data-astro-cid-zcak6nys>Починок Саункин</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Зуй Саунин</strong>.</p><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Молоха Иванов</strong>.</p></div>
 </section>
@@ -2954,12 +3095,12 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Митя Поваров</strong>.</p></div>
 </section><section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-10-6">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/golobokovo/" data-astro-cid-zcak6nys>Починок Голобоково</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/golobokovo/" data-astro-cid-zcak6nys>Починок Голобоково</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Федько Голобок</strong>.</p></div>
 </section><section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-10-7">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/selivanov/" data-astro-cid-zcak6nys>Починок Селиванов</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/selivanov/" data-astro-cid-zcak6nys>Починок Селиванов</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Селька Костин</strong>.</p></div>
 </section><section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-10-8">
@@ -2974,7 +3115,7 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys=""><span class="page-mark" data-astro-cid-zcak6nys="">(л. 503)</span> Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Степанко Шашурин</strong>.</p></div>
 </section><section class="record" data-astro-cid-zcak6nys="" id="belozersky-1544-place-10-10">
 <div class="record-heading-line" data-astro-cid-zcak6nys="">
-<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/moshkov/" data-astro-cid-zcak6nys>Починок Мошков</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
+<h3 class="record-title" data-astro-cid-zcak6nys=""><a class="place-title-link" href="../../places/pustosh-mushkovo-1626-75/" data-astro-cid-zcak6nys>Починок Мошков</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></h3>
 </div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Калинка Фомин</strong>.</p></div>
 </section><section aria-labelledby="section-11" class="record-group" data-astro-cid-zcak6nys="">
@@ -2991,7 +3132,7 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 <h2 class="group-heading" data-astro-cid-zcak6nys="" id="section-12"><button aria-controls="body-section-12" aria-expanded="true" aria-label="Свернуть подраздел" class="heading-toggle" data-astro-cid-zcak6nys="" data-body-toggle="" type="button"><span aria-hidden="true" class="heading-toggle-icon" data-astro-cid-zcak6nys="">▾</span></button>А в Чюравских.</h2>
 <div class="group-content" data-astro-cid-zcak6nys="" id="body-section-12">
 <section class="record" data-astro-cid-zcak6nys="" id="place-12-1">
-<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a data-astro-cid-zcak6nys="" href="../../places/loshakovo-monastery/">Починок Лошаково</a><span style="font-weight:400!important;color:#33281f!important;font-size:.9375rem!important"> против митрополича </span><a data-astro-cid-zcak6nys="" href="../../places/loshakova/">починка Лошакова</a><span class="record-punctuation" data-astro-cid-zcak6nys=""></span></h3><span id="belozersky-1544-place-12-1-metropolitan" class="heading-inline-prose" data-astro-cid-zcak6nys="">, а меж ими ручей Вязовик.</span></div>
+<div class="record-heading-line" data-astro-cid-zcak6nys=""><h3 class="record-title" data-astro-cid-zcak6nys=""><a data-astro-cid-zcak6nys="" href="../../places/loshakovo-monastery/">Починок Лошаково</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span style="font-weight:400!important;color:#33281f!important;font-size:.9375rem!important"> против митрополича </span><a data-astro-cid-zcak6nys="" href="../../places/loshakova/">починка Лошакова</a><span class="book-place-location" role="img" aria-label="Есть координаты" title="Есть координаты"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span class="record-punctuation" data-astro-cid-zcak6nys=""></span></h3><span id="belozersky-1544-place-12-1-metropolitan" class="heading-inline-prose" data-astro-cid-zcak6nys="">, а меж ими ручей Вязовик.</span></div>
 <div class="record-body" data-astro-cid-zcak6nys=""><p class="courtyard" data-astro-cid-zcak6nys="">Во дворе <strong class="person-name" data-astro-cid-zcak6nys="">Гаврилко Бобыкин сын</strong>.</p></div>
 </section>
 <section class="record church-source-fragment" id="belozersky-1544-nativity-church"><p class="church-source-lead" id="nativity-church"><span class="heading-inline-prose">На монастырской же земле </span><a href="../../churches/rozhdestva-bogoroditsy-churovskaya-1544/">церковь Рожество Пречистые</a><span class="record-punctuation" data-astro-cid-zcak6nys="">.</span></p>
@@ -3037,6 +3178,29 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
 (() => {
   const root = document.querySelector(".document-body");
   if (!root) return;
+  const villageGroupId = "body-folios-547-561-place-48";
+  const villageGroup = document.getElementById(villageGroupId);
+  const villageGroupButton = [...document.querySelectorAll("[aria-controls]")].find((button) => button.getAttribute("aria-controls") === villageGroupId);
+  if (villageGroup && villageGroupButton) {
+    villageGroupButton.addEventListener("click", () => {
+      const expanded = villageGroupButton.getAttribute("aria-expanded") === "true";
+      villageGroupButton.setAttribute("aria-expanded", String(!expanded));
+      villageGroupButton.setAttribute("aria-label", expanded ? "Развернуть подраздел" : "Свернуть подраздел");
+      villageGroup.hidden = expanded;
+    });
+    const revealVillageGroup = () => {
+      let targetId = location.hash.slice(1);
+      try { targetId = decodeURIComponent(targetId); } catch {}
+      const target = document.getElementById(targetId);
+      if (target && villageGroup.contains(target) && villageGroup.hidden) {
+        villageGroup.hidden = false;
+        villageGroupButton.setAttribute("aria-expanded", "true");
+        villageGroupButton.setAttribute("aria-label", "Свернуть подраздел");
+      }
+    };
+    window.addEventListener("hashchange", revealVillageGroup);
+    revealVillageGroup();
+  }
   const starayaSection = document.getElementById("belozersky-1626-fragment-staraya");
   const starayaHeadingRow = starayaSection?.previousElementSibling;
   if (starayaHeadingRow?.classList.contains("heading-row")) {
@@ -3074,5 +3238,127 @@ body.embedded-book [id] { scroll-margin-top: 0 !important; }
       node.replaceWith(fragment);
     }
   }
+})();
+</script><script id="book-reading-position-script">(() => {
+  if (new URLSearchParams(location.search).get("embed") === "1") return;
+
+  const navigationType = performance.getEntriesByType("navigation")[0]?.type;
+  const storageKey = () => `belozerye:book-reading:${location.pathname}:${location.hash}`;
+  const controls = () => {
+    const occurrences = new Map();
+    return [...document.querySelectorAll("button.heading-toggle[aria-expanded]")].map((button) => {
+      const entry = button.closest("[data-contents-entry]");
+      const heading = button.closest("h1,h2,h3,h4,h5,h6");
+      const base = button.hasAttribute("data-contents-toggle") ? "contents"
+        : entry ? `contents:${entry.dataset.contentsKey ?? entry.querySelector("a")?.getAttribute("href")}`
+        : button.hasAttribute("aria-controls") ? `panel:${button.getAttribute("aria-controls")}`
+        : `heading:${heading?.id || [...document.querySelectorAll(".document-body h1,.document-body h2,.document-body h3,.document-body h4")].indexOf(heading)}`;
+      const occurrence = occurrences.get(base) ?? 0;
+      occurrences.set(base, occurrence + 1);
+      return [`${base}:${occurrence}`, button];
+    });
+  };
+
+  let saved;
+  if (navigationType === "reload" || navigationType === "back_forward") {
+    try { saved = JSON.parse(sessionStorage.getItem(storageKey())); } catch {}
+  }
+  let restoring = Number.isFinite(saved?.y);
+  let timers = [];
+  const save = () => {
+    if (restoring) return;
+    try {
+      sessionStorage.setItem(storageKey(), JSON.stringify({
+        x: scrollX, y: scrollY,
+        controls: controls().map(([key, button]) => [key, button.getAttribute("aria-expanded") === "true"])
+      }));
+    } catch {}
+  };
+  const scrollToHash = () => {
+    if (!location.hash) return;
+    let id;
+    try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
+    const target = document.getElementById(id);
+    if (!target) return;
+    const headerHeight = document.querySelector("body > header")?.getBoundingClientRect().height ?? 0;
+    scrollTo({ top: Math.max(0, scrollY + target.getBoundingClientRect().top - headerHeight - 32), behavior: "instant" });
+  };
+
+  if (restoring) {
+    history.scrollRestoration = "manual";
+    const expanded = new Map(saved.controls ?? []);
+    for (const [key, button] of controls()) {
+      if (expanded.has(key) && expanded.get(key) !== (button.getAttribute("aria-expanded") === "true")) button.click();
+    }
+  }
+  const initialize = () => {
+    if (restoring) {
+      const restore = () => {
+        if (restoring) scrollTo({ top: saved.y, left: saved.x ?? 0, behavior: "instant" });
+      };
+      requestAnimationFrame(() => requestAnimationFrame(restore));
+      timers = [150, 500].map(delay => setTimeout(restore, delay));
+      timers.push(setTimeout(() => { restoring = false; save(); }, 550));
+    } else if (navigationType !== "reload" && navigationType !== "back_forward") {
+      requestAnimationFrame(() => requestAnimationFrame(scrollToHash));
+      timers = [setTimeout(scrollToHash, 150)];
+    }
+  };
+  if (document.readyState === "complete") initialize();
+  else addEventListener("load", initialize, { once: true });
+
+  const stopRestoring = () => {
+    timers.forEach(clearTimeout);
+    restoring = false;
+  };
+  for (const event of ["wheel", "touchstart", "pointerdown", "keydown"]) {
+    addEventListener(event, stopRestoring, { passive: true });
+  }
+  let scheduled = false;
+  addEventListener("scroll", () => {
+    if (scheduled || restoring) return;
+    scheduled = true;
+    requestAnimationFrame(() => { scheduled = false; save(); });
+  }, { passive: true });
+  document.addEventListener("click", (event) => {
+    if (event.target.closest("button.heading-toggle")) queueMicrotask(save);
+  });
+  addEventListener("pagehide", save);
+  addEventListener("hashchange", () => {
+    stopRestoring();
+    requestAnimationFrame(() => requestAnimationFrame(scrollToHash));
+    timers = [setTimeout(scrollToHash, 150)];
+  });
+})();
+</script><script id="book-refresh-script">(() => {
+  if (!["127.0.0.1", "localhost", "[::1]"].includes(location.hostname)) return;
+  const metadata = document.querySelector('meta[name="belozerye-book-revision"]');
+  if (!metadata) return;
+  let checking = false;
+  const checkRevision = async () => {
+    if (checking || document.visibilityState === "hidden") return;
+    checking = true;
+    try {
+      const response = await fetch(new URL("../../book-revisions.json", location.href), { cache: "no-store" });
+      if (!response.ok) return;
+      const revisions = await response.json();
+      const revision = revisions[metadata.dataset.bookSlug];
+      if (!revision || revision === metadata.content) return;
+      if (new URLSearchParams(location.search).get("embed") === "1") {
+        const url = new URL(location.href);
+        url.searchParams.set("revision", revision);
+        location.replace(url.href);
+      } else {
+        location.reload();
+      }
+    } catch {
+      // The local server may be stopped or rebuilding; retry on the next check.
+    } finally {
+      checking = false;
+    }
+  };
+  setInterval(checkRevision, 3000);
+  addEventListener("focus", checkRevision);
+  document.addEventListener("visibilitychange", checkRevision);
 })();
 </script></body></html>

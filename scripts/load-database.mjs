@@ -71,14 +71,43 @@ for (const row of db.prepare(`
   states.push(state);
   nameStatesByPlace.set(row.place_id, states);
 }
+const administrativeUnitsById = new Map(db.prepare("SELECT id, name, parent_id FROM administrative_units").all()
+  .map((unit) => [unit.id, unit]));
+const administrativeUnitPath = (unitId) => {
+  const names = [];
+  const visited = new Set();
+  while (unitId) {
+    if (visited.has(unitId)) throw new Error(`Circular administrative hierarchy at ${unitId}.`);
+    visited.add(unitId);
+    const unit = administrativeUnitsById.get(unitId);
+    if (!unit) throw new Error(`Unknown administrative unit ${unitId}.`);
+    names.unshift(unit.name);
+    unitId = unit.parent_id;
+  }
+  return names;
+};
 const administrativeContextByMention = new Map();
 for (const row of db.prepare(`
-  SELECT links.mention_id, links.context_key, units.name, units.label
+  SELECT links.mention_id, links.context_key, links.display_label, units.id AS unit_id, units.name, units.label
   FROM mention_administrative_units AS links
   JOIN administrative_units AS units ON units.id = links.administrative_unit_id
+  ORDER BY links.rowid
 `).all()) {
   const context = administrativeContextByMention.get(row.mention_id) ?? {};
-  context[row.context_key] = row.name;
+  if (row.context_key === "subdivision") {
+    const subdivisions = context.subdivision ?? [];
+    if (!subdivisions.includes(row.name)) subdivisions.push(row.name);
+    context.subdivision = subdivisions;
+    const paths = context.subdivision_paths ?? [];
+    paths.push(administrativeUnitPath(row.unit_id));
+    context.subdivision_paths = paths;
+    if (row.display_label) {
+      context.subdivision_labels ??= {};
+      context.subdivision_labels[row.name] = row.display_label;
+    }
+  } else {
+    context[row.context_key] = row.name;
+  }
   if (row.label) context[`${row.context_key}_label`] = row.label;
   administrativeContextByMention.set(row.mention_id, context);
 }

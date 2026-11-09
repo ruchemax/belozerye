@@ -4,14 +4,24 @@ Database file: `data/belozerye.sqlite`. It is the website's only active data
 source: the site builder reads settlements, mentions, coordinates, and the full
 texts of books from it.
 
-The `content/books` directory is retained as backup source material. The builder
-does not read, modify, or require it to run the website.
+The HTML files in `content/books` are retained as backup source material.
+Each book's `CHANGELOG.md` records its publication date and later text additions.
+Update this journal when committing or pushing new book text, following
+[AGENTS.md](AGENTS.md). Formatting changes are not journal entries. The builder
+reads these journals to populate Updates on the home page; it does not read or
+modify the archival HTML files.
 
 Rebuild the pages after editing the database:
 
 ```powershell
 npm.cmd run build
 ```
+
+## Book formatting conventions
+
+- Entries in every book's table of contents must not end with a period. Keep
+  punctuation in the transcribed book text unchanged; this rule applies only to
+  the visible table-of-contents labels.
 
 Create a backup before major changes:
 
@@ -210,18 +220,25 @@ Historical administrative units extracted from a mention's context.
 | `kind` | `TEXT` | Unit type: `uezd`, `volost`, `stan`, `prikaz`, or `subdivision`. |
 | `name` | `TEXT` | Name as written in the source. |
 | `label` | `TEXT`, nullable | Display label. |
+| `parent_id` | `TEXT`, nullable, FK to `administrative_units.id` | Enclosing unit, for example Charomsky key for selo Ilyinskoe. |
+
+Subdivision paths follow `parent_id`. Cards show enclosing units before their
+children; unrelated subdivisions remain separate affiliations.
 
 ### `mention_administrative_units`
 
-Links a mention to its administrative context.
+Links a mention to its administrative context. A mention can belong to multiple
+units with the `subdivision` context key at the same time.
 
 | Column | Type | Description |
 |---|---|---|
 | `mention_id` | `TEXT`, PK, FK → `mentions.id` | Mention. |
 | `administrative_unit_id` | `TEXT`, FK → `administrative_units.id` | Administrative unit. |
 | `context_key` | `TEXT`, PK | Context key: `uezd`, `volost`, and so on. |
+| `display_label` | `TEXT`, nullable | Wording for this mention's affiliation, such as “тянут к Запогостью”. The unit keeps its canonical name. |
 
-Composite primary key: (`mention_id`, `context_key`).
+Composite primary key: (`mention_id`, `context_key`, `administrative_unit_id`).
+Other context keys retain a unique (`mention_id`, `context_key`) pair.
 
 ### `mention_land_categories`
 

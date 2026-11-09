@@ -4,6 +4,7 @@
   <url><loc>https://belozersky.uezd.workers.dev/books/belozersky_uezd-1544/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/books/belozersky_uezd-1585/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/books/belozersky_uezd-1626-27/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/churches/andreya-pervozvannogo-charoma/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/churches/bogoyavlenie-ugol/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/churches/georgiya-pobedonostsa-ugol/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/churches/ili-proroka-charoma/</loc></url>
@@ -11,6 +12,7 @@
   <url><loc>https://belozersky.uezd.workers.dev/churches/nikolaya-chudotvortsa-churovskaya/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/churches/rozhdestva-bogoroditsy-churovskaya-1544/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/churches/rozhdestva-bogoroditsy-churovskaya/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/churches/rozhdestva-khristova-zapogost/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/map/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/ananino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/aristov/</loc></url>
@@ -24,12 +26,21 @@
   <url><loc>https://belozersky.uezd.workers.dev/places/brykino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/charoma/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/chyuravskaya-nov/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/da-k-pogos-t-u-zh-tserkovnaya-pustosh-belaya-1626-19/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/davydovo/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/demidov-bolshoe/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/demsino/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/derevnya-1626-6/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/derevnya-anshukovo-na-rechke-na-ulomke-1626-40/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/derevnya-gnevosheva-na-rechke-na-chyurovke-1626-30/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/derevnya-gorka-na-rechke-na-ulomke-1626-4/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/derevnya-ivashevo-na-rechke-na-ulolmke-1626-2/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/derevnya-pochinok-na-rechke-na-chyurovke-1626-34/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/derevnya-voltsovo-1626-9/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/derevyanitsa/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/dmitrokovo/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/dor/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/drozdovo-churovka/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/drozdovo/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/dryugino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/dubrova/</loc></url>
@@ -100,7 +111,6 @@
   <url><loc>https://belozersky.uezd.workers.dev/places/maltsov/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/manuylova/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/medvezhe/</loc></url>
-  <url><loc>https://belozersky.uezd.workers.dev/places/mervyatino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/merzlyakovo/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/mikhaylovskaya/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/mizhuevo/</loc></url>
@@ -108,7 +118,6 @@
   <url><loc>https://belozersky.uezd.workers.dev/places/modenov/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/mokrotsyno/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/morshikha/</loc></url>
-  <url><loc>https://belozersky.uezd.workers.dev/places/moshkov/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/mosyakino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/mudygino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/mys/</loc></url>
@@ -160,6 +169,47 @@
   <url><loc>https://belozersky.uezd.workers.dev/places/prikino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/pritykino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/pryamikovo/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustish-portamoyka-1626-73/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-agafonova-1626-83/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-agarevo-1626-101/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-baranovo-na-rechke-na-ulomke-1626-24/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-beusovo-1626-65/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-davytkova-1626-92/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-demino-1626-64/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-dubamino-1626-79/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-dunkina-1626-58/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-feoktistova-1626-99/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-gorka-1626-47/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-ignashkovo-1626-81/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-kobelevo-1626-82/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-krutets-lgunin-1626-63/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-kuchino-1626-96/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-kvasino-1626-51/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-lodygino-1626-80/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-makarovo-1626-77/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-mikitino-1626-100/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-mishitino-1626-25/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-mishkino-1626-62/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-mordvinovo-1626-88/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-morozovo-1626-91/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-mushkovo-1626-75/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-ondronnikovo-1626-49/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-orkhino-1626-78/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-perkhito-1626-61/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-pochka-1626-104/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-postryaevo-1626-102/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-retino-1626-50/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-rusanova-1626-105/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-rzhavitsy-1626-74/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-semenova-1626-60/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-sinitsyno-1626-95/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-stepanovskaya-1626-71/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-stepanovskaya-1626-93/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-stupnevo-1626-85/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-tishina-1626-66/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-titovo-1626-84/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-tushino-1626-67/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/pustosh-zakharko-1626-57/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/pyatkov/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/ramene/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/rameshka-churovskaya-2/</loc></url>
@@ -192,6 +242,7 @@
   <url><loc>https://belozersky.uezd.workers.dev/places/sofonovo/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/sogareva/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/sokolovo/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/sosnovka-monastery/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/sosnovka/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/staraya/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/stikino/</loc></url>
@@ -206,8 +257,8 @@
   <url><loc>https://belozersky.uezd.workers.dev/places/tolstoe-ramene/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/troshino/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/trufonovo/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/u-pogosta-zh-na-tserkovnoy-zemle-pochinok-kolovin-1626-13/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/ulushkovo/</loc></url>
-  <url><loc>https://belozersky.uezd.workers.dev/places/uvarova-gorka/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/vasileva/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/vladychna/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/vorobevo/</loc></url>
@@ -215,9 +266,11 @@
   <url><loc>https://belozersky.uezd.workers.dev/places/vysokoe-churovskaya/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/vysokoe-ugla/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/yakulkino/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/yakunino-monastery/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/yaltsova/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/yartsova/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/zaopoche/</loc></url>
+  <url><loc>https://belozersky.uezd.workers.dev/places/zapogostye/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/zarkovo/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/zhukovo/</loc></url>
   <url><loc>https://belozersky.uezd.workers.dev/places/zoserikhino/</loc></url>

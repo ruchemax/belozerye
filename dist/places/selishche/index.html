@@ -1196,7 +1196,13 @@ footer {
           Координаты
         </span>
 
-        <span class="location-coordinates">не установлены</span>
+        <a
+          class="location-coordinates"
+          href="https://yandex.ru/maps/?ll=38.40255138888889%2C59.13588638888889&amp;z=14&amp;pt=38.40255138888889%2C59.13588638888889"
+          target="_blank"
+          rel="noopener noreferrer">
+          59°8′9″ с. ш., 38°24′9″ в. д.
+        </a>
 
       </div>
 
@@ -1210,6 +1216,7 @@ footer {
       <summary><span class="overview-label">Названия</span></summary>
       <ul class="overview-value">
                 <li>деревня Селище (1544)</li>
+        <li>пустошь Селище (1626/27)</li>
       </ul>
     </details>
 
@@ -1217,13 +1224,14 @@ footer {
       <summary><span class="overview-label">Административная принадлежность</span></summary>
       <ul class="overview-value">
                 <li>Белозерский уезд · волость Угла · Судбицы (1544)</li>
+        <li>Белозерский уезд · Надпорожский стан · Судбицы (1626/27)</li>
       </ul>
     </details>
 
     <details class="overview">
       <summary><span class="overview-label">Принадлежность земли</span></summary>
       <ul class="overview-value">
-                <li>Монастырская: Кирилло-Белозерский монастырь (1544)</li>
+                <li>Монастырская: Кирилло-Белозерский монастырь (1544, 1626/27)</li>
       </ul>
     </details>
 
@@ -1259,7 +1267,38 @@ footer {
 <div class="source-content-card">
             <div class="source-fragment">
               <section class="source-document-window" aria-label="Деревня Селище" style="height:230px">
-                <iframe src="../../books/belozersky_uezd-1544/?embed=1&view=fragment-layout-8&revision=15&end=belozersky-1544-place-2-2#belozersky-1544-place-2-2" title="Деревня Селище" loading="lazy" data-fragment-anchor="belozersky-1544-place-2-2" data-fragment-end-anchor="belozersky-1544-place-2-2"></iframe>
+                <iframe src="../../books/belozersky_uezd-1544/?embed=1&view=fragment-layout-8&revision=cd8cecfba501&end=belozersky-1544-place-2-2#belozersky-1544-place-2-2" title="Деревня Селище" loading="lazy" data-fragment-anchor="belozersky-1544-place-2-2" data-fragment-end-anchor="belozersky-1544-place-2-2"></iframe>
+              </section>
+              <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
+              <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
+            </div>
+          </div>
+
+        </div>
+
+      </details>
+    </section>
+
+    <section class="mention-card" aria-labelledby="source-2">
+
+      <details class="source-details">
+
+        <summary>
+          <span class="source-summary-copy">
+            <span id="source-2" class="source-title">
+              <a href="../../books/belozersky_uezd-1626-27/">
+                Писцовая книга Белозерского уезда (1626/27 г.)
+              </a>
+            </span>
+          </span>
+        </summary>
+
+        <div class="source-body">
+
+<div class="source-content-card">
+            <div class="source-fragment">
+              <section class="source-document-window" aria-label="Пустошь Селище на речке на Судобке" style="height:255px">
+                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=0f706ca0248d&end=belozersky-1626-fragment-folios-547-561-place-44#belozersky-1626-fragment-folios-547-561-place-44" title="Пустошь Селище на речке на Судобке" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-folios-547-561-place-44" data-fragment-end-anchor="belozersky-1626-fragment-folios-547-561-place-44"></iframe>
               </section>
               <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
               <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
@@ -1306,8 +1345,8 @@ footer {
 <script src="../../js/yandex-map.js"></script>
 
 <script>
-  const villageLat = 59.6;
-  const villageLon = 38.1;
+  const villageLat = 59.13588638888889;
+  const villageLon = 38.40255138888889;
   const activePlaceId = "selishche";
   const placePagePath = "../";
   const markerContainer = document.querySelector(".map-frame");
@@ -1321,7 +1360,7 @@ footer {
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
-      zoom: 8
+      zoom: 14
     }),
     controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
@@ -1470,8 +1509,10 @@ footer {
   loadMapMarkers();
 </script><script>
   (() => {
+    const frameIsVisible = (frame) => frame.getBoundingClientRect().width > 0
+      && frame.getBoundingClientRect().height > 0;
     const setFrameHeight = (frame, height) => {
-      if (!Number.isFinite(height) || height <= 0) return;
+      if (!frameIsVisible(frame) || !Number.isFinite(height) || height <= 2) return;
       const window = frame.closest(".source-document-window");
       if (window) {
         const fragmentHeight = Math.ceil(height);
@@ -1480,6 +1521,7 @@ footer {
       }
     };
     const resizeToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return;
       try {
         const document = frame.contentDocument;
         const target = document?.getElementById(frame.dataset.fragmentAnchor);
@@ -1513,6 +1555,7 @@ footer {
       }
     };
     const scrollToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return false;
       try {
         const target = frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor);
         if (!target || !frame.contentWindow) return false;
@@ -1536,18 +1579,22 @@ footer {
       }
     });
     for (const frame of document.querySelectorAll(".source-document-window iframe")) {
+      let preparationTimers = [];
       const prepareFrame = () => {
-        if (frame.dataset.fragmentPrepareScheduled) return;
-        frame.dataset.fragmentPrepareScheduled = "true";
-        setTimeout(() => {
+        preparationTimers.forEach(clearTimeout);
+        const prepare = () => {
+          if (!frameIsVisible(frame)) return;
           resizeToFragment(frame);
           requestAnimationFrame(() => revealFrameAtFragment(frame));
-        }, 520);
+        };
+        requestAnimationFrame(() => requestAnimationFrame(prepare));
+        preparationTimers = [150, 550, 1500].map(delay => setTimeout(prepare, delay));
       };
       frame.addEventListener("load", prepareFrame);
+      frame.closest(".source-details")?.addEventListener("toggle", (event) => {
+        if (event.currentTarget.open) prepareFrame();
+      });
       if (frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor)) prepareFrame();
-      setTimeout(() => resizeToFragment(frame), 700);
-      setTimeout(() => resizeToFragment(frame), 2000);
     }
     document.addEventListener("click", (event) => {
       const button = event.target.closest("[data-return-to-fragment]");

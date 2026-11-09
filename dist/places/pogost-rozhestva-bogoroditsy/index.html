@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Погост Рождества Богородицы — Белозерье</title>
+<title>Чуровский погост — Белозерье</title>
 
 <!-- OpenLayers -->
 <link
@@ -1133,7 +1133,7 @@ footer {
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:site_name" content="Белозерье">
-  <meta property="og:title" content="Погост Рождества Богородицы — Белозерье">
+  <meta property="og:title" content="Чуровский погост — Белозерье">
   <meta property="og:url" content="https://belozersky.uezd.workers.dev/places/pogost-rozhestva-bogoroditsy/">
   <meta name="twitter:card" content="summary">
 </head>
@@ -1158,7 +1158,7 @@ footer {
 
   <div class="place-info">
 
-    <h1>Погост Рождества Богородицы</h1>
+    <h1>Чуровский погост</h1>
 
     <div class="place-meta-row">
 
@@ -1215,7 +1215,7 @@ footer {
     <details class="overview">
       <summary><span class="overview-label">Названия</span></summary>
       <ul class="overview-value">
-                <li>погост Рождества Богородицы (1626/27)</li>
+                <li>Чуровский погост (1626/27)</li>
       </ul>
     </details>
 
@@ -1272,7 +1272,7 @@ footer {
 <div class="source-content-card">
             <div class="source-fragment">
               <section class="source-document-window" aria-label="В Чюровской же волости погост на патриаршей земле" style="height:375px">
-                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=15&end=belozersky-1626-fragment-patriarchal-churchyard#belozersky-1626-fragment-patriarchal-churchyard" title="В Чюровской же волости погост на патриаршей земле" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-patriarchal-churchyard" data-fragment-end-anchor="belozersky-1626-fragment-patriarchal-churchyard"></iframe>
+                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=0f706ca0248d&end=belozersky-1626-fragment-patriarchal-churchyard#belozersky-1626-fragment-patriarchal-churchyard" title="В Чюровской же волости погост на патриаршей земле" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-patriarchal-churchyard" data-fragment-end-anchor="belozersky-1626-fragment-patriarchal-churchyard"></iframe>
               </section>
               <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
               <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
@@ -1290,13 +1290,13 @@ footer {
 
   <section
     class="place-map"
-    aria-label="Карта: Погост Рождества Богородицы">
+    aria-label="Карта: Чуровский погост">
 
     <div class="map-frame">
 
       <div
         id="village-map"
-        aria-label="Интерактивная карта: Погост Рождества Богородицы">
+        aria-label="Интерактивная карта: Чуровский погост">
       </div>
 
     </div>
@@ -1483,8 +1483,10 @@ footer {
   loadMapMarkers();
 </script><script>
   (() => {
+    const frameIsVisible = (frame) => frame.getBoundingClientRect().width > 0
+      && frame.getBoundingClientRect().height > 0;
     const setFrameHeight = (frame, height) => {
-      if (!Number.isFinite(height) || height <= 0) return;
+      if (!frameIsVisible(frame) || !Number.isFinite(height) || height <= 2) return;
       const window = frame.closest(".source-document-window");
       if (window) {
         const fragmentHeight = Math.ceil(height);
@@ -1493,6 +1495,7 @@ footer {
       }
     };
     const resizeToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return;
       try {
         const document = frame.contentDocument;
         const target = document?.getElementById(frame.dataset.fragmentAnchor);
@@ -1526,6 +1529,7 @@ footer {
       }
     };
     const scrollToFragment = (frame) => {
+      if (!frameIsVisible(frame)) return false;
       try {
         const target = frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor);
         if (!target || !frame.contentWindow) return false;
@@ -1549,18 +1553,22 @@ footer {
       }
     });
     for (const frame of document.querySelectorAll(".source-document-window iframe")) {
+      let preparationTimers = [];
       const prepareFrame = () => {
-        if (frame.dataset.fragmentPrepareScheduled) return;
-        frame.dataset.fragmentPrepareScheduled = "true";
-        setTimeout(() => {
+        preparationTimers.forEach(clearTimeout);
+        const prepare = () => {
+          if (!frameIsVisible(frame)) return;
           resizeToFragment(frame);
           requestAnimationFrame(() => revealFrameAtFragment(frame));
-        }, 520);
+        };
+        requestAnimationFrame(() => requestAnimationFrame(prepare));
+        preparationTimers = [150, 550, 1500].map(delay => setTimeout(prepare, delay));
       };
       frame.addEventListener("load", prepareFrame);
+      frame.closest(".source-details")?.addEventListener("toggle", (event) => {
+        if (event.currentTarget.open) prepareFrame();
+      });
       if (frame.contentDocument?.getElementById(frame.dataset.fragmentAnchor)) prepareFrame();
-      setTimeout(() => resizeToFragment(frame), 700);
-      setTimeout(() => resizeToFragment(frame), 2000);
     }
     document.addEventListener("click", (event) => {
       const button = event.target.closest("[data-return-to-fragment]");

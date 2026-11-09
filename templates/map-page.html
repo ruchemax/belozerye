@@ -53,6 +53,10 @@
     .map-head { display:flex; justify-content:space-between; gap:14px; align-items:baseline; padding:15px 17px 11px; }
     .map-head p { margin:3px 0 0; color:var(--muted); font:.78rem system-ui,sans-serif; }
     #filter-map { flex:1; min-height:0; background:#e5e7dc; }
+    .map-marker-popup { position:relative; min-width:185px; max-width:260px; padding:9px 10px; border:1px solid #8d7352; border-radius:5px; background:#fffaf0; box-shadow:0 3px 12px #0003; font: .78rem/1.35 system-ui,sans-serif; }
+    .map-marker-popup strong { display:block; margin:0 20px 7px 0; color:var(--ink); }
+    .map-marker-popup a { display:block; padding:4px 0; color:var(--accent); text-decoration:underline; text-underline-offset:2px; }
+    .map-marker-popup-close { position:absolute; top:4px; right:5px; padding:1px 5px; color:var(--ink); background:transparent; border:0; font-size:1rem; }
     .panel-tabs { display:flex; gap:3px; margin-bottom:8px; border-bottom:1px solid var(--line); }
     .panel-tabs button { margin:0; padding:5px 7px; border:0; border-bottom:2px solid transparent; border-radius:3px 3px 0 0; color:var(--muted); background:transparent; }
     .panel-tabs button[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--accent); }
@@ -88,9 +92,11 @@
         <label>Источник<select data-filter="books"><option value="">Все источники</option></select></label>
         <div id="source-filters" hidden>
           <label>Уезд<select data-filter="administrativeUezd"><option value="">Все уезды</option></select></label>
+          <label>Стан<select data-filter="administrativeStan" disabled><option value="">Все станы</option></select></label>
           <label>Приказ<select data-filter="administrativePrikaz"><option value="">Все приказы</option></select></label>
           <label>Волость<select data-filter="administrativeVolost"><option value="">Все волости</option></select></label>
-          <label>Подразделение<select data-filter="administrativeChild" disabled><option value="">Все подразделения</option></select></label>
+          <label>Ключ / Подразделение<select data-filter="administrativeChild" disabled><option value="">Все ключи / подразделения</option></select></label>
+          <label>Село<select data-filter="administrativeSelo" disabled><option value="">Все сёла</option></select></label>
           <label>Принадлежность земли<select data-filter="land"><option value="">Все значения</option></select></label>
           <label>Владелец<select data-filter="owners"><option value="">Все владельцы</option></select></label>
         </div>
@@ -127,9 +133,11 @@
       const objectKind = document.querySelector('[data-filter="objectKind"]');
       const sourceFilters = document.querySelector("#source-filters");
       const administrativeUezd = document.querySelector('[data-filter="administrativeUezd"]');
+      const administrativeStan = document.querySelector('[data-filter="administrativeStan"]');
       const administrativePrikaz = document.querySelector('[data-filter="administrativePrikaz"]');
       const administrativeVolost = document.querySelector('[data-filter="administrativeVolost"]');
       const administrativeChild = document.querySelector('[data-filter="administrativeChild"]');
+      const administrativeSelo = document.querySelector('[data-filter="administrativeSelo"]');
       const groupColor = document.querySelector('[data-filter="groupColor"]');
       const groupList = document.querySelector("#group-list");
       const currentFilterControls = document.querySelector("#current-filter-controls");
@@ -157,25 +165,30 @@
         const option = document.createElement("option"); option.value = value; option.textContent = label; select.append(option);
       });
       addOptions(selects.books, bookOptions);
+      const selectedBook = () => selects.books.value;
       const resetOptions = (select, label) => { select.innerHTML = ""; const option=document.createElement("option"); option.value=""; option.textContent=label; select.append(option); };
       const currentGroup = () => ({
         id: "current",
         color: groupColor.value,
         objectKind: objectKind.value,
-        books: selects.books.value,
+        books: selectedBook(),
         land: selects.land.value,
         owners: selects.owners.value,
         uezd: administrativeUezd.value,
+        stan: administrativeStan.value,
         prikaz: administrativePrikaz.value,
         volost: administrativeVolost.value,
         child: administrativeChild.value,
+        selo: administrativeSelo.value,
         labels: {
           "Тип объекта": objectKind.selectedOptions[0]?.textContent,
           "Источник": selects.books.selectedOptions[0]?.textContent,
           "Уезд": administrativeUezd.selectedOptions[0]?.textContent,
+          "Стан": administrativeStan.selectedOptions[0]?.textContent,
           "Приказ": administrativePrikaz.selectedOptions[0]?.textContent,
           "Волость": administrativeVolost.selectedOptions[0]?.textContent,
-          "Подразделение": administrativeChild.selectedOptions[0]?.textContent,
+          "Ключ / Подразделение": administrativeChild.selectedOptions[0]?.textContent,
+          "Село": administrativeSelo.selectedOptions[0]?.textContent,
           "Принадлежность земли": selects.land.selectedOptions[0]?.textContent,
           "Владелец": selects.owners.selectedOptions[0]?.textContent
         }
@@ -184,9 +197,10 @@
         (!group.books || item.books.includes(group.books)) &&
         (!group.land || item.land_by_book?.[group.books]?.includes(group.land)) &&
         (!group.owners || (group.land ? item.owners_by_land_by_book?.[group.books]?.[group.land]?.includes(group.owners) : item.owners_by_book?.[group.books]?.includes(group.owners))) &&
-        (!(group.uezd || group.prikaz || group.volost || group.child) || item.administrative_records?.some((record) =>
-          (!group.uezd || record.uezd === group.uezd) && (!group.prikaz || record.prikaz === group.prikaz) &&
-          (!group.volost || record.volost === group.volost) && (!group.child || record.child === group.child)
+        (!(group.uezd || group.stan || group.prikaz || group.volost || group.child || group.selo) || item.administrative_records?.some((record) =>
+          (!group.books || group.books === record.book) &&
+          (!group.uezd || record.uezd === group.uezd) && (!group.stan || record.stan === group.stan) && (!group.prikaz || record.prikaz === group.prikaz) &&
+          (!group.volost || record.volost === group.volost) && (!group.child || record.child === group.child) && (!group.selo || record.selo === group.selo)
         ));
       const renderGroups = () => {
         if (currentFilterControls.parentElement !== filterTab) filterControlsAnchor.after(currentFilterControls);
@@ -212,7 +226,7 @@
             editingGroupIndex = index; currentGroupActive = true;
             objectKind.value = editing.objectKind; selects.books.value = editing.books; groupColor.value = editing.color;
             updateAdministrativeOptions();
-            administrativeUezd.value = editing.uezd; administrativePrikaz.value = editing.prikaz; administrativeVolost.value = editing.volost; administrativeChild.value = editing.child;
+            restoreAdministrativeFilters(editing);
             updateAdministrativeOptions(); selects.land.value = editing.land; updateSourceValueOptions(editing.books); selects.owners.value = editing.owners;
             filterControlsAnchor.after(currentFilterControls);
             renderGroups();
@@ -227,7 +241,7 @@
       };
       const renderLegend = (groups) => {
         mapLegend.hidden = groups.length === 0;
-        const bookDependentLabels = new Set(["Уезд", "Приказ", "Волость", "Подразделение", "Принадлежность земли", "Владелец"]);
+        const bookDependentLabels = new Set(["Уезд", "Стан", "Приказ", "Волость", "Ключ / Подразделение", "Село", "Принадлежность земли", "Владелец"]);
         mapLegend.innerHTML = groups.map((group, index) => {
           const entries = Object.entries(group.labels ?? {}).filter(([name]) => group.books || !bookDependentLabels.has(name));
           return `<section class="legend-group"><div class="legend-title"><i style="background:${group.color}"></i>Группа ${index + 1}</div><dl>${entries.map(([name, value]) => `<dt>${name}</dt><dd>${value || "Все значения"}</dd>`).join("")}</dl></section>`;
@@ -241,21 +255,24 @@
         legendTabButton.setAttribute("aria-selected", String(panel === "legend"));
       };
       const matchesAdministrativeFilters = (item) => {
-        const hasFilter = administrativeUezd.value || administrativePrikaz.value || administrativeVolost.value || administrativeChild.value;
+        const hasFilter = administrativeUezd.value || administrativeStan.value || administrativePrikaz.value || administrativeVolost.value || administrativeChild.value || administrativeSelo.value;
         return !hasFilter || item.administrative_records?.some((record) =>
+          (!selectedBook() || selectedBook() === record.book) &&
           (!administrativeUezd.value || record.uezd === administrativeUezd.value) &&
+          (!administrativeStan.value || record.stan === administrativeStan.value) &&
           (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) &&
           (!administrativeVolost.value || record.volost === administrativeVolost.value) &&
-          (!administrativeChild.value || record.child === administrativeChild.value)
+          (!administrativeChild.value || record.child === administrativeChild.value) &&
+          (!administrativeSelo.value || record.selo === administrativeSelo.value)
         );
       };
       const itemsMatchingActiveFilters = (excludedField = "") => {
-        const book = selects.books.value;
+        const book = selectedBook();
         return items.filter((item) =>
           (!objectKind.value || item.kind === objectKind.value) &&
           (!book || item.books.includes(book)) &&
           (excludedField === "land" || !selects.land.value || item.land_by_book?.[book]?.includes(selects.land.value)) &&
-          (excludedField === "owners" || !selects.owners.value || (selects.land.value
+          (excludedField === "land" || excludedField === "owners" || !selects.owners.value || (selects.land.value
             ? item.owners_by_land_by_book?.[book]?.[selects.land.value]?.includes(selects.owners.value)
             : item.owners_by_book?.[book]?.includes(selects.owners.value))) &&
           matchesAdministrativeFilters(item)
@@ -276,17 +293,21 @@
         }
       };
       const updateAdministrativeOptions = () => {
-        const book = selects.books.value;
+        const book = selectedBook();
         sourceFilters.hidden = !book;
         if (!book) {
           resetOptions(administrativeUezd, "Сначала выберите книгу");
+          resetOptions(administrativeStan, "Сначала выберите книгу");
           resetOptions(administrativePrikaz, "Сначала выберите книгу");
           resetOptions(administrativeVolost, "Сначала выберите книгу");
           resetOptions(administrativeChild, "Сначала выберите книгу");
+          resetOptions(administrativeSelo, "Сначала выберите книгу");
           administrativeUezd.disabled = true;
+          administrativeStan.disabled = true;
           administrativePrikaz.disabled = true;
           administrativeVolost.disabled = true;
           administrativeChild.disabled = true;
+          administrativeSelo.disabled = true;
           updateSourceValueOptions(book);
           return;
         }
@@ -297,24 +318,55 @@
         const uezdOptions = new Map(records.filter((record) => record.uezd).map((record) => [record.uezd, record.uezd_label]));
         addOptions(administrativeUezd, [...uezdOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
         administrativeUezd.value = [...administrativeUezd.options].some((option)=>option.value===selectedUezd) ? selectedUezd : "";
+        const selectedStan = administrativeStan.value;
+        resetOptions(administrativeStan, "Все станы");
+        const stanOptions = new Map(records.filter((record) => record.stan && (!administrativeUezd.value || record.uezd === administrativeUezd.value)).map((record) => [record.stan, record.stan_label]));
+        addOptions(administrativeStan, [...stanOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
+        administrativeStan.value = [...administrativeStan.options].some((option)=>option.value===selectedStan) ? selectedStan : "";
+        administrativeStan.disabled = stanOptions.size === 0;
         const selectedPrikaz = administrativePrikaz.value;
         resetOptions(administrativePrikaz, "Все приказы");
-        const prikazOptions = new Map(records.filter((record) => record.prikaz && (!administrativeUezd.value || record.uezd === administrativeUezd.value)).map((record) => [record.prikaz, record.prikaz_label]));
+        const prikazOptions = new Map(records.filter((record) => record.prikaz && (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativeStan.value || record.stan === administrativeStan.value)).map((record) => [record.prikaz, record.prikaz_label]));
         addOptions(administrativePrikaz, [...prikazOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
         administrativePrikaz.value = [...administrativePrikaz.options].some((option)=>option.value===selectedPrikaz) ? selectedPrikaz : "";
         administrativePrikaz.disabled = prikazOptions.size === 0;
         const selectedVolost = administrativeVolost.value;
         resetOptions(administrativeVolost, "Все волости");
-        const volostOptions = new Map(records.filter((record) => record.volost && (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value)).map((record) => [record.volost, record.volost_label]));
+        const volostOptions = new Map(records.filter((record) => record.volost && (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativeStan.value || record.stan === administrativeStan.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value)).map((record) => [record.volost, record.volost_label]));
         addOptions(administrativeVolost, [...volostOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
         administrativeVolost.value = [...administrativeVolost.options].some((option)=>option.value===selectedVolost) ? selectedVolost : "";
         administrativeVolost.disabled = volostOptions.size === 0;
-        const childOptions = new Map(records.filter((record) => (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) && (!administrativeVolost.value || record.volost === administrativeVolost.value) && record.child).map((record) => [record.child, record.child_label]));
+        const childOptions = new Map(records.filter((record) => (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativeStan.value || record.stan === administrativeStan.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) && (!administrativeVolost.value || record.volost === administrativeVolost.value) && record.child).map((record) => [record.child, record.child_label]));
         const children = [...childOptions.keys()];
-        resetOptions(administrativeChild, "Все подразделения");
+        const selectedChild = administrativeChild.value;
+        resetOptions(administrativeChild, "Все ключи / подразделения");
         addOptions(administrativeChild, children.sort((a,b)=>a.localeCompare(b,"ru-RU")).map((value)=>({value,label:childOptions.get(value)})));
+        administrativeChild.value = children.includes(selectedChild) ? selectedChild : "";
         administrativeChild.disabled = children.length === 0;
+        const selectedSelo = administrativeSelo.value;
+        const seloOptions = new Map(records.filter((record) =>
+          (!administrativeUezd.value || record.uezd === administrativeUezd.value) &&
+          (!administrativeStan.value || record.stan === administrativeStan.value) &&
+          (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) &&
+          (!administrativeVolost.value || record.volost === administrativeVolost.value) &&
+          (!administrativeChild.value || record.child === administrativeChild.value) && record.selo
+        ).map((record) => [record.selo, record.selo_label]));
+        resetOptions(administrativeSelo, "Все сёла");
+        addOptions(administrativeSelo, [...seloOptions.entries()].sort(([left],[right])=>left.localeCompare(right,"ru-RU")).map(([value,label])=>({value,label})));
+        administrativeSelo.value = seloOptions.has(selectedSelo) ? selectedSelo : "";
+        administrativeSelo.disabled = seloOptions.size === 0;
         updateSourceValueOptions(book);
+      };
+      const restoreAdministrativeFilters = (group) => {
+        const controls = [[administrativeUezd, "uezd"], [administrativeStan, "stan"],
+          [administrativePrikaz, "prikaz"], [administrativeVolost, "volost"],
+          [administrativeChild, "child"], [administrativeSelo, "selo"]];
+        controls.forEach(([select]) => { select.value = ""; });
+        for (const [select, field] of controls) {
+          updateAdministrativeOptions();
+          select.value = group[field] ?? "";
+        }
+        updateAdministrativeOptions();
       };
       const initialBounds = items.reduce((bounds, item) => [
         Math.min(bounds[0], item.longitude), Math.min(bounds[1], item.latitude),
@@ -382,6 +434,46 @@
       const imageryLayer = devImageryEnabled ? new ol.layer.Tile({source:new ol.source.XYZ({url:"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",attributions:"Sources: Esri, Maxar, Earthstar Geographics, and the GIS User Community"}),visible:false}) : null;
       /* DEV_IMAGERY_LAYER_END */
       const map = new ol.Map({ target:"filter-map", layers:[yandexLayer,/* DEV_IMAGERY_SPREAD_START */...(imageryLayer ? [imageryLayer] : []),/* DEV_IMAGERY_SPREAD_END */placesLayer,churchesLayer,placeClusterLayer,churchClusterLayer], view:new ol.View({center:initialCenter,zoom:10.5}), controls:ol.control.defaults.defaults({attribution:false,rotate:false}).extend([new ol.control.ScaleLine({units:"metric"})]) });
+      const markerPopup = document.createElement("div");
+      markerPopup.className = "map-marker-popup";
+      markerPopup.hidden = true;
+      markerPopup.setAttribute("role", "dialog");
+      markerPopup.setAttribute("aria-label", "Действия с объектом карты");
+      const markerPopupOverlay = new ol.Overlay({ element:markerPopup, positioning:"bottom-center", offset:[0,-12], stopEvent:true, autoPan:{ animation:{ duration:180 } } });
+      map.addOverlay(markerPopupOverlay);
+      const closeMarkerPopup = () => { markerPopupOverlay.setPosition(undefined); markerPopup.hidden = true; };
+      const openMarkerPopup = (marker) => {
+        const objectPath = `../${marker.get("kind") === "church" ? "churches" : "places"}/${encodeURIComponent(marker.get("slug"))}/`;
+        markerPopup.replaceChildren();
+        const title = document.createElement("strong");
+        title.textContent = marker.get("name");
+        const close = document.createElement("button");
+        close.className = "map-marker-popup-close";
+        close.type = "button";
+        close.textContent = "×";
+        close.setAttribute("aria-label", "Закрыть");
+        close.addEventListener("click", closeMarkerPopup);
+        const sameTab = document.createElement("a");
+        sameTab.href = objectPath;
+        sameTab.textContent = "Открыть в текущей вкладке";
+        const newTab = document.createElement("a");
+        newTab.href = objectPath;
+        newTab.target = "_blank";
+        newTab.rel = "noopener noreferrer";
+        newTab.textContent = "Открыть в новой вкладке";
+        const newWindow = document.createElement("a");
+        newWindow.href = objectPath;
+        newWindow.target = "_blank";
+        newWindow.rel = "noopener noreferrer";
+        newWindow.textContent = "Открыть в новом окне";
+        newWindow.addEventListener("click", (event) => {
+          event.preventDefault();
+          window.open(newWindow.href, "_blank", "popup=yes,width=1200,height=800,resizable=yes,scrollbars=yes,noopener,noreferrer");
+        });
+        markerPopup.append(title, close, sameTab, newTab, newWindow);
+        markerPopup.hidden = false;
+        markerPopupOverlay.setPosition(marker.getGeometry().getCoordinates());
+      };
       const yandexAttribution = document.createElement("div");
       yandexAttribution.style.cssText = "position:absolute;right:0;bottom:0;z-index:1;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:4px 8px;max-width:calc(100% - 8px);box-sizing:border-box;padding:2px 5px;border-radius:3px 0 0 0;background:rgba(255,255,255,.8);font:10px/1.2 Arial,sans-serif;color:#555";
       const yandexLogoLink = document.createElement("a");
@@ -962,13 +1054,13 @@
       };
       const update = (fitMap = true) => {
         const values = Object.fromEntries(fields.map((field) => [field, selects[field].value]));
-        const hasAdministrativeFilter = administrativeUezd.value || administrativePrikaz.value || administrativeVolost.value || administrativeChild.value;
+        const hasAdministrativeFilter = administrativeUezd.value || administrativeStan.value || administrativePrikaz.value || administrativeVolost.value || administrativeChild.value || administrativeSelo.value;
         const currentVisible = items.filter((item) => (!objectKind.value || item.kind === objectKind.value) && fields.every((field) => {
           if (!values[field]) return true;
           if (field === "land") return item.land_by_book?.[values.books]?.includes(values[field]);
           if (field === "owners") return values.land ? item.owners_by_land_by_book?.[values.books]?.[values.land]?.includes(values[field]) : item.owners_by_book?.[values.books]?.includes(values[field]);
           return item[field].includes(values[field]);
-        }) && (!hasAdministrativeFilter || item.administrative_records?.some((record) => (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) && (!administrativeVolost.value || record.volost === administrativeVolost.value) && (!administrativeChild.value || record.child === administrativeChild.value))));
+        }) && (!hasAdministrativeFilter || item.administrative_records?.some((record) => (!values.books || values.books === record.book) && (!administrativeUezd.value || record.uezd === administrativeUezd.value) && (!administrativeStan.value || record.stan === administrativeStan.value) && (!administrativePrikaz.value || record.prikaz === administrativePrikaz.value) && (!administrativeVolost.value || record.volost === administrativeVolost.value) && (!administrativeChild.value || record.child === administrativeChild.value) && (!administrativeSelo.value || record.selo === administrativeSelo.value))));
         const editedGroup = currentGroup();
         const groups = savedGroups.map((group, index) => index === editingGroupIndex ? { ...editedGroup, id:group.id } : group);
         if (editingGroupIndex === null && currentGroupActive) groups.push(editedGroup);
@@ -1012,15 +1104,17 @@
         update();
       }));
       administrativeUezd.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
+      administrativeStan.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
       administrativePrikaz.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
       administrativeVolost.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
-      administrativeChild.addEventListener("change", () => { activateCurrentGroup(); update(); });
+      administrativeChild.addEventListener("change", () => { activateCurrentGroup(); updateAdministrativeOptions(); update(); });
+      administrativeSelo.addEventListener("change", () => { activateCurrentGroup(); updateSourceValueOptions(selectedBook()); update(); });
       groupColor.addEventListener("change", () => { activateCurrentGroup(); update(); });
       document.querySelector("#add-group").addEventListener("click", () => {
         const group = currentGroup();
         if (editingGroupIndex !== null) { group.id = savedGroups[editingGroupIndex].id; savedGroups[editingGroupIndex] = group; editingGroupIndex = null; }
         else { if (savedGroups.length >= 4) return; group.id = `saved-${Date.now()}`; savedGroups.push(group); }
-        objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value="";
+        objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativeStan.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value=""; administrativeSelo.value="";
         groupColor.value = groupColors.find((color) => !savedGroups.some((saved) => saved.color === color)) ?? groupColors[0];
         currentGroupActive = true; document.querySelector("#add-group").textContent = "Добавить группу"; updateAdministrativeOptions(); renderGroups(); update();
       });
@@ -1032,7 +1126,7 @@
           editingGroupIndex = previousIndex;
           objectKind.value = previous.objectKind; selects.books.value = previous.books; groupColor.value = previous.color;
           updateAdministrativeOptions();
-          administrativeUezd.value = previous.uezd; administrativePrikaz.value = previous.prikaz; administrativeVolost.value = previous.volost; administrativeChild.value = previous.child;
+          restoreAdministrativeFilters(previous);
           updateAdministrativeOptions(); selects.land.value = previous.land; updateSourceValueOptions(previous.books); selects.owners.value = previous.owners;
           currentGroupActive = true;
           filterControlsAnchor.after(currentFilterControls);
@@ -1049,10 +1143,10 @@
           editingGroupIndex = nextIndex;
           objectKind.value = next.objectKind; selects.books.value = next.books; groupColor.value = next.color;
           updateAdministrativeOptions();
-          administrativeUezd.value = next.uezd; administrativePrikaz.value = next.prikaz; administrativeVolost.value = next.volost; administrativeChild.value = next.child;
+          restoreAdministrativeFilters(next);
           updateAdministrativeOptions(); selects.land.value = next.land; updateSourceValueOptions(next.books); selects.owners.value = next.owners;
         } else {
-          objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value="";
+          objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativeStan.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value=""; administrativeSelo.value="";
           groupColor.value = groupColors[0]; updateAdministrativeOptions();
         }
         currentGroupActive = true;
@@ -1060,7 +1154,7 @@
         renderGroups();
         update();
       });
-      document.querySelector("#reset-filters").addEventListener("click", () => { savedGroups.length=0; editingGroupIndex=null; objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value=""; groupColor.value=groupColors[0]; currentGroupActive=true; document.querySelector("#add-group").textContent="Добавить группу"; updateAdministrativeOptions(); renderGroups(); update(); });
+      document.querySelector("#reset-filters").addEventListener("click", () => { savedGroups.length=0; editingGroupIndex=null; objectKind.value=""; fields.forEach((field) => { selects[field].value=""; }); administrativeUezd.value=""; administrativeStan.value=""; administrativePrikaz.value=""; administrativeVolost.value=""; administrativeChild.value=""; administrativeSelo.value=""; groupColor.value=groupColors[0]; currentGroupActive=true; document.querySelector("#add-group").textContent="Добавить группу"; updateAdministrativeOptions(); renderGroups(); update(); });
       map.on("pointermove", (event) => {
         const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate, { hitTolerance:6 });
         const members = feature?.get("features") ?? [];
@@ -1084,7 +1178,28 @@
         }
         document.querySelector("#filter-map").style.cursor = feature ? "pointer" : "";
       });
-      map.on("singleclick", (event) => { if (coordinateEditMode) return; const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate); if (!feature) return; const members=feature.get("features") ?? []; if(members.length>1){const extent=ol.extent.createEmpty();members.forEach((member)=>ol.extent.extend(extent,member.getGeometry().getExtent()));map.getView().fit(extent,{padding:[55,55,55,55],maxZoom:14,duration:250});return;}const marker=members[0];if(!marker)return;location.href = `../${marker.get("kind") === "church" ? "churches" : "places"}/${encodeURIComponent(marker.get("slug"))}/`; });
+      map.on("singleclick", (event) => {
+        if (coordinateEditMode) return;
+        const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate);
+        if (!feature) return;
+        const members = feature.get("features") ?? [];
+        if (members.length > 1) {
+          const extent = ol.extent.createEmpty();
+          members.forEach((member) => ol.extent.extend(extent, member.getGeometry().getExtent()));
+          map.getView().fit(extent, { padding:[55,55,55,55], maxZoom:14, duration:250 });
+          return;
+        }
+        const marker = members[0];
+        if (marker) location.href = `../${marker.get("kind") === "church" ? "churches" : "places"}/${encodeURIComponent(marker.get("slug"))}/`;
+      });
+      map.getViewport().addEventListener("contextmenu", (event) => {
+        if (coordinateEditMode) return;
+        const feature = map.forEachFeatureAtPixel(map.getEventPixel(event), (candidate) => candidate);
+        const members = feature?.get("features") ?? [];
+        if (members.length !== 1) return;
+        event.preventDefault();
+        openMarkerPopup(members[0]);
+      });
       map.once("postrender", () => {
         requestAnimationFrame(() => fitToVisibleFeatures(source.getFeatures().length));
       });

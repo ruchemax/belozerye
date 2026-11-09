@@ -5,17 +5,20 @@ import { places } from "./load-database.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const text = (html) => html.replace(/<[^>]+>/gu, "").replace(/\s+/gu, " ").trim();
-const year = (period) => Number(String(period).match(/\d{4}/u)?.[0] ?? Infinity);
+const year = (period) => Number(String(period).match(/\d{4}/u)?.[0] ?? Infinity)
+  - (/^до\s+/iu.test(String(period)) ? .5 : 0);
 const renderedNames = (place) => {
   const groups = new Map();
   for (const state of place.name_states ?? []) {
     const period = state.display_period ?? state.observed_year;
     if (!period || state.assertion_kind === "editorial") continue;
-    const label = `${state.type_label ? `${state.type_label.toLocaleLowerCase("ru-RU")} ` : ""}${state.name}`;
+    const typeLabel = state.type_label?.toLocaleLowerCase("ru-RU");
+    const suffixPogost = state.type_code === "pogost" && /(?:ск|ц)ий$/iu.test(state.name);
+    const label = suffixPogost ? `${state.name} ${typeLabel}` : `${typeLabel ? `${typeLabel} ` : ""}${state.name}`;
     const group = groups.get(label) ?? { label, periods: [], position: state.position, year: Infinity };
     if (!group.periods.includes(period)) group.periods.push(period);
     group.position = Math.min(group.position, state.position);
-    group.year = Math.min(group.year, state.assertion_kind === "inferred" ? -Infinity : year(period));
+    group.year = Math.min(group.year, year(period));
     groups.set(label, group);
   }
   return [...groups.values()]

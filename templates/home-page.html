@@ -310,6 +310,41 @@
     .ol-attribution { font-size: 10px; }
     .ol-overlaycontainer-stopevent .ol-zoom { top: 9px; left: 9px; }
 
+    .updates-panel { margin-top: 22px; }
+    .updates-list, .update-sections { list-style: none; padding: 0; margin: 0; }
+    .updates-list { max-height: 36rem; overflow-y: auto; scrollbar-gutter: stable; padding-right: 12px; }
+    .updates-list:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+    .update-item {
+      display: grid;
+      grid-template-columns: 115px minmax(0, 1fr);
+      gap: 22px;
+      padding: 18px 0;
+      border-top: 1px solid var(--rule);
+    }
+    .update-item:last-child { padding-bottom: 0; }
+    .update-meta { color: var(--muted); font: 650 .76rem/1.5 system-ui, sans-serif; }
+    .update-meta time { display: block; }
+    .update-status {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 3px 7px;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      font-size: .68rem;
+      font-weight: 500;
+    }
+    .update-item h3 { margin: 0 0 9px; color: var(--accent); font-size: 1.05rem; line-height: 1.4; }
+    .update-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; padding: 5px 0; }
+    .update-section a { font-size: .9rem; overflow-wrap: anywhere; }
+    .update-item a:hover, .update-item a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+    .update-folios { color: var(--muted); font: .76rem/1.7 system-ui, sans-serif; white-space: nowrap; }
+    @media (max-width: 720px) {
+      .update-item { grid-template-columns: 1fr; gap: 8px; }
+      .update-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+      .update-status { margin-top: 0; }
+      .update-section { grid-template-columns: 1fr; gap: 2px; }
+    }
+
     .footer-note {
       margin: 19px 0 0;
       color: #76614d;
@@ -415,8 +450,28 @@
       </section>
     </section>
 
+    <section class="panel updates-panel" id="updates" aria-labelledby="updates-title">
+      <div class="panel-head"><h2 id="updates-title">Обновления</h2></div>
+      <ol class="updates-list" tabindex="0" aria-label="Обновления книг">
+{{BOOK_UPDATES}}
+      </ol>
+    </section>
   </main>
 
+  <script>
+    (() => {
+      const list = document.querySelector(".updates-list");
+      const entries = [...list.children];
+      if (entries.length <= 3) { list.style.maxHeight = "none"; return; }
+      const resize = () => {
+        const height = entries[2].getBoundingClientRect().bottom - list.getBoundingClientRect().top;
+        list.style.maxHeight = `${Math.ceil(height + list.scrollTop)}px`;
+      };
+      new ResizeObserver(resize).observe(list);
+      window.addEventListener("load", resize);
+      resize();
+    })();
+  </script>
   <script id="place-search-data" type="application/json">{{PLACE_SEARCH_DATA}}</script>
   <script id="map-count-data" type="application/json">{{MAP_COUNT_DATA}}</script>
   <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
