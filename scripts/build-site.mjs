@@ -786,6 +786,8 @@ for (const book of books) {
   const bookPath = path.join(root, "dist", "books", book.slug, "index.html");
   let html = bookDocuments.get(book.id);
   if (!html) throw new Error(`В базе нет текста книги ${book.id}. Пересоздайте базу данных.`);
+  html = html.replaceAll("parchment-seamless-v13.webp", "parchment-seamless-v14.webp");
+  html = html.replace("</head>", '<link rel="preload" as="image" href="../../images/textures/parchment-seamless-v14.webp" fetchpriority="high"></head>');
   html = updateChurchSourceLinks(html, book);
   if (book.id === "belozersky-1626") {
     html = html.replace(
