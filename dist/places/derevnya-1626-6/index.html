@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>Маличеншка? — Белозерье</title>
+<title>Малая Игая — Белозерье</title>
 
 <!-- OpenLayers -->
 <link
@@ -1133,7 +1133,7 @@ footer {
   <meta property="og:type" content="website">
   <meta property="og:locale" content="ru_RU">
   <meta property="og:site_name" content="Белозерье">
-  <meta property="og:title" content="Маличеншка? — Белозерье">
+  <meta property="og:title" content="Малая Игая — Белозерье">
   <meta property="og:url" content="https://belozersky.uezd.workers.dev/places/derevnya-1626-6/">
   <meta name="twitter:card" content="summary">
 </head>
@@ -1158,7 +1158,7 @@ footer {
 
   <div class="place-info">
 
-    <h1>Маличеншка?</h1>
+    <h1>Малая Игая</h1>
 
     <div class="place-meta-row">
 
@@ -1196,7 +1196,13 @@ footer {
           Координаты
         </span>
 
-        <span class="location-coordinates">не установлены</span>
+        <a
+          class="location-coordinates"
+          href="https://yandex.ru/maps/?ll=38.59451361111111%2C59.33385916666667&amp;z=14&amp;pt=38.59451361111111%2C59.33385916666667"
+          target="_blank"
+          rel="noopener noreferrer">
+          59°20′2″ с. ш., 38°35′40″ в. д.
+        </a>
 
       </div>
 
@@ -1209,8 +1215,8 @@ footer {
     <details class="overview">
       <summary><span class="overview-label">Названия</span></summary>
       <ul class="overview-value">
-                <li>пустошь Маличеншка? (до 1626/27)</li>
-        <li>деревня Маличеншка? (1626/27)</li>
+                <li>пустошь Малая Игая (до 1626/27)</li>
+        <li>деревня Малая Игая (1626/27)</li>
       </ul>
     </details>
 
@@ -1259,8 +1265,8 @@ footer {
 
 <div class="source-content-card">
             <div class="source-fragment">
-              <section class="source-document-window" aria-label="Деревня, что была пустошь [Маличеншка?]" style="height:255px">
-                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=fa26aab3b3b0&end=belozersky-1626-fragment-folios-547-561-place-6#belozersky-1626-fragment-folios-547-561-place-6" title="Деревня, что была пустошь [Маличеншка?]" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-folios-547-561-place-6" data-fragment-end-anchor="belozersky-1626-fragment-folios-547-561-place-6"></iframe>
+              <section class="source-document-window" aria-label="Деревня, что была пустошь Малая Игаса [Игая]" style="height:255px">
+                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=8b73381b2137&end=belozersky-1626-fragment-folios-547-561-place-6#belozersky-1626-fragment-folios-547-561-place-6" title="Деревня, что была пустошь Малая Игаса [Игая]" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-folios-547-561-place-6" data-fragment-end-anchor="belozersky-1626-fragment-folios-547-561-place-6"></iframe>
               </section>
               <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
               <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
@@ -1278,13 +1284,13 @@ footer {
 
   <section
     class="place-map"
-    aria-label="Карта: Маличеншка?">
+    aria-label="Карта: Малая Игая">
 
     <div class="map-frame">
 
       <div
         id="village-map"
-        aria-label="Интерактивная карта: Маличеншка?">
+        aria-label="Интерактивная карта: Малая Игая">
       </div>
 
     </div>
@@ -1307,8 +1313,8 @@ footer {
 <script src="../../js/yandex-map.js"></script>
 
 <script>
-  const villageLat = 59.25821668965014;
-  const villageLon = 38.59712075079699;
+  const villageLat = 59.33385916666667;
+  const villageLon = 38.59451361111111;
   const activePlaceId = "derevnya-1626-6";
   const placePagePath = "../";
   const markerContainer = document.querySelector(".map-frame");
@@ -1322,7 +1328,7 @@ footer {
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
-      zoom: 12
+      zoom: 14
     }),
     controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),

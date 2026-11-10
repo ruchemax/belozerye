@@ -1196,7 +1196,13 @@ footer {
           Координаты
         </span>
 
-        <span class="location-coordinates">не установлены</span>
+        <a
+          class="location-coordinates"
+          href="https://yandex.ru/maps/?ll=38.51989138888889%2C59.24543888888889&amp;z=14&amp;pt=38.51989138888889%2C59.24543888888889"
+          target="_blank"
+          rel="noopener noreferrer">
+          59°14′44″ с. ш., 38°31′12″ в. д.
+        </a>
 
       </div>
 
@@ -1259,7 +1265,7 @@ footer {
 <div class="source-content-card">
             <div class="source-fragment">
               <section class="source-document-window" aria-label="починок Коловин" style="height:231px">
-                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=fa26aab3b3b0&end=belozersky-1626-fragment-folios-547-561-place-13#belozersky-1626-fragment-folios-547-561-place-13" title="починок Коловин" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-folios-547-561-place-13" data-fragment-end-anchor="belozersky-1626-fragment-folios-547-561-place-13"></iframe>
+                <iframe src="../../books/belozersky_uezd-1626-27/?embed=1&view=fragment-layout-8&revision=8b73381b2137&end=belozersky-1626-fragment-folios-547-561-place-13#belozersky-1626-fragment-folios-547-561-place-13" title="починок Коловин" loading="lazy" data-fragment-anchor="belozersky-1626-fragment-folios-547-561-place-13" data-fragment-end-anchor="belozersky-1626-fragment-folios-547-561-place-13"></iframe>
               </section>
               <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
               <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
@@ -1306,8 +1312,8 @@ footer {
 <script src="../../js/yandex-map.js"></script>
 
 <script>
-  const villageLat = 59.25821668965014;
-  const villageLon = 38.59712075079699;
+  const villageLat = 59.24543888888889;
+  const villageLon = 38.51989138888889;
   const activePlaceId = "u-pogosta-zh-na-tserkovnoy-zemle-pochinok-kolovin-1626-13";
   const placePagePath = "../";
   const markerContainer = document.querySelector(".map-frame");
@@ -1321,7 +1327,7 @@ footer {
     interactions: ol.interaction.defaults.defaults({ mouseWheelZoom: true }),
     view: new ol.View({
       center: ol.proj.fromLonLat([villageLon, villageLat]),
-      zoom: 12
+      zoom: 14
     }),
     controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),

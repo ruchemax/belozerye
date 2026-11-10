@@ -88,6 +88,14 @@
     "latitude": 59.220615390718
   },
   {
+    "id": "derevnya-1626-6",
+    "slug": "derevnya-1626-6",
+    "name": "Малая Игая",
+    "kind": "place",
+    "longitude": 38.59451361111111,
+    "latitude": 59.33385916666667
+  },
+  {
     "id": "derevnya-gnevosheva-na-rechke-na-chyurovke-1626-30",
     "slug": "derevnya-gnevosheva-na-rechke-na-chyurovke-1626-30",
     "name": "Гневошева",
@@ -128,8 +136,8 @@
     "latitude": 59.260429684826
   },
   {
-    "id": "drozdovo-churovka",
-    "slug": "drozdovo-churovka",
+    "id": "drozdovo",
+    "slug": "drozdovo",
     "name": "Дроздово",
     "kind": "place",
     "longitude": 38.51334833333333,
@@ -490,7 +498,7 @@
   {
     "id": "malchino",
     "slug": "malchino",
-    "name": "Малчино",
+    "name": "Мальцово",
     "kind": "place",
     "longitude": 38.62319300316961,
     "latitude": 59.38422518872531
@@ -632,8 +640,8 @@
     "latitude": 59.311048879286
   },
   {
-    "id": "oleksino",
-    "slug": "oleksino",
+    "id": "olekseeva",
+    "slug": "olekseeva",
     "name": "Олексеева",
     "kind": "place",
     "longitude": 38.610264047512,
@@ -1232,6 +1240,14 @@
     "latitude": 59.240304444444
   },
   {
+    "id": "u-pogosta-zh-na-tserkovnoy-zemle-pochinok-kolovin-1626-13",
+    "slug": "u-pogosta-zh-na-tserkovnoy-zemle-pochinok-kolovin-1626-13",
+    "name": "Коловин",
+    "kind": "place",
+    "longitude": 38.51989138888889,
+    "latitude": 59.24543888888889
+  },
+  {
     "id": "ulushkovo",
     "slug": "ulushkovo",
     "name": "Улушково",
@@ -1306,7 +1322,7 @@
   {
     "id": "zapogostye",
     "slug": "zapogostye",
-    "name": "Запогостский погост",
+    "name": "Погост Запогостье",
     "kind": "place",
     "longitude": 38.51974235716799,
     "latitude": 59.2414205735526
@@ -1364,8 +1380,8 @@
     "slug": "rozhdestva-bogoroditsy-churovskaya-1544",
     "name": "Церковь Рождества Богородицы",
     "kind": "church",
-    "longitude": 38.51968089793265,
-    "latitude": 59.2412231751988
+    "longitude": 38.51949813363382,
+    "latitude": 59.241153544108016
   },
   {
     "id": "andreya-pervozvannogo-charoma",
