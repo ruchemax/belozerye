@@ -71,7 +71,7 @@ for (const row of db.prepare(`
   states.push(state);
   nameStatesByPlace.set(row.place_id, states);
 }
-const administrativeUnitsById = new Map(db.prepare("SELECT id, name, parent_id FROM administrative_units").all()
+const administrativeUnitsById = new Map(db.prepare("SELECT id, kind, CASE WHEN kind='subdivision' THEN COALESCE(label,name) ELSE name END AS name, parent_id FROM administrative_units").all()
   .map((unit) => [unit.id, unit]));
 const administrativeUnitPath = (unitId) => {
   const names = [];
@@ -81,6 +81,8 @@ const administrativeUnitPath = (unitId) => {
     visited.add(unitId);
     const unit = administrativeUnitsById.get(unitId);
     if (!unit) throw new Error(`Unknown administrative unit ${unitId}.`);
+    // Higher-level affiliations come from the mention to preserve historical changes.
+    if (unit.kind !== "subdivision") break;
     names.unshift(unit.name);
     unitId = unit.parent_id;
   }
@@ -88,7 +90,8 @@ const administrativeUnitPath = (unitId) => {
 };
 const administrativeContextByMention = new Map();
 for (const row of db.prepare(`
-  SELECT links.mention_id, links.context_key, links.display_label, units.id AS unit_id, units.name, units.label
+  SELECT links.mention_id, links.context_key, links.display_label, units.id AS unit_id,
+    CASE WHEN units.kind='subdivision' THEN COALESCE(units.label,units.name) ELSE units.name END AS name, units.label
   FROM mention_administrative_units AS links
   JOIN administrative_units AS units ON units.id = links.administrative_unit_id
   ORDER BY links.rowid
@@ -112,6 +115,26 @@ for (const row of db.prepare(`
   administrativeContextByMention.set(row.mention_id, context);
 }
 const landCategoriesByMention = new Map();
+export const fragmentAdministrativeContexts = new Map();
+for (const row of db.prepare(`
+  SELECT links.fragment_id, links.context_key, units.id,
+    CASE WHEN units.kind='subdivision' THEN COALESCE(units.label,units.name) ELSE units.name END AS name, units.label
+  FROM fragment_administrative_units AS links
+  JOIN administrative_units AS units ON units.id=links.administrative_unit_id
+  ORDER BY links.rowid
+`).all()) {
+  const context = fragmentAdministrativeContexts.get(row.fragment_id) ?? {};
+  if (row.context_key === "subdivision") {
+    context.subdivision ??= [];
+    context.subdivision.push(row.name);
+    context.subdivision_paths ??= [];
+    context.subdivision_paths.push(administrativeUnitPath(row.id));
+  } else {
+    context[row.context_key] = row.name;
+  }
+  if (row.label) context[`${row.context_key}_label`] = row.label;
+  fragmentAdministrativeContexts.set(row.fragment_id,context);
+}
 for (const row of db.prepare(`
   SELECT category.mention_id, category.position, category.code, category.label, category.display_period,
     owner.name AS owner_name
@@ -166,6 +189,7 @@ export const places = db.prepare(`
 export const mentions = db.prepare("SELECT * FROM mentions ORDER BY rowid").all().map((row) => ({
   id: row.id, place_id: row.place_id, fragment_id: row.fragment_id,
   match_reliability: row.match_reliability,
+  match_reason: row.match_reason,
   source_name: row.source_name,
   historical_name_override: row.historical_name_override,
   source_context: {
@@ -176,13 +200,13 @@ export const mentions = db.prepare("SELECT * FROM mentions ORDER BY rowid").all(
 export const locations = {
   type: "FeatureCollection",
   features: db.prepare(`
-    SELECT place_id, longitude, latitude
+    SELECT place_id, longitude, latitude, location_note
     FROM place_geometries
     ORDER BY place_id
   `).all().map((row) => ({
     type: "Feature",
     geometry: { type: "Point", coordinates: [row.longitude, row.latitude] },
-    properties: { place_id: row.place_id }
+    properties: { place_id: row.place_id, location_note: row.location_note }
   }))
 };
 export const churches = db.prepare(`

@@ -1,0 +1,7 @@
+export const up = (db) => {
+  const reason = "Соответствие между Елисеево и Олексеево установлено предположительно на основании схожести названий, окружения поселений в тексте и возможной преемственности семей жителей. В 1559 году в Елисееве названы Панко Серков и Мелентей. В 1626/27 году в Олексеевой названы Сафонко Панкратов и Максимко Мелентьев: их отчества позволяют предположить, что Панко мог быть отцом Сафонка, а Мелентей — отцом Максимка.";
+  const update = db.prepare("UPDATE mentions SET match_reason = ? WHERE id = ? AND place_id = 'olekseeva'");
+  for (const id of ["kirillov-1559-mention-006", "kirillov-1559-mention-079"]) {
+    if (update.run(reason, id).changes !== 1) throw new Error(`Expected one Olekseeva mention: ${id}.`);
+  }
+};

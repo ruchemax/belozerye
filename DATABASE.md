@@ -101,6 +101,20 @@ Transcription fragments within a book.
 | `link_target_id` | `TEXT`, nullable | Target settlement for a link, when set. |
 | `raw_json` | `TEXT` | Rare fragment display settings. |
 
+### `fragment_administrative_units`
+
+Administrative affiliations stated by source fragments, including church passages
+that have no settlement mention. Map filters combine these affiliations with the
+linked settlement's context, preserving the source book for each affiliation.
+
+| Column | Type | Description |
+|---|---|---|
+| `fragment_id` | `TEXT`, FK → `fragments.id` | Source fragment. |
+| `administrative_unit_id` | `TEXT`, FK → `administrative_units.id` | Administrative unit. |
+| `context_key` | `TEXT` | Level such as `uezd`, `volost`, or `subdivision`. |
+
+The three columns form the primary key.
+
 ### `churches`
 
 Church cards.
@@ -189,9 +203,15 @@ Mentions of a settlement in a particular source fragment.
 | `source_name` | `TEXT` | Name exactly as it appears in the source. |
 | `historical_name_override` | `TEXT`, nullable | Editorial clarification of the historical name. |
 | `match_reliability` | `TEXT` | `exact` (точное), `probable` (предположительное), or `unreviewed` (не проверено). |
+| `match_reason` | `TEXT`, nullable | Editorial explanation of the proposed correspondence, displayed in the source information tooltip for probable matches. |
 
-The reliability field is used only for editorial database work and is not shown
-on cards or maps. Existing assessments were preserved when the separate
+Probable matches show an information icon on their source panel, with the
+explanation from `match_reason`. Missing reasons are explicitly identified.
+The icon follows the database assessment directly. Migration 352 confirms
+previously probable matches with identical observed names in different books
+for the same settlement, ignoring case and whitespace but preserving spelling
+and endings. Repeated entries within one book do not qualify.
+Existing assessments were preserved when the separate
 assignment table was removed. Older entries default to `unreviewed`.
 
 ### `place_name_states`
@@ -235,10 +255,16 @@ units with the `subdivision` context key at the same time.
 | `mention_id` | `TEXT`, PK, FK → `mentions.id` | Mention. |
 | `administrative_unit_id` | `TEXT`, FK → `administrative_units.id` | Administrative unit. |
 | `context_key` | `TEXT`, PK | Context key: `uezd`, `volost`, and so on. |
-| `display_label` | `TEXT`, nullable | Wording for this mention's affiliation, such as “тянут к Запогостью”. The unit keeps its canonical name. |
+| `display_label` | `TEXT`, nullable | Optional display wording for this mention's affiliation. Defaults to the unit's canonical name. |
 
 Composite primary key: (`mention_id`, `context_key`, `administrative_unit_id`).
 Other context keys retain a unique (`mention_id`, `context_key`) pair.
+
+The `selo` context records household affiliation independently of territorial
+subdivisions. All settlements in the 1626/27 section on folios 547–561 are
+assigned to Ilyinskoe under the adopted reconstruction. This does not imply
+membership in the Charomsky key. The map exposes this affiliation in the
+"Волость / село" filter alongside territorial volosts.
 
 ### `mention_land_categories`
 
@@ -280,6 +306,9 @@ Composite primary key: (`mention_id`, `land_category_position`, `land_owner_id`)
 ### `place_geometries`
 
 Geographic data for settlements.
+
+The nullable `location_note` text column explains the settlement location and is
+displayed on the exclamation mark beside its coordinates.
 
 | Column | Type | Description |
 |---|---|---|

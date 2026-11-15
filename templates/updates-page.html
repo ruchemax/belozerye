@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Все обновления — Белозерье</title>
+  <link rel="preload" as="image" href="../images/textures/homepage-parchment-v3.webp" fetchpriority="high">
+  <link rel="stylesheet" href="../css/book-updates.css">
+  <style>
+    :root { color-scheme: light; --ink: #33281f; --deep: #241f1a; --muted: #80664f; --accent: #9a3412; --rule: rgba(111,78,43,.25); }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); font: 16px/1.5 Georgia, "Times New Roman", serif; background: linear-gradient(110deg,rgba(255,250,231,.54),rgba(232,216,181,.26)), url("../images/textures/homepage-parchment-v3.webp") center/cover fixed #e8dfc4; }
+    a { color: inherit; text-decoration: none; }
+    a:hover, a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+    main { width: min(1050px,100%); margin: auto; padding: 30px clamp(14px,3.3vw,52px) 48px; }
+    .back-link { color: var(--accent); font: 650 .8rem/1.5 system-ui,sans-serif; }
+    h1 { margin: 16px 0 24px; color: var(--deep); font-size: clamp(2rem,4vw,3rem); line-height: 1.15; }
+    .updates-panel { padding: 8px 26px 24px; border: 1px solid var(--rule); border-radius: 5px; background: rgba(255,251,235,.57); }
+    .update-item { grid-template-columns: 115px minmax(0,1fr); gap: 22px; padding: 24px 0; }
+    .update-item:first-child { border-top: 0; }
+    .update-meta { display: block; }
+    .update-status { margin-top: 7px; }
+    @media (max-width: 720px) {
+      .updates-panel { padding-inline: 17px; }
+      .update-item { grid-template-columns: minmax(0,1fr); gap: 10px; }
+      .update-meta { display: flex; }
+      .update-status { margin-top: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back-link" href="../#updates">← На главную</a>
+    <h1>Все обновления</h1>
+    <section class="updates-panel" aria-label="Полный журнал добавлений к книгам">
+      <ol class="updates-list">
+{{BOOK_UPDATES}}
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

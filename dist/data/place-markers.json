@@ -264,12 +264,28 @@
     "latitude": 59.362119632962
   },
   {
+    "id": "gorka-kolinets-1601",
+    "slug": "gorka-kolinets-1601",
+    "name": "Горка",
+    "kind": "place",
+    "longitude": 38.48285638888889,
+    "latitude": 59.464915000000005
+  },
+  {
     "id": "grishiev",
     "slug": "grishiev",
     "name": "Гришнево",
     "kind": "place",
     "longitude": 38.669646617722,
     "latitude": 59.372900514746
+  },
+  {
+    "id": "gushchino-1601",
+    "slug": "gushchino-1601",
+    "name": "Гущино",
+    "kind": "place",
+    "longitude": 38.680629339632986,
+    "latitude": 59.32417701493313
   },
   {
     "id": "igaya",
@@ -318,6 +334,22 @@
     "kind": "place",
     "longitude": 38.59802687578,
     "latitude": 59.214228291884
+  },
+  {
+    "id": "kashievo-1601",
+    "slug": "kashievo-1601",
+    "name": "Кашиево",
+    "kind": "place",
+    "longitude": 38.58320777777778,
+    "latitude": 59.324267222222225
+  },
+  {
+    "id": "kharlamovo",
+    "slug": "kharlamovo",
+    "name": "Харламово",
+    "kind": "place",
+    "longitude": 38.38259628845738,
+    "latitude": 59.11944156069407
   },
   {
     "id": "kislikha-bolshoe",
@@ -586,7 +618,7 @@
   {
     "id": "na-shchuche",
     "slug": "na-shchuche",
-    "name": "на Щучье",
+    "name": "Щучье",
     "kind": "place",
     "longitude": 38.606849648973046,
     "latitude": 59.501326303827454
@@ -638,6 +670,14 @@
     "kind": "place",
     "longitude": 38.572438330212954,
     "latitude": 59.311048879286
+  },
+  {
+    "id": "okunevo",
+    "slug": "okunevo",
+    "name": "Окунево",
+    "kind": "place",
+    "longitude": 38.593337500000004,
+    "latitude": 59.62582694444445
   },
   {
     "id": "olekseeva",
@@ -820,8 +860,8 @@
     "slug": "poteryaevo",
     "name": "Потеряево",
     "kind": "place",
-    "longitude": 38.42026416666666,
-    "latitude": 59.1381325
+    "longitude": 38.419284552140645,
+    "latitude": 59.13823919403404
   },
   {
     "id": "pryamikovo",
@@ -830,6 +870,14 @@
     "kind": "place",
     "longitude": 38.65344745378,
     "latitude": 59.274917823956
+  },
+  {
+    "id": "pustish-portamoyka-1626-73",
+    "slug": "pustish-portamoyka-1626-73",
+    "name": "Портамойка",
+    "kind": "place",
+    "longitude": 38.57142916666667,
+    "latitude": 59.356411944444446
   },
   {
     "id": "pustosh-agafonova-1626-83",
@@ -992,12 +1040,28 @@
     "latitude": 59.32625194444445
   },
   {
+    "id": "putilovo-1559",
+    "slug": "putilovo-1559",
+    "name": "Путилово",
+    "kind": "place",
+    "longitude": 38.716885000000005,
+    "latitude": 59.299371944444445
+  },
+  {
     "id": "ramene",
     "slug": "ramene",
     "name": "Раменье",
     "kind": "place",
     "longitude": 38.490862222222226,
     "latitude": 59.482280555555555
+  },
+  {
+    "id": "rameshka-charomsky-1559",
+    "slug": "rameshka-charomsky-1559",
+    "name": "Рамешка",
+    "kind": "place",
+    "longitude": 38.67952661131606,
+    "latitude": 59.31935230045218
   },
   {
     "id": "rameshka-churovskaya-2",
@@ -1068,8 +1132,8 @@
     "slug": "savinskoe",
     "name": "Большой Двор",
     "kind": "place",
-    "longitude": 38.50343451237941,
-    "latitude": 59.46107110588207
+    "longitude": 38.501903434035476,
+    "latitude": 59.46121679286509
   },
   {
     "id": "selishche",
@@ -1090,7 +1154,7 @@
   {
     "id": "selivanov",
     "slug": "selivanov",
-    "name": "Селиванов",
+    "name": "Селиваново",
     "kind": "place",
     "longitude": 38.7122984981,
     "latitude": 59.30498200171
@@ -1112,6 +1176,14 @@
     "latitude": 59.245274078959
   },
   {
+    "id": "shevyrino",
+    "slug": "shevyrino",
+    "name": "Шедрино",
+    "kind": "place",
+    "longitude": 38.62753277777778,
+    "latitude": 59.35251944444445
+  },
+  {
     "id": "sintsovskoe",
     "slug": "sintsovskoe",
     "name": "Синцово",
@@ -1120,12 +1192,28 @@
     "latitude": 59.303753054636
   },
   {
+    "id": "skorynino-1601",
+    "slug": "skorynino-1601",
+    "name": "Скорынино",
+    "kind": "place",
+    "longitude": 38.62638235517279,
+    "latitude": 59.32777666205931
+  },
+  {
     "id": "slizovo",
     "slug": "slizovo",
     "name": "Слизово",
     "kind": "place",
     "longitude": 38.628025005843,
     "latitude": 59.215336462431
+  },
+  {
+    "id": "sobolkino-1601",
+    "slug": "sobolkino-1601",
+    "name": "Соболькино",
+    "kind": "place",
+    "longitude": 38.56918166666667,
+    "latitude": 59.3224425
   },
   {
     "id": "sofonovo",
@@ -1164,8 +1252,8 @@
     "slug": "sosnovka-monastery",
     "name": "Сосновка",
     "kind": "place",
-    "longitude": 38.55939055555555,
-    "latitude": 59.31195916666666
+    "longitude": 38.55041567094866,
+    "latitude": 59.308406265290415
   },
   {
     "id": "staraya",
@@ -1174,6 +1262,14 @@
     "kind": "place",
     "longitude": 38.58587597994248,
     "latitude": 59.243826206812344
+  },
+  {
+    "id": "stepanovskaya-kolinets-1601",
+    "slug": "stepanovskaya-kolinets-1601",
+    "name": "Степановская",
+    "kind": "place",
+    "longitude": 38.50376797980221,
+    "latitude": 59.47265086971407
   },
   {
     "id": "stikino",
@@ -1256,6 +1352,14 @@
     "latitude": 59.263018026204
   },
   {
+    "id": "uzedi-1601",
+    "slug": "uzedi-1601",
+    "name": "Узеди",
+    "kind": "place",
+    "longitude": 38.625303055555555,
+    "latitude": 59.41339472222222
+  },
+  {
     "id": "vasileva",
     "slug": "vasileva",
     "name": "Василева",
@@ -1274,7 +1378,7 @@
   {
     "id": "voroshnino",
     "slug": "voroshnino",
-    "name": "Верещигино",
+    "name": "Верещагино",
     "kind": "place",
     "longitude": 38.51090583333333,
     "latitude": 59.26199444444445
@@ -1318,6 +1422,14 @@
     "kind": "place",
     "longitude": 38.629989607129,
     "latitude": 59.242861068968
+  },
+  {
+    "id": "zaopoche",
+    "slug": "zaopoche",
+    "name": "Почка",
+    "kind": "place",
+    "longitude": 38.374473774286514,
+    "latitude": 59.11473189465352
   },
   {
     "id": "zapogostye",

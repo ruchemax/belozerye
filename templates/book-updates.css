@@ -1,0 +1,37 @@
+    .updates-panel { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+    .updates-panel .panel-head { flex-shrink: 0; }
+    .updates-list, .update-sections { list-style: none; padding: 0; margin: 0; }
+    .updates-list { margin: 0; }
+    .update-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+      padding: 18px 0;
+      border-top: 1px solid var(--rule);
+    }
+    .update-item:last-child { padding-bottom: 0; }
+    .update-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; color: var(--muted); font: 650 .76rem/1.5 system-ui, sans-serif; }
+    .update-meta time { display: block; }
+    .update-status {
+      display: inline-block;
+      margin-top: 0;
+      padding: 3px 7px;
+      border: 1px solid var(--rule);
+      border-radius: 3px;
+      font-size: .68rem;
+      font-weight: 500;
+    }
+    .update-item :is(h2, h3) { margin: 0 0 9px; color: var(--accent); font-size: 1.05rem; line-height: 1.4; }
+    .update-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 5px 0; }
+    .update-section a { font-size: .9rem; overflow-wrap: anywhere; }
+    .update-item a:hover, .update-item a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+    .update-folios { color: var(--muted); font: .76rem/1.7 system-ui, sans-serif; white-space: nowrap; }
+    @media (max-width: 720px) {
+      .update-item { grid-template-columns: 1fr; gap: 8px; }
+      .update-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+      .update-status { margin-top: 0; }
+      .update-section { grid-template-columns: 1fr; gap: 2px; }
+    }
+
+    .update-description { margin: 0; color: var(--muted); font: .82rem/1.6 system-ui, sans-serif; overflow-wrap: anywhere; }
+    .all-updates-link { margin: 18px 0 0; }

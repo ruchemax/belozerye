@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Источники — Белозерье</title>
+  <link rel="preload" as="image" href="../images/textures/homepage-parchment-v3.webp" fetchpriority="high">
+  <style>
+    :root { color-scheme: light; --ink: #33281f; --deep: #241f1a; --muted: #80664f; --accent: #9a3412; --rule: rgba(111,78,43,.25); --page-max-width: 1510px; --page-inline-padding: clamp(20px,3.3vw,52px); }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; color: var(--ink); font: 16px/1.5 Georgia, "Times New Roman", serif;
+      background: linear-gradient(110deg,rgba(255,250,231,.54),rgba(232,216,181,.26)), url("../images/textures/homepage-parchment-v3.webp") center/cover fixed #e8dfc4;
+    }
+    a { color: inherit; text-decoration: none; }
+    a:hover, a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+    .site-header {
+      position: sticky; top: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      min-height: 62px; padding-inline: max(var(--page-inline-padding),calc((100vw - var(--page-max-width))/2 + var(--page-inline-padding)));
+      color: #f8f4e9; background: #181818; border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; }
+    .brand img { width: 36px; height: 36px; }
+    .site-nav { font: 650 .85rem/1.4 system-ui,sans-serif; }
+    main { width: min(1050px,100%); margin: auto; padding: 30px var(--page-inline-padding) 48px; }
+    .back-link { color: var(--accent); font: 650 .8rem/1.5 system-ui,sans-serif; }
+    h1 { margin: 16px 0 24px; color: var(--deep); font-size: clamp(2rem,4vw,3rem); line-height: 1.15; }
+    .sources-list { padding: 8px 26px; border: 1px solid var(--rule); border-radius: 5px; background: rgba(255,251,235,.57); }
+    .book-item { display: grid; grid-template-columns: 84px minmax(0,1fr); gap: 20px; align-items: start; padding: 24px 0; border-top: 1px solid var(--rule); }
+    .book-item:first-child { border-top: 0; }
+    .book-year { padding: 6px 5px; border-radius: 3px; color: #fff; background: #876b50; font: 700 .8rem/1.35 system-ui,sans-serif; text-align: center; }
+    .book-title { color: var(--accent); font-size: 1.15rem; font-weight: 700; line-height: 1.35; }
+    .book-description { margin-top: 7px; color: var(--muted); font: .88rem/1.6 system-ui,sans-serif; overflow-wrap: anywhere; }
+    @media (max-width: 520px) {
+      .site-header { padding-inline: 14px; }
+      main { padding: 24px 14px 38px; }
+      .sources-list { padding: 4px 17px; }
+      .book-item { grid-template-columns: minmax(0,1fr); gap: 12px; }
+      .book-year { justify-self: start; min-width: 78px; }
+    }
+  </style>
+  <link rel="canonical" href="https://belozersky.uezd.workers.dev/sources/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Белозерье">
+  <meta property="og:title" content="Источники — Белозерье">
+  <meta property="og:url" content="https://belozersky.uezd.workers.dev/sources/">
+  <meta name="twitter:card" content="summary">
+<style id="global-site-header-styles">.global-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 62px;
+  padding: 0 clamp(14px, 3.3vw, 52px);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  color: #f8f4e9;
+  background: #181818;
+}
+.global-site-header a {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: none;
+  text-decoration: none;
+}
+.global-site-header .global-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 1.15rem/1.4 Georgia, "Times New Roman", serif;
+}
+.global-site-header .global-brand img { width: 36px; height: 36px; }
+.global-site-header .global-site-nav { display: flex; align-items: center; gap: 24px; }
+.global-site-header .global-site-nav a { font: 650 .85rem/1.4 system-ui, sans-serif; }
+.global-site-header a:hover,
+.global-site-header a:focus-visible,
+.global-site-header a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 520px) {
+  .global-site-header { padding-inline: 14px; gap: 12px; }
+  .global-site-header .global-site-nav { gap: 14px; }
+}
+</style>
+</head>
+<body>
+  <header class="global-site-header">
+  <a class="global-brand" href="../" aria-label="Белозерье — главная">
+    <img src="../images/icons/belozerye-monastery-logo.svg" alt="">
+    <span>Белозерье</span>
+  </a>
+  <nav class="global-site-nav" aria-label="Основная навигация">
+    <a href="../sources/" aria-current="page">Источники</a>
+    <a href="../map/">Карта</a>
+  </nav>
+</header>
+  <main>
+    <a class="back-link" href="../">← На главную</a>
+    <h1>Источники</h1>
+    <section class="sources-list" aria-label="Книги проекта">
+          <article class="book-item">
+            <span class="book-year">1544</span>
+            <div>
+              <a class="book-title" href="../books/belozersky_uezd-1544/">Сотная из писцовых книг Белозерского уезда (1544 г.)</a>
+              <div class="book-description">Сотная из писцовых книг Ф.Ф. Хидырщикова и Г.Л. Клементиева на земли Кирилло-Белозерского монастыря в Белозерском уезде (1544 г.)</div>
+            </div>
+          </article>
+          <article class="book-item">
+            <span class="book-year">1559</span>
+            <div>
+              <a class="book-title" href="../books/kirillov_monastery-1559/">Вытные книги Кирилова монастыря (1559 г.)</a>
+
+            </div>
+          </article>
+          <article class="book-item">
+            <span class="book-year">1585</span>
+            <div>
+              <a class="book-title" href="../books/belozersky_uezd-1585/">Писцовая книга Белозерского уезда (1585 г.)</a>
+              <div class="book-description">Писцовая книга езовых дворцовых волостей и государевых оброчных угодий Белозерского уезда А.Е. Салтыкова и подьячих А. Варламова и Б. Логинова (1585 г.)</div>
+            </div>
+          </article>
+          <article class="book-item">
+            <span class="book-year">1601</span>
+            <div>
+              <a class="book-title" href="../books/kirillov_monastery-1601/">Переписная книга Кирилова монастыря (1601 г.)</a>
+              <div class="book-description">Переписная книга вотчин Кирилова монастыря М.В. Молчанова и В. Нелюбова (1601 г.).</div>
+            </div>
+          </article>
+          <article class="book-item">
+            <span class="book-year">1626/27</span>
+            <div>
+              <a class="book-title" href="../books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a>
+              <div class="book-description">Писцовая книга Белозерского уезда письма и меры Н. Шеховского и подьячего М. Козлова 1626/27 г. Копия XVIII в. за скрепой секретаря И. Феоктистова и справами подканцеляристов П. Цветкова и И. Михайлова</div>
+            </div>
+          </article>
+    </section>
+  </main>
+</body>
+</html>

@@ -6,6 +6,7 @@
   <title>Белозерье — историко-географический проект</title>
   <link rel="preload" as="image" href="./images/textures/homepage-parchment-v3.webp" fetchpriority="high">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.11.0/ol.css">
+  <link rel="stylesheet" href="./css/book-updates.css">
   <style>
     :root {
       color-scheme: light;
@@ -73,7 +74,7 @@
     main {
       width: min(var(--page-max-width), 100%);
       margin: auto;
-      padding: 24px var(--page-inline-padding) 48px;
+      padding: 16px var(--page-inline-padding) 48px;
     }
 
     .intro {
@@ -81,8 +82,8 @@
       align-items: end;
       justify-content: space-between;
       gap: 30px;
-      margin-bottom: 25px;
-      padding-bottom: 26px;
+      margin-bottom: 18px;
+      padding-bottom: 18px;
       border-bottom: 1px solid var(--rule);
     }
 
@@ -96,7 +97,7 @@
     .intro h1 {
       margin: 2px 0 0;
       color: var(--deep);
-      font-size: clamp(2.4rem, 4vw, 3.7rem);
+      font-size: clamp(2.04rem, 3.4vw, 3.145rem);
       line-height: 1.08;
       letter-spacing: -.02em;
     }
@@ -121,12 +122,22 @@
       display: grid;
       grid-template-columns: minmax(300px, 1fr) minmax(430px, 1.4fr);
       gap: 22px;
-      height: clamp(500px, calc(100vh - 260px), 820px);
-      height: clamp(500px, calc(100dvh - 260px), 820px);
+      min-height: 0;
       align-items: stretch;
     }
 
-    .left-column { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; gap: 17px; }
+    .left-column { display: flex; flex-direction: column; gap: 17px; min-height: 0; min-width: 0; }
+    .left-column > .panel { flex-shrink: 0; }
+    .search-panel { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+    .search-panel .panel-head { flex-shrink: 0; }
+    .search-panel h2 { font-size: 1.12rem; }
+    .search { width: 100%; flex-shrink: 0; padding: 10px 11px; border: 1px solid #c4b292; border-radius: 3px; outline: none; color: var(--ink); background: #fff9e8; font: .82rem/1.4 system-ui, sans-serif; }
+    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(154,52,18,.12); }
+    .search-results { display: grid; align-content: start; gap: 2px; margin-top: 9px; max-height: calc(3.87rem + 40px); overflow-y: auto; overscroll-behavior: contain; }
+    .search-result { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 8px; border-radius: 3px; font-size: .86rem; }
+    .search-result:hover, .search-result:focus-visible { background: rgba(255,255,255,.5); }
+    .search-result strong { color: var(--accent); }
+    .search-empty { margin: 5px 0 0; color: var(--muted); font: .78rem/1.5 system-ui, sans-serif; }
 
     .panel {
       padding: 19px 22px;
@@ -192,36 +203,6 @@
     }
 
     .action-link:hover, .action-link:focus-visible { border-color: var(--accent); }
-
-    .search-panel { display: flex; min-height: 0; flex-direction: column; }
-    .search-panel h2 { font-size: 1.12rem; }
-    .search {
-      width: 100%;
-      padding: 10px 11px;
-      border: 1px solid #c4b292;
-      border-radius: 3px;
-      outline: none;
-      color: var(--ink);
-      background: #fff9e8;
-      font: .82rem/1.4 system-ui, sans-serif;
-    }
-
-    .search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(154,52,18,.12); }
-    .search-results { display: grid; gap: 2px; margin-top: 9px; overflow-y: auto; }
-    .search-result {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 6px 8px;
-      border-radius: 3px;
-      font-size: .86rem;
-    }
-
-    .search-result:hover, .search-result:focus-visible { background: rgba(255,255,255,.5); }
-    .search-result strong { color: var(--accent); }
-    .search-result span { color: var(--muted); font: .7rem/1.4 system-ui, sans-serif; }
-    .search-empty { margin: 5px 0 0; color: var(--muted); font: .78rem/1.5 system-ui, sans-serif; }
 
     .map-panel {
       display: flex;
@@ -311,76 +292,56 @@
     .ol-attribution { font-size: 10px; }
     .ol-overlaycontainer-stopevent .ol-zoom { top: 9px; left: 9px; }
 
-    .updates-panel { margin-top: 22px; }
-    .updates-list, .update-sections { list-style: none; padding: 0; margin: 0; }
-    .updates-list { max-height: 36rem; overflow-y: auto; scrollbar-gutter: stable; padding-right: 12px; }
-    .updates-list:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
-    .update-item {
-      display: grid;
-      grid-template-columns: 115px minmax(0, 1fr);
-      gap: 22px;
-      padding: 18px 0;
-      border-top: 1px solid var(--rule);
-    }
-    .update-item:last-child { padding-bottom: 0; }
-    .update-meta { color: var(--muted); font: 650 .76rem/1.5 system-ui, sans-serif; }
-    .update-meta time { display: block; }
-    .update-status {
-      display: inline-block;
-      margin-top: 7px;
-      padding: 3px 7px;
-      border: 1px solid var(--rule);
-      border-radius: 3px;
-      font-size: .68rem;
-      font-weight: 500;
-    }
-    .update-item h3 { margin: 0 0 9px; color: var(--accent); font-size: 1.05rem; line-height: 1.4; }
-    .update-section { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; padding: 5px 0; }
-    .update-section a { font-size: .9rem; overflow-wrap: anywhere; }
-    .update-item a:hover, .update-item a:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
-    .update-folios { color: var(--muted); font: .76rem/1.7 system-ui, sans-serif; white-space: nowrap; }
-    @media (max-width: 720px) {
-      .update-item { grid-template-columns: 1fr; gap: 8px; }
-      .update-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
-      .update-status { margin-top: 0; }
-      .update-section { grid-template-columns: 1fr; gap: 2px; }
-    }
-
+    .site-nav a { font: 650 .85rem/1.4 system-ui, sans-serif; }
+    .site-nav a:hover, .site-nav a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
     .footer-note {
       margin: 19px 0 0;
       color: #76614d;
       font: .75rem/1.6 system-ui, sans-serif;
     }
 
+    @media (min-width: 1051px) {
+      main { display: flex; flex-direction: column; height: calc(100vh - 62px); height: calc(100dvh - 62px); padding-bottom: 24px; }
+      .intro { flex-shrink: 0; }
+      .dashboard { flex: 1; }
+      .map-panel { height: 100%; min-height: 0; }
+      .left-column { height: 100%; gap: 14px; }
+      .left-column .panel { padding-block: 16px; }
+      .left-column .search-panel { flex: 1; }
+      .left-column .search-results { flex: 1; min-height: 0; max-height: none; }
+      .left-column .updates-panel { flex: 0 0 auto; }
+      .left-column .update-item { padding-block: clamp(8px, 1.4vh, 12px); gap: 6px; }
+      .left-column .update-item:last-child { padding-bottom: 0; }
+      .left-column .update-item h3 { margin-bottom: 5px; }
+      .left-column .all-updates-link { margin-top: 16px; }
+    }
+
     @media (max-width: 1050px) {
       .dashboard { height: auto; grid-template-columns: 1fr; }
-      .left-column { grid-template-rows: none; }
-      .search-results { overflow-y: visible; }
       .map-panel {
-        height: clamp(480px, 70vh, 720px);
-        height: clamp(480px, 70dvh, 720px);
+        height: calc(100dvh - 100px);
+        min-height: 320px;
       }
     }
 
     @media (max-width: 720px) {
       .site-header { padding-inline: 14px; }
-      main { padding: 25px 14px 38px; }
+      main { padding: 16px 14px 38px; }
       .intro { display: block; }
-      .stats { margin-top: 23px; }
+      .stats { margin-top: 16px; }
       .directory { grid-template-columns: 1fr 1fr; }
       .map-head { align-items: flex-start; flex-direction: column; }
     }
 
     @media (max-width: 520px) {
-      .intro h1 { font-size: 2.45rem; }
+      .intro h1 { font-size: 2.08rem; }
       .intro p { font-size: .98rem; }
       .stats { justify-content: space-between; gap: 10px; }
       .stat strong { font-size: 1.45rem; }
       .directory { grid-template-columns: 1fr; }
       .panel { padding: 17px; }
       .map-panel {
-        height: clamp(440px, 68vh, 600px);
-        height: clamp(440px, 68dvh, 600px);
+        height: calc(100dvh - 100px);
       }
       .map-controls { width: 100%; overflow-x: auto; }
       .map-controls button { white-space: nowrap; }
@@ -394,14 +355,60 @@
   <meta property="og:title" content="Белозерье — историко-географический проект">
   <meta property="og:url" content="https://belozersky.uezd.workers.dev/">
   <meta name="twitter:card" content="summary">
+<style id="global-site-header-styles">.global-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 62px;
+  padding: 0 clamp(14px, 3.3vw, 52px);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  color: #f8f4e9;
+  background: #181818;
+}
+.global-site-header a {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: none;
+  text-decoration: none;
+}
+.global-site-header .global-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 1.15rem/1.4 Georgia, "Times New Roman", serif;
+}
+.global-site-header .global-brand img { width: 36px; height: 36px; }
+.global-site-header .global-site-nav { display: flex; align-items: center; gap: 24px; }
+.global-site-header .global-site-nav a { font: 650 .85rem/1.4 system-ui, sans-serif; }
+.global-site-header a:hover,
+.global-site-header a:focus-visible,
+.global-site-header a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 520px) {
+  .global-site-header { padding-inline: 14px; gap: 12px; }
+  .global-site-header .global-site-nav { gap: 14px; }
+}
+</style>
 </head>
 <body>
-  <header class="site-header">
-    <a class="brand" href="./" aria-label="Белозерье — главная">
-      <img src="./images/icons/belozerye-monastery-logo.svg" alt="">
-      <span>Белозерье</span>
-    </a>
-  </header>
+  <header class="global-site-header">
+  <a class="global-brand" href="./" aria-label="Белозерье — главная">
+    <img src="./images/icons/belozerye-monastery-logo.svg" alt="">
+    <span>Белозерье</span>
+  </a>
+  <nav class="global-site-nav" aria-label="Основная навигация">
+    <a href="./sources/">Источники</a>
+    <a href="./map/">Карта</a>
+  </nav>
+</header>
 
   <main>
     <section class="intro" aria-labelledby="page-title">
@@ -410,46 +417,28 @@
         <h1 id="page-title">Белозерье</h1>
       </div>
       <div class="stats" aria-label="Состав проекта">
-        <div class="stat"><strong>3</strong><span>Источника</span></div>
-        <div class="stat"><strong>258</strong><span>Населённых пунктов</span></div>
+        <div class="stat"><strong>5</strong><span>Источника</span></div>
+        <div class="stat"><strong>288</strong><span>Населённых пунктов</span></div>
         <div class="stat"><strong>9</strong><span>Церквей</span></div>
       </div>
     </section>
 
     <section class="dashboard">
       <div class="left-column">
-        <section class="panel" id="books" aria-labelledby="books-title">
+        <section class="panel updates-panel" id="updates" aria-labelledby="updates-title">
           <div class="panel-head">
-            <h2 id="books-title">Источники</h2>
+            <h2 id="updates-title">Последние обновления</h2>
           </div>
-          <article class="book-item">
-            <span class="book-year">1544</span>
-            <div>
-              <a class="book-title" href="./books/belozersky_uezd-1544/">Сотная из писцовых книг Белозерского уезда (1544 г.)</a>
-              <div class="book-description">Сотная из писцовых книг Ф.Ф. Хидырщикова и Г.Л. Клементиева на земли Кирилло-Белозерского монастыря в Белозерском уезде (1544 г.)</div>
-            </div>
-          </article>
-          <article class="book-item">
-            <span class="book-year">1585</span>
-            <div>
-              <a class="book-title" href="./books/belozersky_uezd-1585/">Писцовая книга Белозерского уезда (1585 г.)</a>
-              <div class="book-description">Писцовая книга езовых дворцовых волостей и государевых оброчных угодий Белозерского уезда А.Е. Салтыкова и подьячих А. Варламова и Б. Логинова (1585 г.)</div>
-            </div>
-          </article>
-          <article class="book-item">
-            <span class="book-year">1626/27</span>
-            <div>
-              <a class="book-title" href="./books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a>
-              <div class="book-description">Писцовая книга Белозерского уезда письма и меры Н. Шеховского и подьячего М. Козлова 1626/27 г. Копия XVIII в. за скрепой секретаря И. Феоктистова и справами подканцеляристов П. Цветкова и И. Михайлова</div>
-            </div>
-          </article>
+          <ol class="updates-list" aria-label="Обновления книг">
+<li class="update-item"><div class="update-meta"><time datetime="2026-11-15">15.11.2026</time></div><article><h3><a href="./books/kirillov_monastery-1601/">Переписная книга Кирилова монастыря (1601 г.)</a></h3><p class="update-description">Да Белоозерскаго ж уезда Кирилова монастыря вотчина на Сизме · л. 37об.–45</p></article></li>
+<li class="update-item"><div class="update-meta"><time datetime="2026-11-15">15.11.2026</time></div><article><h3><a href="./books/kirillov_monastery-1559/">Вытные книги Кирилова монастыря (1559 г.)</a></h3><p class="update-description">Семянник ржаной и яровой. Ключ Кощеевьской · л. 111–115</p></article></li>
+<li class="update-item"><div class="update-meta"><time datetime="2026-11-09">09.11.2026</time></div><article><h3><a href="./books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a></h3><p class="update-description">Того ж Надпорожскаго стану Кирилова манастыря вотчина на Сизьме, в Чюровской волости в Чаромском ключе и в Запогосте, и в Коленце, и в Судбицах · л. 547–561</p></article></li>
+          </ol>
+          <p class="all-updates-link"><a class="action-link" href="./updates/">Все обновления →</a></p>
         </section>
-
         <section class="panel search-panel" aria-labelledby="search-title">
-          <div class="panel-head">
-            <h2 id="search-title">Найти населённый пункт</h2>
-          </div>
-          <input id="place-search" class="search" type="search" placeholder="Например: Крушково, Поповская, Чарома…" autocomplete="off" aria-controls="search-results">
+          <div class="panel-head"><h2 id="search-title">Найти населённый пункт</h2></div>
+          <input id="place-search" class="search" type="search" placeholder="Например: Крушково, Поповская, Чарома…" autocomplete="off" aria-label="Название населённого пункта" aria-controls="search-results">
           <div id="search-results" class="search-results" aria-live="polite"></div>
         </section>
       </div>
@@ -461,10 +450,9 @@
             <p>Населённые пункты и церкви с установленным местоположением</p>
           </div>
           <div class="map-actions">
-            <a class="map-explore-link" href="./map/">К исследованию</a>
             <div class="map-controls" role="group" aria-label="Фильтр объектов карты">
               <button class="active" type="button" data-map-filter="all">Все</button>
-              <button type="button" data-map-filter="place">Поселения</button>
+              <button type="button" data-map-filter="place">Населённые пункты</button>
               <button type="button" data-map-filter="church">Церкви</button>
             </div>
           </div>
@@ -473,70 +461,52 @@
         <div class="map-legend">
           <span><span class="legend-dot"></span>Населённые пункты</span>
           <span><img class="legend-church-icon" src="./images/icons/church-marker.png" alt="">Церкви</span>
-          <span id="map-count" class="map-count">На карте: 175</span>
+          <span id="map-count" class="map-count">На карте: 189</span>
         </div>
       </section>
     </section>
 
-    <section class="panel updates-panel" id="updates" aria-labelledby="updates-title">
-      <div class="panel-head"><h2 id="updates-title">Обновления</h2></div>
-      <ol class="updates-list" tabindex="0" aria-label="Обновления книг">
-<li class="update-item"><div class="update-meta"><time datetime="2026-11-09">09.11.2026</time></div><article><h3><a href="./books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a></h3><ul class="update-sections"><li class="update-section"><a href="./books/belozersky_uezd-1626-27/#folios-547-561">Того ж Надпорожскаго стану Кирилова манастыря вотчина на Сизьме, в Чюровской волости в Чаромском ключе и в Запогосте, и в Коленце, и в Судбицах</a><span class="update-folios">Листы 547–561</span></li></ul></article></li>
-<li class="update-item"><div class="update-meta"><time datetime="2026-10-29">29.10.2026</time></div><article><h3><a href="./books/belozersky_uezd-1585/">Писцовая книга Белозерского уезда (1585 г.)</a></h3><ul class="update-sections"><li class="update-section"><a href="./books/belozersky_uezd-1585/#churovskaya">Волость Чюровская пуста того ж Усть-Угольского приказу</a><span class="update-folios">Листы 1544–1548 об.</span></li></ul></article></li>
-<li class="update-item"><div class="update-meta"><time datetime="2026-10-29">29.10.2026</time></div><article><h3><a href="./books/belozersky_uezd-1544/">Сотная из писцовых книг Белозерского уезда (1544 г.)</a></h3><ul class="update-sections"><li class="update-section"><a href="./books/belozersky_uezd-1544/#volost-ugol">В волости в Угле деревни Кирилова ж монастыря</a><span class="update-folios">Листы 497 об.–502/2 об.</span></li><li class="update-section"><a href="./books/belozersky_uezd-1544/#without-plough">Кирилова ж монастыря починки без пашни</a><span class="update-folios">Листы 502/2 об.–503</span></li></ul></article></li>
-<li class="update-item"><div class="update-meta"><time datetime="2026-10-20">20.10.2026</time></div><article><h3><a href="./books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a></h3><ul class="update-sections"><li class="update-section"><a href="./books/belozersky_uezd-1626-27/#church-and-estates">Волость Чуровская, а в ней погост на государеве земле</a><span class="update-folios">Листы 362 об.</span></li><li class="update-section"><a href="./books/belozersky_uezd-1626-27/#landowners">В той же волости за помещики</a><span class="update-folios">Листы 362 об.–363 об.</span></li><li class="update-section"><a href="./books/belozersky_uezd-1626-27/#vacant-lands">А под ней написано: в той волости, тое ж Чюровские волости, в порозжих землях старые пустоты</a><span class="update-folios">Листы 364–367</span></li><li class="update-section"><a href="./books/belozersky_uezd-1626-27/#patriarchal-domain">Патриаршая вотчина</a><span class="update-folios">Листы 444–453 об.</span></li></ul></article></li>
-      </ol>
-    </section>
   </main>
 
-  <script>
-    (() => {
-      const list = document.querySelector(".updates-list");
-      const entries = [...list.children];
-      if (entries.length <= 3) { list.style.maxHeight = "none"; return; }
-      const resize = () => {
-        const height = entries[2].getBoundingClientRect().bottom - list.getBoundingClientRect().top;
-        list.style.maxHeight = `${Math.ceil(height + list.scrollTop)}px`;
-      };
-      new ResizeObserver(resize).observe(list);
-      window.addEventListener("load", resize);
-      resize();
-    })();
-  </script>
-  <script id="place-search-data" type="application/json">[{"slug":"pustosh-agarevo-1626-101","name":"Агарево","type":"Пустошь","search":["Агарево"]},{"slug":"pustosh-agafonova-1626-83","name":"Агафонова","type":"Пустошь","search":["Агафонова"]},{"slug":"ananino","name":"Ананьино","type":"Деревня","search":["Ананьино"]},{"slug":"derevnya-anshukovo-na-rechke-na-ulomke-1626-40","name":"Аншуково","type":"Деревня","search":["Аншуково"]},{"slug":"aristov","name":"Аристов","type":"Починок","search":["Аристов"]},{"slug":"bovynin","name":"Бавыкино","type":"Деревня","search":["Бавыкино","Бовынин"]},{"slug":"pustosh-baranovo-na-rechke-na-ulomke-1626-24","name":"Бараново","type":"Пустошь","search":["Бараново"]},{"slug":"bezkhvostoe","name":"Безхвостое","type":"Селище","search":["Безхвостое"]},{"slug":"da-k-pogos-t-u-zh-tserkovnaya-pustosh-belaya-1626-19","name":"Белая","type":"Пустошь","search":["Белая"]},{"slug":"bezsoloe","name":"Бессоново","type":"Деревня","search":["Бессоново","Безсолое"]},{"slug":"pustosh-beusovo-1626-65","name":"Беусово","type":"Пустошь","search":["Беусово","Белоусово"]},{"slug":"bodaga","name":"Бодага","type":"Деревня","search":["Бодага"]},{"slug":"savinskoe","name":"Большой Двор","type":"Пустошь","search":["Большой Двор","Савинское","Великий Двор"]},{"slug":"borisovo","name":"Борисово","type":"Деревня","search":["Борисово"]},{"slug":"borisovskaya","name":"Борисовска","type":"Деревня","search":["Борисовска"]},{"slug":"bronnikovo","name":"Бронниково","type":"Деревня","search":["Бронниково"]},{"slug":"brykino","name":"Брыкино","type":"Деревня","search":["Брыкино"]},{"slug":"vasileva","name":"Василева","type":"Пустошь","search":["Василева"]},{"slug":"voroshnino","name":"Верещигино","type":"Пустошь","search":["Верещигино","Ворошнино"]},{"slug":"vladychna","name":"Владычна","type":"Пустошь","search":["Владычна"]},{"slug":"vorobevo","name":"Воробьево","type":"Селище","search":["Воробьево"]},{"slug":"vysokoe-ugla","name":"Высокое","type":"Деревня","search":["Высокое"]},{"slug":"vysokoe-churovskaya","name":"Высокое","type":"Деревня","search":["Высокое"]},{"slug":"gavrilova","name":"Гаврилова","type":"Деревня","search":["Гаврилова"]},{"slug":"galshutin","name":"Галшутин","type":"Деревня","search":["Галшутин"]},{"slug":"derevnya-gnevosheva-na-rechke-na-chyurovke-1626-30","name":"Гневошева","type":"Деревня","search":["Гневошева"]},{"slug":"golobokovo","name":"Голобоково","type":"Деревня","search":["Голобоково"]},{"slug":"gologuzovo-ugla","name":"Гологузово","type":"Починок","search":["Гологузово"]},{"slug":"gologuzovo-churovskaya","name":"Гологузово","type":"Селище","search":["Гологузово"]},{"slug":"golodyaevo","name":"Голодяево","type":"Деревня","search":["Голодяево"]},{"slug":"derevnya-gorka-na-rechke-na-ulomke-1626-4","name":"Горка","type":"Деревня","search":["Горка","Уварова Горка"]},{"slug":"pustosh-gorka-1626-47","name":"Горка","type":"Пустошь","search":["Горка"]},{"slug":"gorchakovo","name":"Горчаково","type":"Селище","search":["Горчаково"]},{"slug":"grishiev","name":"Гришнево","type":"Пустошь","search":["Гришнево","Гришиев"]},{"slug":"davydovo","name":"Давыдово","type":"Селище","search":["Давыдово"]},{"slug":"pustosh-davytkova-1626-92","name":"Давыткова","type":"Пустошь","search":["Давыткова"]},{"slug":"demidov-bolshoe","name":"Демидов Болшое","type":"Селище","search":["Демидов Болшое"]},{"slug":"pustosh-demino-1626-64","name":"Демино","type":"Пустошь","search":["Демино"]},{"slug":"demsino","name":"Демсино","type":"Деревня","search":["Демсино"]},{"slug":"derevyanitsa","name":"Деревяница","type":"Деревня","search":["Деревяница"]},{"slug":"dmitrokovo","name":"Дмитроково","type":"Деревня","search":["Дмитроково"]},{"slug":"dor","name":"Дор","type":"Пустошь","search":["Дор","Дор Левашев"]},{"slug":"drozdovo","name":"Дроздово","type":"Деревня","search":["Дроздово"]},{"slug":"dryugino","name":"Дрюгино","type":"Пустошь","search":["Дрюгино","Дручино"]},{"slug":"pustosh-dubamino-1626-79","name":"Дубамино","type":"Пустошь","search":["Дубамино"]},{"slug":"dubrova","name":"Дуброва","type":"Деревня","search":["Дуброва"]},{"slug":"pustosh-dunkina-1626-58","name":"Дунькина","type":"Пустошь","search":["Дунькина"]},{"slug":"romanovskoe","name":"Дупелнево","type":"Деревня","search":["Дупелнево","Романовское","Раменье Дупельное"]},{"slug":"durakov","name":"Дуракова","type":"Деревня","search":["Дуракова","Дураков"]},{"slug":"ezdalki","name":"Ездалки","type":"Пустошь","search":["Ездалки","Елданицы","Езданницы"]},{"slug":"eltsovo","name":"Ельцово","type":"Пустошь","search":["Ельцово"]},{"slug":"eremeevskoe","name":"Еремейкова","type":"Деревня","search":["Еремейкова","Еремеевское"]},{"slug":"esipo-esino","name":"Есино","type":"Пустошь","search":["Есино"]},{"slug":"zhukovo","name":"Жуково","type":"Селище","search":["Жуково"]},{"slug":"zaopoche","name":"Заопочье","type":"Деревня","search":["Заопочье"]},{"slug":"larino","name":"Заречье","type":"Деревня","search":["Заречье","Ларино"]},{"slug":"zarkovo","name":"Зарково","type":"Селище","search":["Зарково"]},{"slug":"pustosh-zakharko-1626-57","name":"Захарко","type":"Пустошь","search":["Захарко"]},{"slug":"zoserikhino","name":"Зосерихино","type":"Пустошь","search":["Зосерихино"]},{"slug":"ivankov","name":"Иванков","type":"Деревня","search":["Иванков"]},{"slug":"ivantsovo","name":"Иванцово","type":"Деревня","search":["Иванцово"]},{"slug":"derevnya-ivashevo-na-rechke-na-ulolmke-1626-2","name":"Ивашево","type":"Деревня","search":["Ивашево"]},{"slug":"pustosh-ignashkovo-1626-81","name":"Игнашково","type":"Пустошь","search":["Игнашково"]},{"slug":"igaya","name":"Игоя","type":"Деревня","search":["Игоя","Игая"]},{"slug":"igumnovo","name":"Игумново","type":"Деревня","search":["Игумново"]},{"slug":"ievlevo","name":"Иевлево","type":"Деревня","search":["Иевлево"]},{"slug":"ikonnikovo","name":"Иконниково","type":"Пустошь","search":["Иконниково","Лихачево"]},{"slug":"ilinskaya","name":"Ильинская","type":"Пустошь","search":["Ильинская"]},{"slug":"charoma","name":"Ильинское","type":"Деревня","search":["Ильинское","Чарома","Большой Двор"]},{"slug":"isakovo","name":"Исаково","type":"Пустошь","search":["Исаково"]},{"slug":"pustosh-kvasino-1626-51","name":"Квасино","type":"Пустошь","search":["Квасино"]},{"slug":"kislikha-bolshoe","name":"Кислиха Большое","type":"Селище","search":["Кислиха Большое"]},{"slug":"kislikha-maloe","name":"Кислиха Малое","type":"Селище","search":["Кислиха Малое"]},{"slug":"sofonovo","name":"Кистенева","type":"Деревня","search":["Кистенева","Софоново","Кистенево"]},{"slug":"klykov","name":"Клыков","type":"Деревня","search":["Клыков"]},{"slug":"knyazhe","name":"Княжая","type":"Деревня","search":["Княжая","Княжье"]},{"slug":"pustosh-kobelevo-1626-82","name":"Кобелево","type":"Пустошь","search":["Кобелево"]},{"slug":"pishchalinskoe","name":"Коленецкий погост","type":"Погост","search":["Коленецкий погост","Пищалинское"]},{"slug":"u-pogosta-zh-na-tserkovnoy-zemle-pochinok-kolovin-1626-13","name":"Коловин","type":"Починок","search":["Коловин"]},{"slug":"kolyshino","name":"Колышкино","type":"Деревня","search":["Колышкино","Колышино"]},{"slug":"koryukino","name":"Корюкино","type":"Деревня","search":["Корюкино"]},{"slug":"kotovo","name":"Котово","type":"Деревня","search":["Котово"]},{"slug":"koshcheiv-koshcheev","name":"Кощеев","type":"Починок","search":["Кощеев"]},{"slug":"koshcheevo","name":"Кощеево","type":"Деревня","search":["Кощеево"]},{"slug":"krasnoe","name":"Красное","type":"Деревня","search":["Красное"]},{"slug":"krivosheino","name":"Кривошеино","type":"Деревня","search":["Кривошеино"]},{"slug":"krutets","name":"Крутец","type":"Деревня","search":["Крутец"]},{"slug":"pustosh-krutets-lgunin-1626-63","name":"Крутец Лгунин","type":"Пустошь","search":["Крутец Лгунин"]},{"slug":"krushkova","name":"Крушкова","type":"Деревня","search":["Крушкова","Крушково"]},{"slug":"krushkovo","name":"Крушково","type":"Починок","search":["Крушково"]},{"slug":"kuznetsovo","name":"Кузнецово","type":"Пустошь","search":["Кузнецово"]},{"slug":"kuleberovo","name":"Кулеберево","type":"Деревня","search":["Кулеберево","Кулеберово"]},{"slug":"kunino","name":"Кунино","type":"Пустошь","search":["Кунино","Кукино"]},{"slug":"kurakin","name":"Куракино","type":"Деревня","search":["Куракино","Куракин"]},{"slug":"kurgany","name":"Курганы","type":"Деревня","search":["Курганы"]},{"slug":"kurya","name":"Курья","type":"Селище","search":["Курья"]},{"slug":"kusty","name":"Кусты","type":"Деревня","search":["Кусты"]},{"slug":"pustosh-kuchino-1626-96","name":"Кучино","type":"Пустошь","search":["Кучино"]},{"slug":"likhacheva","name":"Лихачева","type":"Пустошь","search":["Лихачева","Чюрове"]},{"slug":"likhachevo","name":"Лихачево","type":"Деревня","search":["Лихачево"]},{"slug":"pustosh-lodygino-1626-80","name":"Лодыгино","type":"Пустошь","search":["Лодыгино"]},{"slug":"loshakova","name":"Лошакова","type":"Починок","search":["Лошакова","Лошаково"]},{"slug":"loshakovo-monastery","name":"Лошаково","type":"Починок","search":["Лошаково"]},{"slug":"luzhkovo","name":"Лужкова","type":"Деревня","search":["Лужкова"]},{"slug":"lukino","name":"Лукино","type":"Деревня","search":["Лукино"]},{"slug":"lykhovo","name":"Лыхово","type":"Селище","search":["Лыхово"]},{"slug":"lyshkovo","name":"Лышково","type":"Деревня","search":["Лышково"]},{"slug":"modenov","name":"Маденово","type":"Деревня","search":["Маденово","Моденов"]},{"slug":"makarovo","name":"Макарово","type":"Деревня","search":["Макарово"]},{"slug":"pustosh-makarovo-1626-77","name":"Макарово","type":"Пустошь","search":["Макарово"]},{"slug":"maksimkov","name":"Максимков","type":"Деревня","search":["Максимков"]},{"slug":"maksimtsova","name":"Максимцова","type":"Пустошь","search":["Максимцова"]},{"slug":"derevnya-1626-6","name":"Малая Игая","type":"Деревня","search":["Малая Игая"]},{"slug":"malgin","name":"Малгин","type":"Деревня","search":["Малгин"]},{"slug":"malgina","name":"Малгина","type":"Деревня","search":["Малгина"]},{"slug":"malinukha","name":"Малинуха","type":"Пустошь","search":["Малинуха"]},{"slug":"maltsov","name":"Мальцов","type":"Починок","search":["Мальцов"]},{"slug":"malchino","name":"Мальцово","type":"Деревня","search":["Мальцово","Малгиево","Малчино"]},{"slug":"manuylova","name":"Мануйлова","type":"Пустошь","search":["Мануйлова"]},{"slug":"medvezhe","name":"Медвежье","type":"Деревня","search":["Медвежье"]},{"slug":"merzlyakovo","name":"Мерзляково","type":"Селище","search":["Мерзляково"]},{"slug":"mizhuevo","name":"Мижуево","type":"Деревня","search":["Мижуево"]},{"slug":"mizhukovo","name":"Мижуково","type":"Селище","search":["Мижуково"]},{"slug":"pustosh-mikitino-1626-100","name":"Микитино","type":"Пустошь","search":["Микитино"]},{"slug":"mikhaylovskaya","name":"Михайловская","type":"Пустошь","search":["Михайловская"]},{"slug":"pustosh-mishitino-1626-25","name":"Мишитино","type":"Пустошь","search":["Мишитино"]},{"slug":"pustosh-mishkino-1626-62","name":"Мишкино","type":"Пустошь","search":["Мишкино"]},{"slug":"mokrotsyno","name":"Мокроцыно","type":"Деревня","search":["Мокроцыно"]},{"slug":"pustosh-mordvinovo-1626-88","name":"Мордвиново","type":"Пустошь","search":["Мордвиново","Мервятино"]},{"slug":"pustosh-morozovo-1626-91","name":"Морозово","type":"Пустошь","search":["Морозово"]},{"slug":"morshikha","name":"Моршиха","type":"Деревня","search":["Моршиха"]},{"slug":"mosyakino","name":"Мосякино","type":"Селище","search":["Мосякино"]},{"slug":"mudygino","name":"Мудыгино","type":"Пустошь","search":["Мудыгино"]},{"slug":"pustosh-mushkovo-1626-75","name":"Мушково","type":"Пустошь","search":["Мушково","Мошков"]},{"slug":"mys","name":"Мыс","type":"Деревня","search":["Мыс"]},{"slug":"myshkino","name":"Мышкино","type":"Деревня","search":["Мышкино"]},{"slug":"na-shchuche","name":"на Щучье","type":"Деревня","search":["на Щучье"]},{"slug":"nazarovo","name":"Назарово","type":"Деревня","search":["Назарово"]},{"slug":"nekraskov","name":"Некрасков","type":"Деревня","search":["Некрасков"]},{"slug":"novo","name":"Ново","type":"Пустошь","search":["Ново"]},{"slug":"novoy-pochinok-filin","name":"Новой Починок Филин","type":"Пустошь","search":["Новой Починок Филин"]},{"slug":"nov-shatretskaya","name":"Новь Шатрецкая","type":"Деревня","search":["Новь Шатрецкая"]},{"slug":"norovo","name":"Норово","type":"Селище","search":["Норово"]},{"slug":"obukhovo-ugla","name":"Обухово","type":"Деревня","search":["Обухово"]},{"slug":"obukhovo-ramenskaya","name":"Обухово","type":"Деревня","search":["Обухово"]},{"slug":"ovinets","name":"Овинницы","type":"Деревня","search":["Овинницы","Овинец"]},{"slug":"okatevo","name":"Окатьево","type":"Деревня","search":["Окатьево"]},{"slug":"okoemovo","name":"Окоемово","type":"Деревня","search":["Окоемово"]},{"slug":"oksenovo","name":"Оксеново","type":"Деревня","search":["Оксеново"]},{"slug":"okunevo","name":"Окунево","type":"Деревня","search":["Окунево"]},{"slug":"olekseeva","name":"Олексеева","type":"Деревня","search":["Олексеева","Филино"]},{"slug":"oleksino","name":"Олексино","type":"Деревня","search":["Олексино"]},{"slug":"olesheva","name":"Олешева","type":"Деревня","search":["Олешева"]},{"slug":"olkhovets","name":"Ольховец","type":"Пустошь","search":["Ольховец"]},{"slug":"omelyanov","name":"Омельянов","type":"Деревня","search":["Омельянов"]},{"slug":"onanin-pochinok","name":"Онаньин Починок","type":"Деревня","search":["Онаньин Починок"]},{"slug":"pustosh-ondronnikovo-1626-49","name":"Ондронниково","type":"Пустошь","search":["Ондронниково","Андрюково"]},{"slug":"opalikha","name":"Опалиха","type":"Деревня","search":["Опалиха"]},{"slug":"pustosh-orkhino-1626-78","name":"Орхино","type":"Пустошь","search":["Орхино"]},{"slug":"osifkovo","name":"Осифково","type":"Деревня","search":["Осифково"]},{"slug":"palshmay","name":"Палшмай","type":"Пустошь","search":["Палшмай","Палшма"]},{"slug":"pateryaeva","name":"Патеряева","type":"Пустошь","search":["Патеряева"]},{"slug":"patrekeitsovo","name":"Патрекеицово","type":"Пустошь","search":["Патрекеицово","Патрекеево"]},{"slug":"pakhomovo","name":"Пахомово","type":"Пустошь","search":["Пахомово"]},{"slug":"perkhino","name":"Перхино","type":"Деревня","search":["Перхино"]},{"slug":"pustosh-perkhito-1626-61","name":"Перхито","type":"Пустошь","search":["Перхито"]},{"slug":"pestovo","name":"Пестово","type":"Деревня","search":["Пестово"]},{"slug":"pestyushkin","name":"Пестюшкин","type":"Пустошь","search":["Пестюшкин"]},{"slug":"peshkov","name":"Пешково","type":"Деревня","search":["Пешково","Пешков"]},{"slug":"pirogovo","name":"Пирогово","type":"Пустошь","search":["Пирогово"]},{"slug":"plesnyukovo","name":"Плеснюково","type":"Пустошь","search":["Плеснюково"]},{"slug":"pleshchakovo","name":"Плещаково","type":"Селище","search":["Плещаково"]},{"slug":"ploskoe","name":"Плоское","type":"Деревня","search":["Плоское"]},{"slug":"zapogostye","name":"Погост Запогостье","type":"Погост","search":["Погост Запогостье","Запогостье"]},{"slug":"pograeva","name":"Пограева","type":"Деревня","search":["Пограева"]},{"slug":"podosenkovo","name":"Подосенково","type":"Селище","search":["Подосенково"]},{"slug":"polezhaevo","name":"Полежаево","type":"Деревня","search":["Полежаево"]},{"slug":"popovskaya","name":"Поповская","type":"Деревня","search":["Поповская","Богоявленский"]},{"slug":"pustish-portamoyka-1626-73","name":"Портамойка","type":"Пустошь","search":["Портамойка"]},{"slug":"pustosh-postryaevo-1626-102","name":"Постряево","type":"Пустошь","search":["Постряево"]},{"slug":"poteryaevo","name":"Потеряево","type":"Деревня","search":["Потеряево"]},{"slug":"pochinok-ugla","name":"Починок","type":"Деревня","search":["Починок"]},{"slug":"pochinok-churovskaya","name":"Починок","type":"Деревня","search":["Починок"]},{"slug":"derevnya-pochinok-na-rechke-na-chyurovke-1626-34","name":"Починок","type":"Деревня","search":["Починок"]},{"slug":"pustosh-pochka-1626-104","name":"Почка","type":"Пустошь","search":["Почка"]},{"slug":"presnyakovo","name":"Пресняково","type":"Пустошь","search":["Пресняково"]},{"slug":"prikino","name":"Прикино","type":"Пустошь","search":["Прикино"]},{"slug":"pritykino","name":"Притыкино","type":"Деревня","search":["Притыкино"]},{"slug":"pryamikovo","name":"Прямиково","type":"Селище","search":["Прямиково"]},{"slug":"pyatkov","name":"Пятков","type":"Деревня","search":["Пятков"]},{"slug":"ramene","name":"Раменье","type":"Пустошь","search":["Раменье"]},{"slug":"rameshka-churovskaya","name":"Рамешка","type":"Пустошь","search":["Рамешка","Раменки","Раменка"]},{"slug":"rameshka-churovskaya-2","name":"Рамешка","type":"Пустошь","search":["Рамешка"]},{"slug":"pustosh-retino-1626-50","name":"Ретино","type":"Пустошь","search":["Ретино","Репино"]},{"slug":"pustosh-rzhavitsy-1626-74","name":"Ржавицы","type":"Пустошь","search":["Ржавицы"]},{"slug":"rodino","name":"Родино","type":"Деревня","search":["Родино"]},{"slug":"rozbuy","name":"Розбуй","type":"Пустошь","search":["Розбуй"]},{"slug":"romanovo","name":"Романницово","type":"Деревня","search":["Романницово","Романово"]},{"slug":"rublevo","name":"Рублево","type":"Деревня","search":["Рублево"]},{"slug":"pustosh-rusanova-1626-105","name":"Русанова","type":"Пустошь","search":["Русанова"]},{"slug":"savin","name":"Савин","type":"Деревня","search":["Савин"]},{"slug":"saunkin","name":"Савунино","type":"Пустошь","search":["Савунино","Саункин"]},{"slug":"samsonitsa","name":"Самсоница","type":"Пустошь","search":["Самсоница"]},{"slug":"samsonova-dubrovka","name":"Самсонова Дубровка","type":"Деревня","search":["Самсонова Дубровка"]},{"slug":"samuilova","name":"Самуилова","type":"Пустошь","search":["Самуилова"]},{"slug":"svatkova","name":"Сваткова","type":"Деревня","search":["Сваткова"]},{"slug":"selivanov","name":"Селиванов","type":"Деревня","search":["Селиванов"]},{"slug":"selittskoe","name":"Селитцкое","type":"Пустошь","search":["Селитцкое","Селецкое"]},{"slug":"selishche","name":"Селище","type":"Деревня","search":["Селище"]},{"slug":"seltsa","name":"Сельцо","type":"Деревня","search":["Сельцо","Сельца"]},{"slug":"pustosh-semenova-1626-60","name":"Семенова","type":"Пустошь","search":["Семенова"]},{"slug":"semkino","name":"Семкино","type":"Пустошь","search":["Семкино"]},{"slug":"senukhino","name":"Сенухино","type":"Селище","search":["Сенухино"]},{"slug":"senkin","name":"Сенькин","type":"Деревня","search":["Сенькин"]},{"slug":"senyutino","name":"Сенютино","type":"Селище","search":["Сенютино"]},{"slug":"pustosh-sinitsyno-1626-95","name":"Синицыно","type":"Пустошь","search":["Синицыно"]},{"slug":"sintsovskoe","name":"Синцово","type":"Деревня","search":["Синцово","Синцовское"]},{"slug":"skorobogatoy","name":"Скоробогатой","type":"Деревня","search":["Скоробогатой"]},{"slug":"slizovo","name":"Слизово","type":"Пустошь","search":["Слизово"]},{"slug":"sogareva","name":"Согарева","type":"Пустошь","search":["Согарева"]},{"slug":"sokolovo","name":"Соколово","type":"Деревня","search":["Соколово"]},{"slug":"sosnovka","name":"Сосновка","type":"Пустошь","search":["Сосновка"]},{"slug":"sosnovka-monastery","name":"Сосновка","type":"Деревня","search":["Сосновка"]},{"slug":"staraya","name":"Старая","type":"Деревня","search":["Старая"]},{"slug":"pustosh-stepanovskaya-1626-71","name":"Степановская","type":"Пустошь","search":["Степановская"]},{"slug":"pustosh-stepanovskaya-1626-93","name":"Степановская","type":"Пустошь","search":["Степановская"]},{"slug":"stikino","name":"Стикино","type":"Селище","search":["Стикино"]},{"slug":"pustosh-stupnevo-1626-85","name":"Ступнево","type":"Пустошь","search":["Ступнево"]},{"slug":"syromyatkino","name":"Сыромяткино","type":"Пустошь","search":["Сыромяткино"]},{"slug":"tarasov","name":"Тарасов","type":"Деревня","search":["Тарасов"]},{"slug":"tarasova","name":"Тарасова","type":"Деревня","search":["Тарасова"]},{"slug":"tarutin","name":"Тарутин","type":"Деревня","search":["Тарутин"]},{"slug":"telyatnik","name":"Телятник","type":"Деревня","search":["Телятник"]},{"slug":"timoshin","name":"Тимшино","type":"Пустошь","search":["Тимшино","Тимошин"]},{"slug":"pustosh-titovo-1626-84","name":"Титово","type":"Пустошь","search":["Титово"]},{"slug":"pustosh-tishina-1626-66","name":"Тишина","type":"Пустошь","search":["Тишина"]},{"slug":"tishinskoe","name":"Тишинское","type":"Деревня","search":["Тишинское"]},{"slug":"tolstoe-ramene","name":"Толстое Раменье","type":"Деревня","search":["Толстое Раменье"]},{"slug":"troshino","name":"Трошино","type":"Пустошь","search":["Трошино"]},{"slug":"trufonovo","name":"Труфоново","type":"Пустошь","search":["Труфоново","Труфаново"]},{"slug":"pustosh-tushino-1626-67","name":"Тушино","type":"Пустошь","search":["Тушино"]},{"slug":"ulushkovo","name":"Улушково","type":"Деревня","search":["Улушково"]},{"slug":"fedorkovo","name":"Федорково","type":"Пустошь","search":["Федорково","Федорово"]},{"slug":"fedosino","name":"Федосьино","type":"Деревня","search":["Федосьино"]},{"slug":"fedotov","name":"Федотово","type":"Деревня","search":["Федотово","Федотов"]},{"slug":"pustosh-feoktistova-1626-99","name":"Феоктистова","type":"Пустошь","search":["Феоктистова"]},{"slug":"fomkin","name":"Фоминское","type":"Пустошь","search":["Фоминское","Фомкин"]},{"slug":"fofonovo","name":"Фофоново","type":"Пустошь","search":["Фофоново","Фофанова"]},{"slug":"pochinok-kharlamov-u-kolentsa","name":"Харламова","type":"Деревня","search":["Харламова","Харламов"]},{"slug":"chyuravskaya-nov","name":"Черепаново","type":"Деревня","search":["Черепаново","Чюравская Новь"]},{"slug":"pogost-rozhestva-bogoroditsy","name":"Чуровский погост","type":"Погост","search":["Чуровский погост","Чуровский"]},{"slug":"shevyrino","name":"Шедрино","type":"Деревня","search":["Шедрино","Шевырино"]},{"slug":"shizdino","name":"Шиздино","type":"Пустошь","search":["Шиздино"]},{"slug":"shilolino","name":"Шилолино","type":"Деревня","search":["Шилолино"]},{"slug":"yakulkino","name":"Якулкино","type":"Пустошь","search":["Якулкино","Якунино"]},{"slug":"yakunino-monastery","name":"Якунино","type":"Пустошь","search":["Якунино"]},{"slug":"yaltsova","name":"Ялцова","type":"Пустошь","search":["Ялцова"]},{"slug":"yartsova","name":"Ярцова","type":"Пустошь","search":["Ярцова","Ярново"]}]</script>
-  <script id="map-count-data" type="application/json">{"all":175,"place":166,"church":9}</script>
+  <script id="place-search-data" type="application/json">[{"slug":"pustosh-agarevo-1626-101","name":"Агарево","search":["Агарево","Огарково"]},{"slug":"pustosh-agafonova-1626-83","name":"Агафонова","search":["Агафонова","Агафоново"]},{"slug":"ananino","name":"Ананьино","search":["Ананьино"]},{"slug":"derevnya-anshukovo-na-rechke-na-ulomke-1626-40","name":"Аншуково","search":["Аншуково","Оншюково","Дуброва"]},{"slug":"aristov","name":"Аристов","search":["Аристов","Аристова","Новцо"]},{"slug":"bovynin","name":"Бавыкино","search":["Бавыкино","Бовынин","Бовыкино"]},{"slug":"pustosh-baranovo-na-rechke-na-ulomke-1626-24","name":"Бараново","search":["Бараново"]},{"slug":"bezkhvostoe","name":"Безхвостое","search":["Безхвостое"]},{"slug":"da-k-pogos-t-u-zh-tserkovnaya-pustosh-belaya-1626-19","name":"Белая","search":["Белая"]},{"slug":"berezkino-1559","name":"Березкино","search":["Березкино"]},{"slug":"bezsoloe","name":"Бессоново","search":["Бессоново","Безсолое"]},{"slug":"pustosh-beusovo-1626-65","name":"Беусово","search":["Беусово","Белоусово"]},{"slug":"bodaga","name":"Бодага","search":["Бодага"]},{"slug":"savinskoe","name":"Большой Двор","search":["Большой Двор","Савинское","Великий Двор","Савинская","Большей Двор"]},{"slug":"borisovo","name":"Борисово","search":["Борисово"]},{"slug":"borisovskaya","name":"Борисовска","search":["Борисовска"]},{"slug":"bronnikovo","name":"Бронниково","search":["Бронниково"]},{"slug":"brykino","name":"Брыкино","search":["Брыкино"]},{"slug":"bykov-1559","name":"Быков","search":["Быков"]},{"slug":"valovka-charomsky-1559","name":"Валовка","search":["Валовка"]},{"slug":"vasileva","name":"Василева","search":["Василева"]},{"slug":"vaskov-kolenets-1559","name":"Васьков","search":["Васьков"]},{"slug":"voroshnino","name":"Верещагино","search":["Верещагино","Ворошнино"]},{"slug":"vladychna","name":"Владычна","search":["Владычна"]},{"slug":"vorobevo","name":"Воробьево","search":["Воробьево"]},{"slug":"vysokoe-ugla","name":"Высокое","search":["Высокое"]},{"slug":"vysokoe-churovskaya","name":"Высокое","search":["Высокое"]},{"slug":"gavrilova","name":"Гаврилова","search":["Гаврилова"]},{"slug":"galshutin","name":"Галшутин","search":["Галшутин"]},{"slug":"derevnya-gnevosheva-na-rechke-na-chyurovke-1626-30","name":"Гневошева","search":["Гневошева","Гневашево"]},{"slug":"golobokovo","name":"Голобоково","search":["Голобоково","Голобокое"]},{"slug":"gologuzovo-ugla","name":"Гологузово","search":["Гологузово","Гологузка"]},{"slug":"gologuzovo-churovskaya","name":"Гологузово","search":["Гологузово"]},{"slug":"golodyaevo","name":"Голодяево","search":["Голодяево"]},{"slug":"derevnya-gorka-na-rechke-na-ulomke-1626-4","name":"Горка","search":["Горка","Уварова Горка"]},{"slug":"pustosh-gorka-1626-47","name":"Горка","search":["Горка"]},{"slug":"gorka-kolinets-1601","name":"Горка","search":["Горка"]},{"slug":"gorchakovo","name":"Горчаково","search":["Горчаково"]},{"slug":"grishiev","name":"Гришнево","search":["Гришнево","Гришиев","Грешнево","Гришенево"]},{"slug":"gushchino-1601","name":"Гущино","search":["Гущино"]},{"slug":"davydovo","name":"Давыдово","search":["Давыдово"]},{"slug":"pustosh-davytkova-1626-92","name":"Давыткова","search":["Давыткова"]},{"slug":"demidov-bolshoe","name":"Демидов Болшое","search":["Демидов Болшое"]},{"slug":"pustosh-demino-1626-64","name":"Демино","search":["Демино"]},{"slug":"demsino","name":"Демсино","search":["Демсино"]},{"slug":"denisov-1559","name":"Денисьев","search":["Денисьев"]},{"slug":"derevyanitsa","name":"Деревяница","search":["Деревяница"]},{"slug":"dmitrokovo","name":"Дмитроково","search":["Дмитроково"]},{"slug":"dor","name":"Дор","search":["Дор","Дор Левашев"]},{"slug":"dor-kolenets-1559","name":"Дор","search":["Дор"]},{"slug":"drozdovo","name":"Дроздово","search":["Дроздово"]},{"slug":"dryugino","name":"Дрюгино","search":["Дрюгино","Дручино"]},{"slug":"dryuchino-1601","name":"Дрючино","search":["Дрючино"]},{"slug":"pustosh-dubamino-1626-79","name":"Дубамино","search":["Дубамино"]},{"slug":"dubrova","name":"Дуброва","search":["Дуброва"]},{"slug":"pustosh-dunkina-1626-58","name":"Дунькина","search":["Дунькина","Дудкино"]},{"slug":"romanovskoe","name":"Дупелнево","search":["Дупелнево","Романовское","Раменье Дупельное","Дупельное"]},{"slug":"durakov","name":"Дуракова","search":["Дуракова","Дураков","Дураково"]},{"slug":"ezdalki","name":"Ездалки","search":["Ездалки","Елданицы","Езданницы"]},{"slug":"eltsovo","name":"Ельцово","search":["Ельцово"]},{"slug":"eremeevskoe","name":"Еремейкова","search":["Еремейкова","Еремеевское","Еремиево","Еремино"]},{"slug":"esipo-esino","name":"Есино","search":["Есино"]},{"slug":"zhukovo","name":"Жуково","search":["Жуково"]},{"slug":"larino","name":"Заречье","search":["Заречье","Ларино"]},{"slug":"zarkovo","name":"Зарково","search":["Зарково"]},{"slug":"zasorikhino-1559","name":"Засорихино","search":["Засорихино","Засориха"]},{"slug":"pustosh-zakharko-1626-57","name":"Захарко","search":["Захарко","Захарьино"]},{"slug":"zoserikhino","name":"Зосерихино","search":["Зосерихино"]},{"slug":"ivankov","name":"Иванков","search":["Иванков"]},{"slug":"ivantsovo","name":"Иванцово","search":["Иванцово","Иванцево"]},{"slug":"derevnya-ivashevo-na-rechke-na-ulolmke-1626-2","name":"Ивашево","search":["Ивашево"]},{"slug":"pustosh-ignashkovo-1626-81","name":"Игнашково","search":["Игнашково","Игнашино"]},{"slug":"igaya","name":"Игоя","search":["Игоя","Игая","Игая Большая","Игоя Большая"]},{"slug":"igumnovo","name":"Игумново","search":["Игумново"]},{"slug":"ievlevo","name":"Иевлево","search":["Иевлево"]},{"slug":"ikonnikovo","name":"Иконниково","search":["Иконниково","Лихачево"]},{"slug":"ilinskaya","name":"Ильинская","search":["Ильинская"]},{"slug":"charoma","name":"Ильинское","search":["Ильинское","Чарома","Большой Двор","Чяромское","Чяромские","Большей Двор"]},{"slug":"isakovo","name":"Исаково","search":["Исаково"]},{"slug":"karpov-kolenets-1559","name":"Карпов","search":["Карпов"]},{"slug":"kashievo-1601","name":"Кашиево","search":["Кашиево"]},{"slug":"pustosh-kvasino-1626-51","name":"Квасино","search":["Квасино","Квасинино"]},{"slug":"kislikha-bolshoe","name":"Кислиха Большое","search":["Кислиха Большое"]},{"slug":"kislikha-maloe","name":"Кислиха Малое","search":["Кислиха Малое"]},{"slug":"sofonovo","name":"Кистенева","search":["Кистенева","Софоново","Кистенево"]},{"slug":"klykov","name":"Клыков","search":["Клыков"]},{"slug":"knyazhe","name":"Княжая","search":["Княжая","Княжье","Князево","Княжо","Княже"]},{"slug":"pustosh-kobelevo-1626-82","name":"Кобелево","search":["Кобелево"]},{"slug":"pishchalinskoe","name":"Коленецкий погост","search":["Коленецкий погост","Пищалинское"]},{"slug":"u-pogosta-zh-na-tserkovnoy-zemle-pochinok-kolovin-1626-13","name":"Коловин","search":["Коловин","Коловик"]},{"slug":"kolyshino","name":"Колышкино","search":["Колышкино","Колышино"]},{"slug":"koryukino","name":"Корюкино","search":["Корюкино"]},{"slug":"kotovo","name":"Котово","search":["Котово"]},{"slug":"koshcheiv-koshcheev","name":"Кощеев","search":["Кощеев"]},{"slug":"koshcheevo","name":"Кощеево","search":["Кощеево","Кощиево"]},{"slug":"krasnoe","name":"Красное","search":["Красное"]},{"slug":"krivosheino","name":"Кривошеино","search":["Кривошеино"]},{"slug":"krutets","name":"Крутец","search":["Крутец"]},{"slug":"pustosh-krutets-lgunin-1626-63","name":"Крутец Лгунин","search":["Крутец Лгунин","Крутец"]},{"slug":"krushkova","name":"Крушкова","search":["Крушкова","Крушково"]},{"slug":"krushkovo","name":"Крушково","search":["Крушково","Кружково"]},{"slug":"kuznetsovo","name":"Кузнецово","search":["Кузнецово"]},{"slug":"kuleberovo","name":"Кулеберево","search":["Кулеберево","Кулеберово"]},{"slug":"kunino","name":"Кунино","search":["Кунино","Кукино"]},{"slug":"kurakin","name":"Куракино","search":["Куракино","Куракин"]},{"slug":"kurgany","name":"Курганы","search":["Курганы"]},{"slug":"kurya","name":"Курья","search":["Курья"]},{"slug":"kusty","name":"Кусты","search":["Кусты"]},{"slug":"pustosh-kuchino-1626-96","name":"Кучино","search":["Кучино"]},{"slug":"likhacheva","name":"Лихачева","search":["Лихачева","Чюрове"]},{"slug":"likhachevo","name":"Лихачево","search":["Лихачево"]},{"slug":"pustosh-lodygino-1626-80","name":"Лодыгино","search":["Лодыгино"]},{"slug":"loshakova","name":"Лошакова","search":["Лошакова","Лошаково"]},{"slug":"loshakovo-monastery","name":"Лошаково","search":["Лошаково"]},{"slug":"luzhkovo","name":"Лужкова","search":["Лужкова"]},{"slug":"lukino","name":"Лукино","search":["Лукино","Починок Лукоников","Лукин Починок"]},{"slug":"lykhovo","name":"Лыхово","search":["Лыхово"]},{"slug":"lyshkovo","name":"Лышково","search":["Лышково"]},{"slug":"modenov","name":"Маденово","search":["Маденово","Моденов","Моденово"]},{"slug":"makarovo","name":"Макарово","search":["Макарово"]},{"slug":"pustosh-makarovo-1626-77","name":"Макарово","search":["Макарово","Максаково"]},{"slug":"maksimkov","name":"Максимков","search":["Максимков"]},{"slug":"maksimtsova","name":"Максимцова","search":["Максимцова"]},{"slug":"derevnya-1626-6","name":"Малая Игая","search":["Малая Игая","Игая Малая","Игоя Малая"]},{"slug":"malgin","name":"Малгин","search":["Малгин","Малгино"]},{"slug":"malgina","name":"Малгина","search":["Малгина"]},{"slug":"malinukha","name":"Малинуха","search":["Малинуха"]},{"slug":"maltsov","name":"Мальцов","search":["Мальцов"]},{"slug":"malchino","name":"Мальцово","search":["Мальцово","Малгиево","Малчино","Малгино"]},{"slug":"manuylova","name":"Мануйлова","search":["Мануйлова"]},{"slug":"medvezhe","name":"Медвежье","search":["Медвежье"]},{"slug":"merzlyakovo","name":"Мерзляково","search":["Мерзляково"]},{"slug":"mizhuevo","name":"Мижуево","search":["Мижуево"]},{"slug":"mizhukovo","name":"Мижуково","search":["Мижуково"]},{"slug":"pustosh-mikitino-1626-100","name":"Микитино","search":["Микитино"]},{"slug":"mitkino-1601","name":"Митькино","search":["Митькино"]},{"slug":"mikhaylovskaya","name":"Михайловская","search":["Михайловская"]},{"slug":"pustosh-mishitino-1626-25","name":"Мишитино","search":["Мишитино"]},{"slug":"pustosh-mishkino-1626-62","name":"Мишкино","search":["Мишкино","Мишково"]},{"slug":"mokrotsyno","name":"Мокроцыно","search":["Мокроцыно"]},{"slug":"pustosh-mordvinovo-1626-88","name":"Мордвиново","search":["Мордвиново","Мервятино","Мервядино","Мердвинино"]},{"slug":"pustosh-morozovo-1626-91","name":"Морозово","search":["Морозово","Самсонова Дубровка","Дуброва","Полежаево"]},{"slug":"morshikha","name":"Моршиха","search":["Моршиха"]},{"slug":"mosyakino","name":"Мосякино","search":["Мосякино"]},{"slug":"mudygino","name":"Мудыгино","search":["Мудыгино"]},{"slug":"pustosh-mushkovo-1626-75","name":"Мушково","search":["Мушково","Мошков"]},{"slug":"mys","name":"Мыс","search":["Мыс"]},{"slug":"myshkino","name":"Мышкино","search":["Мышкино"]},{"slug":"myatino-1559","name":"Мятино","search":["Мятино"]},{"slug":"nazarovo","name":"Назарово","search":["Назарово"]},{"slug":"nekraskov","name":"Некрасков","search":["Некрасков"]},{"slug":"nikitino-1559","name":"Никитино","search":["Никитино","Никитинская"]},{"slug":"nifontov-1559","name":"Нифонтов","search":["Нифонтов"]},{"slug":"novo","name":"Ново","search":["Ново"]},{"slug":"novoy-pochinok-filin","name":"Новой Починок Филин","search":["Новой Починок Филин"]},{"slug":"nov-shatretskaya","name":"Новь Шатрецкая","search":["Новь Шатрецкая"]},{"slug":"norovo","name":"Норово","search":["Норово"]},{"slug":"obukhovo-ugla","name":"Обухово","search":["Обухово"]},{"slug":"obukhovo-ramenskaya","name":"Обухово","search":["Обухово"]},{"slug":"ovinets","name":"Овинницы","search":["Овинницы","Овинец","Овинцы"]},{"slug":"okatevo","name":"Окатьево","search":["Окатьево"]},{"slug":"okoemovo","name":"Окоемово","search":["Окоемово"]},{"slug":"oksenovo","name":"Оксеново","search":["Оксеново"]},{"slug":"okunevo","name":"Окунево","search":["Окунево"]},{"slug":"olekseeva","name":"Олексеева","search":["Олексеева","Филино","Елесиево"]},{"slug":"oleksino","name":"Олексино","search":["Олексино"]},{"slug":"olesheva","name":"Олешева","search":["Олешева"]},{"slug":"olkhovets","name":"Ольховец","search":["Ольховец"]},{"slug":"omelyanov","name":"Омельянов","search":["Омельянов"]},{"slug":"omosov-1559","name":"Омосов","search":["Омосов"]},{"slug":"onanin-pochinok","name":"Онаньин Починок","search":["Онаньин Починок"]},{"slug":"pustosh-ondronnikovo-1626-49","name":"Ондронниково","search":["Ондронниково","Андрюково","Ондроково"]},{"slug":"opalikha","name":"Опалиха","search":["Опалиха"]},{"slug":"pustosh-orkhino-1626-78","name":"Орхино","search":["Орхино"]},{"slug":"osifkovo","name":"Осифково","search":["Осифково"]},{"slug":"ostyunino-1559","name":"Остюнино","search":["Остюнино","Отюнино"]},{"slug":"pavlovskaya-1601","name":"Павловская","search":["Павловская"]},{"slug":"palshmay","name":"Палшмай","search":["Палшмай","Палшма"]},{"slug":"pateryaeva","name":"Патеряева","search":["Патеряева"]},{"slug":"patrekeitsovo","name":"Патрекеицово","search":["Патрекеицово","Патрекеево"]},{"slug":"pakhomovo","name":"Пахомово","search":["Пахомово"]},{"slug":"perkhino","name":"Перхино","search":["Перхино"]},{"slug":"pustosh-perkhito-1626-61","name":"Перхино","search":["Перхино","Першино"]},{"slug":"pestovo","name":"Пестово","search":["Пестово"]},{"slug":"pestyushkin","name":"Пестюшкин","search":["Пестюшкин"]},{"slug":"peshkov","name":"Пешково","search":["Пешково","Пешков"]},{"slug":"pirogovo","name":"Пирогово","search":["Пирогово"]},{"slug":"pishkov-1559","name":"Пишков","search":["Пишков"]},{"slug":"plesnyukovo","name":"Плеснюково","search":["Плеснюково"]},{"slug":"pleshchakovo","name":"Плещаково","search":["Плещаково"]},{"slug":"ploskoe","name":"Плоское","search":["Плоское"]},{"slug":"zapogostye","name":"Погост Запогостье","search":["Погост Запогостье","Запогостье"]},{"slug":"pograeva","name":"Пограева","search":["Пограева"]},{"slug":"podosenkovo","name":"Подосенково","search":["Подосенково"]},{"slug":"polezhaevo","name":"Полежаево","search":["Полежаево"]},{"slug":"popovskaya","name":"Поповская","search":["Поповская","Богоявленский"]},{"slug":"pustish-portamoyka-1626-73","name":"Портамойка","search":["Портамойка"]},{"slug":"poteryaevo","name":"Потеряево","search":["Потеряево"]},{"slug":"pochinok-ugla","name":"Починок","search":["Починок"]},{"slug":"pochinok-churovskaya","name":"Починок","search":["Починок"]},{"slug":"derevnya-pochinok-na-rechke-na-chyurovke-1626-34","name":"Починок","search":["Починок"]},{"slug":"pochinok-kharlamov-u-kolentsa","name":"Починок Харламов у Коленца","search":["Починок Харламов у Коленца","Харламов"]},{"slug":"zaopoche","name":"Почка","search":["Почка","Заопочье","Потка"]},{"slug":"presnyakovo","name":"Пресняково","search":["Пресняково"]},{"slug":"prikino","name":"Прикино","search":["Прикино"]},{"slug":"pritykino","name":"Притыкино","search":["Притыкино"]},{"slug":"pryamikovo","name":"Прямиково","search":["Прямиково"]},{"slug":"puminovo-1601","name":"Пуминово","search":["Пуминово"]},{"slug":"putilovo-1559","name":"Путилово","search":["Путилово"]},{"slug":"pyatkov","name":"Пятков","search":["Пятков"]},{"slug":"ramene","name":"Раменье","search":["Раменье","Рамешка","Рамение"]},{"slug":"rameshka-churovskaya","name":"Рамешка","search":["Рамешка","Раменки","Раменка"]},{"slug":"rameshka-churovskaya-2","name":"Рамешка","search":["Рамешка"]},{"slug":"rameshka-charomsky-1559","name":"Рамешка","search":["Рамешка"]},{"slug":"pustosh-retino-1626-50","name":"Ретино","search":["Ретино","Репино"]},{"slug":"pustosh-rzhavitsy-1626-74","name":"Ржавицы","search":["Ржавицы","Ржаницыно"]},{"slug":"rodino","name":"Родино","search":["Родино"]},{"slug":"rozbuy","name":"Розбуй","search":["Розбуй"]},{"slug":"romanovo","name":"Романницово","search":["Романницово","Романово","Романниково","Романиково"]},{"slug":"roslovo-kolenets-1559","name":"Рослово","search":["Рослово","Ивана Рослово"]},{"slug":"rublevo","name":"Рублево","search":["Рублево"]},{"slug":"pustosh-rusanova-1626-105","name":"Русанова","search":["Русанова","Русаново"]},{"slug":"savin","name":"Савин","search":["Савин"]},{"slug":"saunkin","name":"Савунино","search":["Савунино","Саункин","Савино","Сауниньская","Саунинская"]},{"slug":"samsonitsa","name":"Самсоница","search":["Самсоница"]},{"slug":"samuilova","name":"Самуилова","search":["Самуилова"]},{"slug":"svatkova","name":"Сваткова","search":["Сваткова"]},{"slug":"selivanov","name":"Селиваново","search":["Селиваново","Селиванов"]},{"slug":"selittskoe","name":"Селитцкое","search":["Селитцкое","Селецкое"]},{"slug":"selishche","name":"Селище","search":["Селище","Селища"]},{"slug":"seltsa","name":"Сельцо","search":["Сельцо","Сельца"]},{"slug":"senkin","name":"Семенова","search":["Семенова","Сенькин"]},{"slug":"semkino","name":"Семкино","search":["Семкино"]},{"slug":"senukhino","name":"Сенухино","search":["Сенухино"]},{"slug":"senyutino","name":"Сенютино","search":["Сенютино"]},{"slug":"pustosh-sinitsyno-1626-95","name":"Синицыно","search":["Синицыно"]},{"slug":"sintsovskoe","name":"Синцово","search":["Синцово","Синцовское"]},{"slug":"skomorokhov-1559","name":"Скоморохов","search":["Скоморохов"]},{"slug":"skorobogatoy","name":"Скоробогатой","search":["Скоробогатой","Скоробагатое"]},{"slug":"skorynino-1601","name":"Скорынино","search":["Скорынино"]},{"slug":"slizovo","name":"Слизово","search":["Слизово"]},{"slug":"sobolkino-1601","name":"Соболькино","search":["Соболькино"]},{"slug":"sogareva","name":"Согарева","search":["Согарева"]},{"slug":"sokolovo","name":"Соколово","search":["Соколово"]},{"slug":"sosnovka","name":"Сосновка","search":["Сосновка"]},{"slug":"sosnovka-monastery","name":"Сосновка","search":["Сосновка","Сосновец"]},{"slug":"staraya","name":"Старая","search":["Старая"]},{"slug":"pustosh-stepanovskaya-1626-71","name":"Степановская","search":["Степановская","Пророково"]},{"slug":"stepanovskaya-kolinets-1601","name":"Степановская","search":["Степановская"]},{"slug":"stikino","name":"Стикино","search":["Стикино"]},{"slug":"strelitsa-kolenets-1559","name":"Стрелица","search":["Стрелица"]},{"slug":"pustosh-stupnevo-1626-85","name":"Ступнево","search":["Ступнево","Ступная","Ступное"]},{"slug":"syromyatkino","name":"Сыромяткино","search":["Сыромяткино"]},{"slug":"tarasov","name":"Тарасов","search":["Тарасов","Тарасово"]},{"slug":"tarasova","name":"Тарасова","search":["Тарасова","Тарасово"]},{"slug":"telyatnik","name":"Телятник","search":["Телятник"]},{"slug":"timoshin","name":"Тимшино","search":["Тимшино","Тимошин"]},{"slug":"pustosh-titovo-1626-84","name":"Титово","search":["Титово"]},{"slug":"tishinskoe","name":"Тишина","search":["Тишина","Тишинское","Тишино"]},{"slug":"tolstoe-ramene","name":"Толстое Раменье","search":["Толстое Раменье"]},{"slug":"troshin-charomsky-1559","name":"Трошин","search":["Трошин"]},{"slug":"troshino","name":"Трошино","search":["Трошино"]},{"slug":"trufonovo","name":"Труфоново","search":["Труфоново","Труфаново"]},{"slug":"pustosh-tushino-1626-67","name":"Тушино","search":["Тушино"]},{"slug":"uzedi-1601","name":"Узеди","search":["Узеди","Узяди"]},{"slug":"ulushkovo","name":"Улушково","search":["Улушково"]},{"slug":"fedorkovo","name":"Федорково","search":["Федорково","Федорово"]},{"slug":"fedosino","name":"Федосьино","search":["Федосьино"]},{"slug":"fedotov","name":"Федотово","search":["Федотово","Федотов"]},{"slug":"pustosh-feoktistova-1626-99","name":"Феоктистова","search":["Феоктистова","Тарутин","Фертистово"]},{"slug":"fomkin","name":"Фоминское","search":["Фоминское","Фомкин","Фоминская"]},{"slug":"fofonovo","name":"Фофоново","search":["Фофоново","Фофанова"]},{"slug":"khalturin-1559","name":"Халтурин","search":["Халтурин"]},{"slug":"kharlamovo","name":"Харламово","search":["Харламово","Харламова"]},{"slug":"khlopovo-1559","name":"Хлопово","search":["Хлопово"]},{"slug":"kholmy-charomsky-1559","name":"Холмы","search":["Холмы","Холм"]},{"slug":"chyuravskaya-nov","name":"Черепаново","search":["Черепаново","Чюравская Новь"]},{"slug":"pogost-rozhestva-bogoroditsy","name":"Чуровский погост","search":["Чуровский погост","Чуровский"]},{"slug":"shevnitsyno-1559","name":"Шевницыно","search":["Шевницыно","Шевницино"]},{"slug":"shevyrino","name":"Шедрино","search":["Шедрино","Шевырино","Шовырино"]},{"slug":"shelepino-1601","name":"Шелепино","search":["Шелепино"]},{"slug":"shizdino","name":"Шиздино","search":["Шиздино"]},{"slug":"shilolino","name":"Шилолино","search":["Шилолино"]},{"slug":"na-shchuche","name":"Щучье","search":["Щучье","на Щучье"]},{"slug":"yakulkino","name":"Якулкино","search":["Якулкино","Якунино"]},{"slug":"yakunino-monastery","name":"Якунино","search":["Якунино","Якутино"]},{"slug":"yaltsova","name":"Ялцова","search":["Ялцова"]},{"slug":"yartsova","name":"Ярцова","search":["Ярцова","Ярново"]}]</script>
+  <script id="map-count-data" type="application/json">{"all":189,"place":180,"church":9}</script>
   <script src="https://cdn.jsdelivr.net/npm/ol@10.11.0/dist/ol.js"></script>
   <script src="./js/map-marker-settings.js"></script>
   <script src="./js/yandex-map.js"></script>
+  <script src="./js/map-link-navigation.js"></script>
   <script>
     (() => {
       const places = JSON.parse(document.querySelector("#place-search-data").textContent);
-      const mapCounts = JSON.parse(document.querySelector("#map-count-data").textContent);
-      const mapCount = document.querySelector("#map-count");
       const search = document.querySelector("#place-search");
       const results = document.querySelector("#search-results");
       const normalize = (value) => String(value).toLocaleLowerCase("ru-RU").replaceAll("ё", "е").trim();
-      const escapeMarkup = (value) => String(value).replace(/[&<>"']/g, (character) => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;"
-      })[character]);
-
       const renderResults = () => {
         const query = normalize(search.value);
         const matches = (query
           ? places.filter((place) => place.search.some((name) => normalize(name).includes(query)))
-          : places.slice(0, 5)).slice(0, 8);
-        results.innerHTML = matches.length
-          ? matches.map((place) => `<a class="search-result" href="./places/${encodeURIComponent(place.slug)}/"><strong>${escapeMarkup(place.name)}</strong><span>${escapeMarkup(place.type)}</span></a>`).join("")
-          : `<p class="search-empty">Совпадений не найдено</p>`;
+          : places);
+        const links = matches.map((place) => {
+          const link = document.createElement("a");
+          link.className = "search-result";
+          link.href = `./places/${encodeURIComponent(place.slug)}/`;
+          const name = document.createElement("strong");
+          name.textContent = place.name;
+          link.append(name);
+          return link;
+        });
+        if (!links.length) {
+          const empty = document.createElement("p");
+          empty.className = "search-empty";
+          empty.textContent = "Совпадений не найдено";
+          links.push(empty);
+        }
+        results.replaceChildren(...links);
+        results.scrollTop = 0;
       };
-
       search.addEventListener("input", renderResults);
-      document.querySelector("[data-focus-search]")?.addEventListener("click", () => {
-        search.scrollIntoView({ behavior: "smooth", block: "center" });
-        setTimeout(() => search.focus(), 350);
-      });
       renderResults();
-
+      const mapCounts = JSON.parse(document.querySelector("#map-count-data").textContent);
+      const mapCount = document.querySelector("#map-count");
       if (!window.ol) return;
       const mapElement = document.querySelector("#historical-map");
       const markerSettings = window.BelozeryeMapMarkers;
@@ -618,6 +588,7 @@
         controls: ol.control.defaults.defaults({ attribution: false, rotate: false }).extend([new ol.control.ScaleLine({ units: "metric" })])
       });
       window.BelozeryeYandexMaps.addAttribution(map);
+      window.BelozeryeMapLinkNavigation(map, { rootPrefix: "./" });
       const placeHoverLabel = document.createElement("span");
       placeHoverLabel.className = "map-hover-label";
       const churchHoverLabel = document.createElement("span");
@@ -751,6 +722,7 @@
       });
 
       map.on("singleclick", (event) => {
+        if (event.originalEvent.target?.closest?.(".map-object-link")) return;
         const feature = map.forEachFeatureAtPixel(event.pixel, (candidate) => candidate, { hitTolerance: 7 });
         if (!feature) return;
         const members = feature.get("features") ?? [];

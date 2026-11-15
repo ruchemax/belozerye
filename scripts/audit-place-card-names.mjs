@@ -15,15 +15,14 @@ const renderedNames = (place) => {
     const typeLabel = state.type_label?.toLocaleLowerCase("ru-RU");
     const suffixPogost = state.type_code === "pogost" && /(?:ск|ц)ий$/iu.test(state.name);
     const label = suffixPogost ? `${state.name} ${typeLabel}` : `${typeLabel ? `${typeLabel} ` : ""}${state.name}`;
-    const group = groups.get(label) ?? { label, periods: [], position: state.position, year: Infinity };
-    if (!group.periods.includes(period)) group.periods.push(period);
+    const group = groups.get(period) ?? { period, labels: [], position: state.position, year: year(period) };
+    if (!group.labels.includes(label)) group.labels.push(label);
     group.position = Math.min(group.position, state.position);
-    group.year = Math.min(group.year, year(period));
-    groups.set(label, group);
+    groups.set(period, group);
   }
   return [...groups.values()]
     .sort((left, right) => left.year - right.year || left.position - right.position)
-    .map(({ label, periods }) => `${label} (${periods.sort((left, right) => year(left) - year(right)).join(", ")})`)
+    .map(({ period, labels }) => `${period} — ${labels.join("; ")}`)
     .join(" ");
 };
 

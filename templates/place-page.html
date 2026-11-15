@@ -233,6 +233,21 @@ h1 {
   font: 600 .92rem/1.45 Georgia, "Times New Roman", serif;
 }
 
+.location-coordinate-value {
+  display: inline-flex;
+  align-items: center;
+  gap: .9rem;
+}
+
+.source-match-info.location-uncertainty {
+  position: relative;
+  margin-left: 0;
+}
+
+.location-uncertainty .source-match-tooltip {
+  right: 0;
+}
+
 .location-coordinates:hover,
 .location-coordinates:focus-visible {
   text-decoration: underline;
@@ -345,7 +360,46 @@ h1 {
 
 .source-summary-copy {
   min-width: 0;
+  flex: 1;
 }
+
+.source-details > summary { position: relative; }
+.source-match-info { flex: 0 0 auto; margin-left: auto; }
+.source-match-info-button {
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: .15rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent, #9a3412);
+  cursor: help;
+}
+.source-match-info-button svg { width: 100%; height: 100%; }
+.source-match-info-button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.source-match-tooltip {
+  display: none;
+  position: absolute;
+  z-index: 50;
+  top: 100%;
+  right: .5rem;
+  box-sizing: border-box;
+  width: min(26rem, calc(100vw - 4rem));
+  padding: .75rem .9rem;
+  border: 1px solid var(--line, #c8b99b);
+  border-radius: 5px;
+  background: #fbf3df;
+  color: #33281f;
+  box-shadow: 0 5px 18px #33281f25;
+  font-size: .9rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+}
+.source-match-info:hover .source-match-tooltip,
+.source-match-info:focus-within .source-match-tooltip { display: block; }
 
 .source-title {
   display: block;
@@ -854,6 +908,8 @@ h2 {
   background: var(--card-bg);
 }
 
+.overview:has(+ .overview) { margin-bottom: 0; }
+
 .overview-label {
   display: inline;
   margin: 0;
@@ -1006,7 +1062,7 @@ h2 {
   background: var(--card-bg);
 }
 
-:is(.place-card, .church-card) .sources-heading + .mention-card {
+:is(.place-card, .church-card) .source-sections > .mention-card:first-child {
   border-top: 1px solid var(--line);
   border-radius: 5px 5px 0 0;
 }
@@ -1021,7 +1077,7 @@ h2 {
   border-top: 1px solid var(--line);
 }
 
-:is(.place-card, .church-card) .sources-heading + .mention-card .source-details {
+:is(.place-card, .church-card) .source-sections > .mention-card:first-child .source-details {
   border-top: 0;
 }
 
@@ -1037,6 +1093,71 @@ h2 {
 }
 
 /* Responsive layout */
+
+.card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.card-heading h1 { min-width: 0; }
+.map-toggle {
+  flex: 0 0 auto;
+  padding: .45rem .65rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--card-bg);
+  color: #9a3412;
+  font: 600 .85rem/1.4 system-ui, sans-serif;
+  cursor: pointer;
+}
+.map-toggle:focus-visible {
+  outline: 2px solid #9a3412;
+  outline-offset: 3px;
+}
+.map-collapse-control {
+  position: absolute;
+  z-index: 1;
+  top: .5em;
+  right: 2.75em;
+}
+.map-collapse-control svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+.content.is-map-collapsed { grid-template-columns: minmax(0, 1fr); }
+.place-map[hidden] { display: none; }
+@media (min-width: 951px) {
+  .is-map-collapsed .place-info > :is(.card-heading, .place-meta-row, .overview) {
+    width: calc((100% - 1rem) / 2);
+  }
+  .is-map-collapsed .source-sections {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+  .is-map-collapsed .source-sections:has(> .mention-card + .mention-card) {
+    grid-auto-rows: 1px;
+    row-gap: 0;
+  }
+  :is(.place-card, .church-card) .is-map-collapsed .mention-card {
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 0;
+  }
+  .is-map-collapsed .mention-card:only-child { grid-column: 1 / -1; }
+  .is-map-collapsed .mention-card:only-child .source-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+  .is-map-collapsed .source-content-card { min-width: 0; }
+  .is-map-collapsed .source-content-card:only-child { grid-column: 1 / -1; }
+  .is-map-collapsed .mention-card:only-child .source-content-card + .source-content-card { margin-top: 0; }
+}
 
 @media (max-width: 950px) {
   .site-nav {
@@ -1151,7 +1272,10 @@ footer {
 
   <div class="place-info">
 
-    <h1>{{PLACE_DISPLAY_NAME}}</h1>
+    <div class="card-heading">
+      <h1>{{PLACE_DISPLAY_NAME}}</h1>
+      <button class="map-toggle" type="button" aria-controls="card-map" aria-expanded="false" data-map-restore hidden>Показать карту</button>
+    </div>
 
 {{PLACE_META_BLOCK}}
 
@@ -1190,7 +1314,9 @@ footer {
       Источники
     </h2>
 
+    <div class="source-sections">
 {{MENTION_SECTIONS}}
+    </div>
 
   </div>
 
@@ -1208,6 +1334,50 @@ footer {
 </footer>
 
 {{MAP_SCRIPTS}}
+
+<script>
+(() => {
+  const button = document.querySelector("[data-map-toggle]");
+  const restore = document.querySelector("[data-map-restore]");
+  const mapPanel = document.getElementById("card-map");
+  const content = document.querySelector(".content");
+  if (!button || !restore || !mapPanel || !content) return;
+  const sourceCards = [...document.querySelectorAll(".source-sections > .mention-card")];
+  const wideScreen = matchMedia("(min-width: 951px)");
+  const arrangeSources = () => {
+    const compact = content.classList.contains("is-map-collapsed") && wideScreen.matches && sourceCards.length > 1;
+    for (const card of sourceCards) {
+      if (compact) {
+        card.style.gridRowEnd = `span ${Math.max(1, Math.ceil(card.getBoundingClientRect().height) - 1)}`;
+      } else {
+        card.style.removeProperty("grid-row-end");
+      }
+    }
+  };
+  const sourceObserver = new ResizeObserver(arrangeSources);
+  sourceCards.forEach(card => sourceObserver.observe(card));
+  wideScreen.addEventListener("change", arrangeSources);
+  const setCollapsed = (collapsed) => {
+    mapPanel.hidden = collapsed;
+    content.classList.toggle("is-map-collapsed", collapsed);
+    button.setAttribute("aria-expanded", String(!collapsed));
+    restore.hidden = !collapsed;
+    arrangeSources();
+    requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+  };
+  button.addEventListener("click", async () => {
+    if (document.fullscreenElement && mapPanel.contains(document.fullscreenElement)) {
+      await document.exitFullscreen();
+    }
+    setCollapsed(true);
+    restore.focus();
+  });
+  restore.addEventListener("click", () => {
+    setCollapsed(false);
+    button.focus();
+  });
+})();
+</script>
 
 </body>
 </html>

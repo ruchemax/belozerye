@@ -1,9 +1,9 @@
-import { access, mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { books, fragments, places, mentions, locations, churches, churchSources, bookDocuments } from "./load-database.mjs";
+import { books, fragments, places, mentions, locations, churches, churchSources, bookDocuments, fragmentAdministrativeContexts } from "./load-database.mjs";
 import { loadBookUpdates } from "./book-updates.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -16,15 +16,23 @@ if (!yandexMapsApiKey) throw new Error("Добавьте ключ Tiles API Ян
 
 const template = await readFile(path.join(root, "templates/place-page.html"), "utf8");
 const homeTemplate = await readFile(path.join(root, "templates/home-page.html"), "utf8");
+const sourcesTemplate = await readFile(path.join(root, "templates/sources-page.html"), "utf8");
+const updatesTemplate = await readFile(path.join(root, "templates/updates-page.html"), "utf8");
+const bookUpdatesStyles = await readFile(path.join(root, "templates/book-updates.css"), "utf8");
+const siteHeaderTemplate = await readFile(path.join(root, "templates/site-header.html"), "utf8");
+const siteHeaderStyles = await readFile(path.join(root, "templates/site-header.css"), "utf8");
+const mapLinkNavigation = await readFile(path.join(root, "templates/map-link-navigation.js"), "utf8");
 const mapPageTemplate = await readFile(path.join(root, "templates/map-page.html"), "utf8");
 const mapMarkerSettings = await readFile(path.join(root, "templates/map-marker-settings.js"), "utf8");
 const yandexMapTemplate = await readFile(path.join(root, "templates/yandex-map.js"), "utf8");
 const notFoundTemplate = await readFile(path.join(root, "templates/not-found.html"), "utf8");
 const bookReadingPositionScript = await readFile(path.join(root, "templates/book-reading-position.js"), "utf8");
 const bookRefreshScript = await readFile(path.join(root, "templates/book-refresh.js"), "utf8");
+const bookContentsScript = await readFile(path.join(root, "templates/book-contents.js"), "utf8");
 const bookRendererRevision = createHash("sha256")
   .update(await readFile(fileURLToPath(import.meta.url)))
-  .update(bookReadingPositionScript).update(bookRefreshScript).digest("hex");
+  .update(siteHeaderTemplate).update(siteHeaderStyles)
+  .update(bookReadingPositionScript).update(bookRefreshScript).update(bookContentsScript).digest("hex");
 const responseHeaders = await readFile(path.join(root, "templates/headers.txt"), "utf8");
 const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const decodeHtml = (value) => String(value)
@@ -221,6 +229,9 @@ const bookLayoutStyle = `<style id="book-layout-style">
 .document-body .heading-row h2 {
   margin: 0 !important;
 }
+.document-body .heading-note-flow > h2 {
+  display: inline !important;
+}
 .document-body a[href*="/churches/"] {
   text-decoration: none;
 }
@@ -241,6 +252,9 @@ const bookLayoutStyle = `<style id="book-layout-style">
 }
 .document-body :is(.record, .place-record) :is(.record, .place-record) {
   padding-left: 0 !important;
+}
+.document-body .record-source-note + .record-heading-line {
+  margin-top: 1rem !important;
 }
 .document-body .record-body,
 .document-body .village-lines { margin: 0 !important; padding: 0 !important; }
@@ -308,6 +322,8 @@ const bookLayoutStyle = `<style id="book-layout-style">
   line-height: 1.5 !important;
 }
 #document-contents .contents-entry[hidden] { display: none !important; }
+#document-contents[hidden],
+#document-contents .toc-children[hidden] { display: none !important; }
 #document-contents .contents-entry > * { margin-block: 0 !important; }
 #document-contents .contents-entry::before { content: none !important; }
 #document-contents .contents-link {
@@ -525,6 +541,7 @@ const churchHighlightScript = `<script id="church-name-highlight-script">
 })();
 </script>`;
 const addContentsLevelToggles = (html) => {
+  html = html.replace(/if \(contentsPanel\) \{[\s\S]*?\n\}\n(?=if \(documentBody\))/u, "");
   const entryPattern = /<div\b(?=[^>]*\bdata-contents-entry\b)(?=[^>]*\bdata-contents-level="(\d+)")[^>]*>[\s\S]*?<\/div>/gu;
   const entries = [...html.matchAll(entryPattern)].map((match) => ({
     start: match.index,
@@ -552,7 +569,33 @@ const addContentsLevelToggles = (html) => {
       entries[later].end += delta;
     }
   }
-  return result;
+  const collapsedGroups = new Set();
+  let insideFirstLevel = false;
+  result = result.replace(entryPattern, (entry, level) => {
+    if (Number(level) === 1) {
+      insideFirstLevel = /<button\b(?![^>]*\baria-controls=)[^>]*\bdata-contents-level-toggle\b/u.test(entry);
+      return entry.replace(/<button\b[^>]*\bdata-contents-level-toggle\b[^>]*>/u, (button) => {
+        const controlledId = button.match(/aria-controls="([^"]+)"/u)?.[1];
+        if (controlledId) collapsedGroups.add(controlledId);
+        return button.replace(/aria-expanded="[^"]*"/u, 'aria-expanded="false"')
+          .replace(/aria-label="[^"]*"/u, 'aria-label="Показать подразделы"');
+      });
+    }
+    return insideFirstLevel ? entry.replace(/^<div\b/u, "<div hidden") : entry;
+  });
+  result = result.replace(/<div\b[^>]*\bid="([^"]+)"[^>]*>/gu, (opening, id) =>
+    collapsedGroups.has(id) && !/\bhidden(?:\s|=|>)/u.test(opening)
+      ? opening.replace(/^<div\b/u, "<div hidden") : opening);
+  return result.replace("</body>", `<script id="book-contents-script">${bookContentsScript}</script></body>`);
+};
+const syncContentsWithHeadings = (html) => {
+  const headings = new Map([...html.matchAll(/<h[1-6]\b[^>]*\bid="([^"]+)"[^>]*>([\s\S]*?)<\/h[1-6]>/gu)]
+    .map(([, id, content]) => [id, content
+      .replace(/<button\b[^>]*>[\s\S]*?<\/button>/gu, "")
+      .replace(/<span\b[^>]*class="[^"]*\b(?:page-mark|heading-inline-prose|book-place-location)\b[^"]*"[^>]*>[\s\S]*?<\/span>/gu, "")
+      .replace(/<[^>]+>/gu, "").replace(/\s+/gu, " ").trim()]));
+  return html.replace(/(<a\b(?=[^>]*\bclass="[^"]*\bcontents-link\b)[^>]*\bhref="#([^"]+)"[^>]*>)[\s\S]*?(<\/a>)/gu,
+    (link, opening, id, closing) => headings.has(id) ? opening + headings.get(id) + closing : link);
 };
 const stripContentsTerminalPeriods = (html) => html.replace(
   /<div\b(?=[^>]*\bdata-contents-entry\b)[^>]*>[\s\S]*?<\/div>/gu,
@@ -593,16 +636,8 @@ const applyBookTitles = (html, book) => {
   }
   if (!headingMatch) throw new Error(`Main heading for book ${book.id} was not found.`);
 
-  const publicationDatePattern = /<p\b[^>]*>\s*Опубликовано:[\s\S]*?<\/p>/iu;
-  let publicationDate = publicationDatePattern.exec(html)?.[0] ?? "";
-  const updated = latestBookUpdates.get(book.id);
-  if (updated && publicationDate) {
-    const updatedText = new Intl.DateTimeFormat("ru-RU", {
-      day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Berlin"
-    }).format(new Date(`${updated}T12:00:00Z`));
-    publicationDate = publicationDate.replace(/<\/p>$/u,
-      `<br>Обновлено: <time class="book-updated-date" datetime="${updated}">${escapeHtml(updatedText)}</time></p>`);
-  }
+  const publicationDatePattern = /<p\b[^>]*>\s*(?:Опубликовано|Добавлено):[\s\S]*?<\/p>/iu;
+  const publicationDate = publicationDatePattern.exec(html)?.[0] ?? "";
   const publicationUrl = /<p\b[^>]*>\s*Публикация:\s*<a\b[^>]*href="([^"]+)"/iu.exec(html)?.[1];
   let beforeHeading = html.slice(0, headingMatch.index).replace(publicationDatePattern, "");
   let afterHeading = html.slice(headingMatch.index + headingMatch[0].length);
@@ -616,7 +651,7 @@ const applyBookTitles = (html, book) => {
     ? `<a href="${escapeHtml(publicationUrl)}" rel="noopener noreferrer" target="_blank">${publicationText}</a>`
     : publicationText;
   const metadata = `${publicationDate ? `${publicationDate}\n` : ""}<h1${headingAttributes}>${escapeHtml(book.short_title)}</h1>
-<p class="book-full-title">${escapeHtml(book.full_title)}</p>
+${book.full_title && book.full_title !== book.short_title ? `<p class="book-full-title">${escapeHtml(book.full_title)}</p>` : ""}
 ${archiveReference || publicationReference ? `<div class="book-bibliography">
   ${archiveReference ? `<p class="book-reference"><span class="book-reference-label">Архивный шифр:</span> ${archiveReference}</p>` : ""}
   ${publicationReference ? `<p class="book-reference"><span class="book-reference-label">Публикации:</span><br>${publicationReference}</p>` : ""}
@@ -838,6 +873,7 @@ for (const book of books) {
       '$1<span class="church-name-highlight">церковь страстотерпца Христова Георгия</span>'
     );
   }
+  if (book.id === "kirillov-1559") html = syncContentsWithHeadings(html);
   html = stripContentsTerminalPeriods(html);
   html = addContentsLevelToggles(html);
   html = addBookRefresh(addBookReadingPosition(addEmbeddedBookMode(addChurchHighlighting(addBookLayout(applyBookTitles(html, book))))), book);
@@ -880,7 +916,7 @@ for (const mention of mentions) {
   for (const field of ["uezd"]) {
     if (!mention.source_context?.[field]) throw new Error(`В упоминании ${mention.id} не заполнено поле source_context.${field}.`);
   }
-  if (!mention.source_context?.volost && !mention.source_context?.subdivision) {
+  if (!mention.source_context?.volost && !mention.source_context?.selo && !mention.source_context?.subdivision) {
     throw new Error(`В упоминании ${mention.id} не задана волость или другое административное подразделение.`);
   }
   const landCategories = mention.source_context?.land_categories ?? [mention.source_context?.land_category];
@@ -1016,7 +1052,10 @@ const formatSourceContext = (context) => [
   `${context.uezd} уезд`,
   context.stan ? `${context.stan} стан` : null,
   context.prikaz ? `${context.prikaz} приказ` : null,
-  context.volost_label ?? (context.volost ? `${context.volost} волость` : null),
+  [
+    context.volost_label ?? (context.volost ? `${context.volost} волость` : null),
+    context.selo_label ?? (context.selo ? `Село ${context.selo}` : null)
+  ].filter(Boolean).join(" / "),
   formatSubdivisionHierarchy(context) || null
 ].filter(Boolean).join(" · ");
 const formatFolioMark = (folio) => `(л. ${folio.replace(/\s+(об\.)$/iu, "$1")})`;
@@ -1037,6 +1076,7 @@ const renderMap = (placeLocation, fallbackLocation = null) => {
       longitude,
       latitude,
       zoom: 14,
+      locationNote: placeLocation.properties?.location_note,
       coordinatesText: `${formatCoordinate(latitude, "с. ш.", "ю. ш.")}, ${formatCoordinate(longitude, "в. д.", "з. д.")}`,
       linkUrl: `https://yandex.ru/maps/?ll=${longitude}%2C${latitude}&z=14&pt=${longitude}%2C${latitude}`,
       known: true
@@ -1105,6 +1145,7 @@ const renderPlaceMeta = (place, map, extraMeta = "", extraMetaFirst = false) => 
           Координаты
         </span>
 
+        <span class="location-coordinate-value">
         ${map.known ? `<a
           class="location-coordinates"
           href="${escapeHtml(map.linkUrl)}"
@@ -1112,6 +1153,13 @@ const renderPlaceMeta = (place, map, extraMeta = "", extraMetaFirst = false) => 
           rel="noopener noreferrer">
           ${escapeHtml(map.coordinatesText)}
         </a>` : `<span class="location-coordinates">${escapeHtml(map.coordinatesText)}</span>`}
+        ${map.known && map.locationNote ? `<span class="source-match-info location-uncertainty">
+          <button class="source-match-info-button" type="button" aria-label="Положение установлено предположительно" aria-describedby="location-match-reason">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.5v6M12 7.5h.01"/></svg>
+          </button>
+          <span class="source-match-tooltip" id="location-match-reason" role="tooltip">${escapeHtml(map.locationNote)}</span>
+        </span>` : ""}
+        </span>
 
       </div>
 
@@ -1143,10 +1191,17 @@ const mapChurches = churches
 const churchCardDisplayName = (church) => church.name;
 const renderMapSection = (place, map) => {
   return `  <section
+    id="card-map"
     class="place-map"
     aria-label="Карта: ${escapeHtml(displayName(place))}">
 
     <div class="map-frame">
+
+      <div class="map-collapse-control ol-unselectable ol-control">
+        <button type="button" data-map-toggle aria-controls="card-map" aria-expanded="true" aria-label="Свернуть карту" title="Свернуть карту">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM9 4v16m8-12-4 4 4 4"/></svg>
+        </button>
+      </div>
 
       <div
         id="village-map"
@@ -1183,10 +1238,14 @@ const renderMapScripts = (place, map, isChurchPage = false) => `<!-- OpenLayers 
     }),
     controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
-      new ol.control.FullScreen()
+      new ol.control.FullScreen(),
+      new ol.control.Control({ element: document.querySelector(".map-collapse-control") })
     ])
   });
   window.BelozeryeYandexMaps.addAttribution(map);
+  new ResizeObserver(() => {
+    if (document.getElementById("village-map").getBoundingClientRect().width > 0) map.updateSize();
+  }).observe(document.getElementById("village-map"));
   const updateCardClusters = () => {
     cardClusterOverlays.splice(0).forEach((overlay) => map.removeOverlay(overlay));
     cardMarkerEntries.forEach((entry) => {
@@ -1443,6 +1502,12 @@ const renderSourceWindowSizing = () => `<script>
         preparationTimers = [150, 550, 1500].map(delay => setTimeout(prepare, delay));
       };
       frame.addEventListener("load", prepareFrame);
+      let previousWidth = 0;
+      new ResizeObserver(([entry]) => {
+        if (entry.contentRect.width === previousWidth) return;
+        previousWidth = entry.contentRect.width;
+        prepareFrame();
+      }).observe(frame.closest(".source-document-window"));
       frame.closest(".source-details")?.addEventListener("toggle", (event) => {
         if (event.currentTarget.open) prepareFrame();
       });
@@ -1455,6 +1520,15 @@ const renderSourceWindowSizing = () => `<script>
       if (!frame) return;
       scrollToFragment(frame);
     });
+    for (const button of document.querySelectorAll(".source-match-info-button")) {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") button.blur();
+      });
+    }
     for (const handle of document.querySelectorAll("[data-source-resize]")) {
       handle.addEventListener("dblclick", () => {
         const window = handle.closest(".source-fragment")?.querySelector(".source-document-window");
@@ -1485,9 +1559,9 @@ const fillTemplate = (source, values) => {
   for (const [key, value] of Object.entries(values)) result = result.replaceAll(`{{${key}}}`, value);
   const unresolved = result.match(/{{[A-Z0-9_]+}}/g);
   if (unresolved) throw new Error(`Не заполнены поля шаблона: ${unresolved.join(", ")}`);
-  return result;
+  return result.replace(/[ \t]+(?=\r?$)/gmu, "");
 };
-const renderContextHistory = (mentions, valuesForContext) => {
+const renderContextHistory = (mentions, valuesForContext, { omitGeneralAffiliations = false } = {}) => {
   const grouped = new Map();
   for (const [index, mention] of mentions.entries()) {
     const fragment = fragmentsById.get(mention.fragment_id);
@@ -1496,16 +1570,37 @@ const renderContextHistory = (mentions, valuesForContext) => {
       const value = typeof item === "string" ? item : item?.value;
       const period = typeof item === "string" ? book.year : item?.period ?? book.year;
       if (!value) continue;
-      const group = grouped.get(value) ?? { value, periods: [], position: index, year: Infinity };
-      if (!group.periods.includes(period)) group.periods.push(period);
+      const group = grouped.get(period) ?? { period, values: new Set(), position: index, year: sourceYearValue(period) };
+      group.values.add(value);
       group.position = Math.min(group.position, index);
-      group.year = Math.min(group.year, sourceYearValue(period));
-      grouped.set(value, group);
+      grouped.set(period, group);
     }
   }
   return [...grouped.values()]
-    .sort((left, right) => left.year - right.year || left.position - right.position || left.value.localeCompare(right.value, "ru"))
-    .map(({ value, periods }) => `${escapeHtml(value)} (${periods.sort((left, right) => sourceYearValue(left) - sourceYearValue(right)).map(escapeHtml).join(", ")})`)
+    .sort((left, right) => left.year - right.year || left.position - right.position)
+    .map(({ period, values }) => {
+      let labels = [...values];
+      if (omitGeneralAffiliations) {
+        const units = (label) => label.split(/\s*[·/]\s*/u);
+        labels = labels.filter((label) => !labels.some((other) => {
+          const ownUnits = units(label);
+          const otherUnits = units(other);
+          return otherUnits.length > ownUnits.length && ownUnits.every((unit) => otherUnits.includes(unit));
+        }));
+        const affiliationsByParent = new Map();
+        for (const label of labels) {
+          const boundary = label.lastIndexOf(" · ");
+          const parent = boundary < 0 ? "" : label.slice(0, boundary);
+          const children = boundary < 0 ? label : label.slice(boundary + 3);
+          const group = affiliationsByParent.get(parent) ?? new Set();
+          for (const child of children.split(" / ")) group.add(child);
+          affiliationsByParent.set(parent, group);
+        }
+        labels = [...affiliationsByParent].map(([parent, children]) =>
+          `${parent ? `${parent} · ` : ""}${[...children].join(" / ")}`);
+      }
+      return `${escapeHtml(period)} — ${labels.map(escapeHtml).join("; ")}`;
+    });
 };
 const renderOverviewItems = (items) => items.map((item) => `        <li>${item}</li>`).join("\n");
 const renderQuotedFragment = (mention, mergedMentions = []) => {
@@ -1568,6 +1663,14 @@ const renderSourceGroup = (sourceMentions, index) => {
   const firstMention = sourceMentions[0];
   const book = booksById.get(fragmentsById.get(firstMention.fragment_id).book_id);
   const headingId = `source-${index + 1}`;
+  const probableMentions = sourceMentions.filter((mention) => mention.match_reliability === "probable" && mention.match_reason?.trim());
+  const matchReasons = [...new Set(probableMentions.map((mention) => mention.match_reason.trim()))];
+  const matchInfo = probableMentions.length ? `<span class="source-match-info">
+            <button class="source-match-info-button" type="button" aria-label="Предположительное сопоставление" aria-describedby="${headingId}-match-reason">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10.5v6M12 7.5h.01"/></svg>
+            </button>
+            <span class="source-match-tooltip" id="${headingId}-match-reason" role="tooltip">${escapeHtml(matchReasons.join(" "))}</span>
+          </span>` : "";
   const sourceWindowGroups = [];
   for (const mention of sourceMentions) {
     const fragment = fragmentsById.get(mention.fragment_id);
@@ -1614,6 +1717,7 @@ const renderSourceGroup = (sourceMentions, index) => {
               </a>
             </span>
           </span>
+          ${matchInfo}
         </summary>
 
         <div class="source-body">
@@ -1652,8 +1756,8 @@ const mapMarkerData = [...mapPlaces.map((marker) => ({
   longitude: marker.longitude,
   latitude: marker.latitude
 }))];
-const mapFilterMetadata = (placeId) => {
-  const placeMentions = mentions.filter((mention) => mention.place_id === placeId);
+const mapFilterMetadata = (placeId, additionalSources = []) => {
+  const placeMentions = [...mentions.filter((mention) => mention.place_id === placeId), ...additionalSources];
   const booksForPlace = new Set();
   const administrative = new Set();
   const administrativeRecords = [];
@@ -1666,16 +1770,21 @@ const mapFilterMetadata = (placeId) => {
     const fragment = fragmentsById.get(mention.fragment_id);
     if (fragment) booksForPlace.add(fragment.book_id);
     const context = mention.source_context ?? {};
-    for (const key of ["uezd", "stan", "prikaz", "volost", "subdivision"]) {
+    for (const key of ["uezd", "stan", "prikaz", "volost", "selo", "subdivision"]) {
       for (const value of [context[key] ?? []].flat()) administrative.add(value);
     }
-    const hasAdministrativeContext = context.uezd || context.stan || context.prikaz || context.volost || context.subdivision;
+    const hasAdministrativeContext = context.uezd || context.stan || context.prikaz || context.volost || context.selo || context.subdivision;
     if (fragment && hasAdministrativeContext) {
       const subdivisions = [context.subdivision ?? []].flat();
-      for (const subdivision of subdivisions.length ? subdivisions : [null]) {
+      const volost = context.volost ?? (subdivisions.includes("Сизма") ? "Сизма" : null);
+      const children = subdivisions.filter((subdivision) => subdivision !== "Сизма");
+      const isKey = (name) => /(?:^|\s)ключ$/iu.test(name ?? "");
+      const explicitKeys = subdivisions.filter(isKey);
+      for (const subdivision of children.length ? children : [null]) {
+        const selo = context.selo ?? null;
         const path = (context.subdivision_paths ?? []).find((path) => path.at(-1) === subdivision) ?? [subdivision];
-        const selo = path.length > 1 && /^село /iu.test(path.at(-1)) ? path.at(-1) : null;
-        const child = selo ? path.at(-2) : subdivision;
+        const child = path.find(isKey) ?? (explicitKeys.length === 1 ? explicitKeys[0] : null);
+        const localSubdivision = subdivision && !isKey(subdivision) ? subdivision : null;
         administrativeRecords.push({
           book: fragment.book_id,
           uezd: context.uezd ?? null,
@@ -1684,12 +1793,14 @@ const mapFilterMetadata = (placeId) => {
           stan_label: context.stan ? `${context.stan} стан` : null,
           prikaz: context.prikaz ?? null,
           prikaz_label: context.prikaz ? `${context.prikaz} приказ` : null,
-          volost: context.volost ?? null,
-          volost_label: context.volost ? (context.volost_label ? `${context.volost_label[0].toLocaleUpperCase("ru-RU")}${context.volost_label.slice(1)}` : `${context.volost} волость`) : null,
+          volost,
+          volost_label: context.volost ? (context.volost_label ? `${context.volost_label[0].toLocaleUpperCase("ru-RU")}${context.volost_label.slice(1)}` : `${context.volost} волость`) : volost,
           child: child ? context.subdivision_labels?.[child] ?? child : null,
           child_label: child ? context.subdivision_labels?.[child] ?? formatSubdivision(child) : null,
+          subdivision: localSubdivision,
+          subdivision_label: localSubdivision ? context.subdivision_labels?.[localSubdivision] ?? formatSubdivision(localSubdivision) : null,
           selo,
-          selo_label: selo
+          selo_label: context.selo_label ?? (selo ? `Село ${selo}` : null)
         });
       }
     }
@@ -1726,8 +1837,13 @@ const mapFilterData = [
     };
   }),
   ...mapChurches.map((marker) => {
-    const metadata = mapFilterMetadata(marker.church.location_place_id);
-    for (const source of churchSourcesByChurchId.get(marker.church.id) ?? []) {
+    const churchSources = churchSourcesByChurchId.get(marker.church.id) ?? [];
+    const additionalSources = churchSources.flatMap((source) => {
+      const context = fragmentAdministrativeContexts.get(source.fragment_id);
+      return context ? [{ fragment_id: source.fragment_id, source_context: context }] : [];
+    });
+    const metadata = mapFilterMetadata(marker.church.location_place_id, additionalSources);
+    for (const source of churchSources) {
       const fragment = fragmentsById.get(source.fragment_id);
       if (fragment) {
         metadata.books.push(fragment.book_id);
@@ -1750,12 +1866,14 @@ const homeMapCounts = {
   church: mapMarkerData.filter((marker) => marker.kind === "church").length
 };
 expectedFiles.set(path.join(root, "dist", "js", "map-marker-settings.js"), mapMarkerSettings);
+expectedFiles.set(path.join(root, "dist", "js", "map-link-navigation.js"), mapLinkNavigation);
 expectedFiles.set(path.join(root, "dist", "js", "yandex-map.js"), fillTemplate(yandexMapTemplate, {
   YANDEX_MAPS_API_KEY: JSON.stringify(yandexMapsApiKey).replaceAll("<", "\\u003c")
 }));
 let mapPageHtml = fillTemplate(mapPageTemplate, {
   MAP_FILTER_DATA: JSON.stringify(mapFilterData).replaceAll("<", "\\u003c"),
-  BOOK_OPTIONS: JSON.stringify(books.map((book) => ({ value: book.id, label: book.short_title }))).replaceAll("<", "\\u003c"),
+  BOOK_OPTIONS: JSON.stringify(books.toSorted((left, right) => parseInt(left.year, 10) - parseInt(right.year, 10))
+    .map((book) => ({ value: book.id, label: book.short_title }))).replaceAll("<", "\\u003c"),
   YANDEX_MAPS_API_KEY: JSON.stringify(yandexMapsApiKey).replaceAll("<", "\\u003c"),
   DEV_IMAGERY_ENABLED: JSON.stringify(devImageryEnabled)
 });
@@ -1769,6 +1887,10 @@ const churovskoyeLocation = locations.features.find(
   (feature) => feature.properties?.place_id === "pogost-rozhestva-bogoroditsy"
 );
 if (!churovskoyeLocation) throw new Error("Не найдены координаты Чуровского для центра карты Чуровской волости.");
+const sudbitsyLocation = locations.features.find(
+  (feature) => feature.properties?.place_id === "selishche"
+);
+if (!sudbitsyLocation) throw new Error("Не найдены координаты Селища для обзора Судбиц.");
 
 const placeNameCounts = new Map();
 for (const place of places) {
@@ -1797,7 +1919,11 @@ for (const place of places) {
   const isChurovskayaVolost = placeMentions.some(
     (mention) => /^чуровск/iu.test(String(mention.source_context?.volost ?? ""))
   );
-  const map = renderMap(placeLocation, isChurovskayaVolost ? churovskoyeLocation : null);
+  const isSudbitsy = placeMentions.some(
+    (mention) => [mention.source_context?.subdivision ?? []].flat().includes("Судбицы")
+  );
+  const fallbackLocation = isSudbitsy ? sudbitsyLocation : isChurovskayaVolost ? churovskoyeLocation : null;
+  const map = renderMap(placeLocation, fallbackLocation);
   const historicalNameMentions = placeMentions.sort((a, b) => {
     const aFragment = fragmentsById.get(a.fragment_id);
     const bFragment = fragmentsById.get(b.fragment_id);
@@ -1805,63 +1931,37 @@ for (const place of places) {
     const bBook = booksById.get(bFragment.book_id);
     return sourceYearValue(aBook.year) - sourceYearValue(bBook.year) || aFragment.order - bFragment.order;
   });
-  const historicalNamesByName = new Map();
-  const formerHistoricalNamesByName = new Map();
-  for (const mention of historicalNameMentions) {
-    const fragment = fragmentsById.get(mention.fragment_id);
-    const book = booksById.get(fragment.book_id);
-    const formerHistoricalName = formerPlaceName(mention.source_name);
-    if (formerHistoricalName) {
-      const yearLabels = formerHistoricalNamesByName.get(formerHistoricalName) ?? [];
-      const yearLabel = `до ${book.year}`;
-      if (!yearLabels.includes(yearLabel)) yearLabels.push(yearLabel);
-      formerHistoricalNamesByName.set(formerHistoricalName, yearLabels);
-    }
-    const historicalNameSource = mention.historical_name_override ?? mention.source_name;
-    const historicalName = normalizedPlaceName(historicalNameSource);
-    const years = historicalNamesByName.get(historicalName) ?? [];
-    if (!years.includes(book.year)) years.push(book.year);
-    historicalNamesByName.set(historicalName, years);
-  }
-  const allMentionYears = [...new Set(historicalNameMentions.map((mention) => {
-    const fragment = fragmentsById.get(mention.fragment_id);
-    return booksById.get(fragment.book_id).year;
-  }))];
-  const groupedNameStates = new Map();
+  const namesByPeriod = new Map();
+  const addHistoricalName = (period, label, position) => {
+    const group = namesByPeriod.get(period) ?? { period, labels: new Set(), position, year: sourceYearValue(period) };
+    group.labels.add(label);
+    group.position = Math.min(group.position, position);
+    namesByPeriod.set(period, group);
+  };
   for (const state of place.name_states ?? []) {
     const period = state.display_period ?? state.observed_year;
     if (!period || state.assertion_kind === "editorial") continue;
     const typeLabel = state.type_label?.toLocaleLowerCase("ru-RU");
     const suffixPogost = state.type_code === "pogost" && /(?:ск|ц)ий$/iu.test(state.name);
     const label = suffixPogost ? `${state.name} ${typeLabel}` : `${typeLabel ? `${typeLabel} ` : ""}${state.name}`;
-    const group = groupedNameStates.get(label) ?? { label, periods: [], position: state.position, year: Infinity };
-    if (!group.periods.includes(period)) group.periods.push(period);
-    group.position = Math.min(group.position, state.position);
-    group.year = Math.min(group.year, sourceYearValue(period));
-    groupedNameStates.set(label, group);
+    addHistoricalName(period, label, state.position);
   }
-  const stateNames = [...groupedNameStates.values()]
+  if (namesByPeriod.size === 0) {
+    for (const [position, mention] of historicalNameMentions.entries()) {
+      const fragment = fragmentsById.get(mention.fragment_id);
+      const book = booksById.get(fragment.book_id);
+      const formerName = formerPlaceName(mention.source_name);
+      if (formerName) addHistoricalName(`до ${book.year}`, formerName, position);
+      const names = place.name_variants?.length ? place.name_variants
+        : [normalizedPlaceName(mention.historical_name_override ?? mention.source_name)];
+      for (const name of names) addHistoricalName(book.year, name, position);
+    }
+  }
+  const historicalNameParts = [...namesByPeriod.values()]
     .sort((left, right) => left.year - right.year || left.position - right.position)
-    .map(({ label, periods }) => `${label} (${periods.sort((left, right) =>
-      sourceYearValue(left) - sourceYearValue(right)
-    ).join(", ")})`);
-  const historicalNameParts = stateNames.length > 0
-    ? [...new Set(stateNames)]
-    : Array.isArray(place.name_variants) && place.name_variants.length > 0
-    ? [place.name_variants
-      .map((historicalName) => `${historicalName} (${allMentionYears.join(", ")})`)
-      .join(", ")]
-    : [...historicalNamesByName]
-      .map(([historicalName, years]) => `${historicalName} (${years.join(", ")})`)
-      ;
-  if (stateNames.length === 0) {
-    historicalNameParts.unshift(
-      ...[...formerHistoricalNamesByName]
-        .map(([historicalName, yearLabels]) => `${historicalName} (${yearLabels.join(", ")})`)
-    );
-  }
+    .map(({ period, labels }) => `${period} — ${[...labels].join("; ")}`);
   const historicalNames = renderOverviewItems(historicalNameParts.map(escapeHtml));
-  const administrativeAffiliations = renderContextHistory(placeMentions, (context) => [formatSourceContext(context)]);
+  const administrativeAffiliations = renderContextHistory(placeMentions, (context) => [formatSourceContext(context)], { omitGeneralAffiliations: true });
   const landOwnerships = renderContextHistory(placeMentions, (context) =>
     (context.land_categories ?? [context.land_category])
       .map((category) => category?.label && ({
@@ -2065,7 +2165,12 @@ const bookLocationMarker = '<span class="book-place-location" role="img" aria-la
 const addBookLocationMarkers = (html) => html.replace(/<a\b[^>]*>[\s\S]*?<\/a>/gu, (link) => {
   const href = /\bhref="([^"]+)"/u.exec(link)?.[1];
   const slug = href && /(?:^|\/)places\/([^/?#]+)\/$/u.exec(href)?.[1];
-  return slug && locatedPlaceSlugs.has(decodeURIComponent(slug)) ? `${link}${bookLocationMarker}` : link;
+  if (!slug) return link;
+  const folioPattern = /<span\b[^>]*class="[^"]*\bpage-mark\b[^"]*"[^>]*>[\s\S]*?<\/span>/gu;
+  const folios = [...link.matchAll(folioPattern)].map((match) => match[0]);
+  const titleLink = link.replace(folioPattern, "").replace(/\s+<\/a>$/u, "</a>");
+  const location = locatedPlaceSlugs.has(decodeURIComponent(slug)) ? bookLocationMarker : "";
+  return `${titleLink}${location}${folios.length ? ` ${folios.join(" ")}` : ""}`;
 });
 const ensureBookCommaSpacing = (html) => {
   const tokens = html.match(/<script\b[^>]*>[\s\S]*?<\/script>|<style\b[^>]*>[\s\S]*?<\/style>|<[^>]*>|[^<]+/giu) ?? [];
@@ -2093,11 +2198,13 @@ for (const book of books) {
 }
 
 const homePath = path.join(root, "dist", "index.html");
-const homeBookItems = books.map((book) => `          <article class="book-item">
+const sourceBookItems = [...books]
+  .sort((left, right) => Number.parseInt(left.year, 10) - Number.parseInt(right.year, 10))
+  .map((book) => `          <article class="book-item">
             <span class="book-year">${escapeHtml(book.year)}</span>
             <div>
-              <a class="book-title" href="./books/${encodeURIComponent(book.slug)}/">${escapeHtml(book.short_title)}</a>
-              <div class="book-description">${escapeHtml(book.full_title)}</div>
+              <a class="book-title" href="../books/${encodeURIComponent(book.slug)}/">${escapeHtml(book.short_title)}</a>
+              ${book.id === "kirillov-1559" ? "" : `<div class="book-description">${escapeHtml(book.full_title)}</div>`}
             </div>
           </article>`).join("\n");
 const homePlaceSearch = [...places]
@@ -2105,7 +2212,6 @@ const homePlaceSearch = [...places]
   .map((place) => ({
     slug: place.slug,
     name: mainPlaceName(place),
-    type: place.type?.label ?? "Населённый пункт",
     search: [...new Set([
       mainPlaceName(place),
       ...(place.name_variants ?? []),
@@ -2113,8 +2219,8 @@ const homePlaceSearch = [...places]
     ].filter(Boolean))]
   }));
 const normalizeUpdateHeading = (value) => plainText(value).replace(/[▾▸]/gu, "").replace(/[.,:;]+$/u, "").trim();
-const homeUpdates = bookUpdateEntries.map((entry) => {
-  const bookHref = `./books/${encodeURIComponent(entry.book.slug)}/`;
+const renderBookUpdate = (entry, { rootPrefix = "./", compact = false } = {}) => {
+  const bookHref = `${rootPrefix}books/${encodeURIComponent(entry.book.slug)}/`;
   const headings = [...bookDocuments.get(entry.book.id).matchAll(/<h1\b([^>]*)>([\s\S]*?)<\/h1>/gu)]
     .map((match) => ({ id: /\bid="([^"]+)"/u.exec(match[1])?.[1], title: normalizeUpdateHeading(match[2]) }));
   const sections = entry.sections.map((section) => {
@@ -2122,19 +2228,30 @@ const homeUpdates = bookUpdateEntries.map((entry) => {
     const href = heading?.id ? `${bookHref}#${encodeURIComponent(heading.id)}` : bookHref;
     return `<li class="update-section"><a href="${href}">${escapeHtml(section.title)}</a><span class="update-folios">Листы ${escapeHtml(section.folios)}</span></li>`;
   }).join("");
-  return `<li class="update-item"><div class="update-meta"><time datetime="${entry.date}">${entry.displayDate}</time>${entry.status ? `<span class="update-status">${escapeHtml(entry.status)}</span>` : ""}</div><article><h3><a href="${bookHref}">${escapeHtml(entry.book.short_title)}</a></h3><ul class="update-sections">${sections}</ul></article></li>`;
-}).join("\n");
+  const firstSection = entry.sections[0];
+  const summary = `${firstSection.title} · л. ${firstSection.folios}`;
+  const description = compact ? `<p class="update-description">${escapeHtml(summary)}</p>` : `<ul class="update-sections">${sections}</ul>`;
+  const heading = compact ? "h3" : "h2";
+  return `<li class="update-item"><div class="update-meta"><time datetime="${entry.date}">${entry.displayDate}</time>${entry.status ? `<span class="update-status">${escapeHtml(entry.status)}</span>` : ""}</div><article><${heading}><a href="${bookHref}">${escapeHtml(entry.book.short_title)}</a></${heading}>${description}</article></li>`;
+};
+const homeUpdates = bookUpdateEntries.slice(0, 3).map((entry) => renderBookUpdate(entry, { compact: true })).join("\n");
 const homeHtml = fillTemplate(homeTemplate, {
   BOOK_COUNT: String(books.length),
   PLACE_COUNT: String(places.length),
   CHURCH_COUNT: String(churches.length),
   LOCATED_COUNT: String(mapMarkerData.length),
-  BOOK_ITEMS: homeBookItems,
   BOOK_UPDATES: homeUpdates,
   PLACE_SEARCH_DATA: JSON.stringify(homePlaceSearch).replaceAll("<", "\\u003c"),
   MAP_COUNT_DATA: JSON.stringify(homeMapCounts)
 });
 expectedFiles.set(homePath, homeHtml);
+expectedFiles.set(path.join(root, "dist", "css", "book-updates.css"), bookUpdatesStyles);
+expectedFiles.set(path.join(root, "dist", "updates", "index.html"), fillTemplate(updatesTemplate, {
+  BOOK_UPDATES: bookUpdateEntries.map((entry) => renderBookUpdate(entry, { rootPrefix: "../" })).join("\n")
+}));
+expectedFiles.set(path.join(root, "dist", "sources", "index.html"), fillTemplate(sourcesTemplate, {
+  BOOK_ITEMS: sourceBookItems
+}));
 
 const pageTitleCounts = new Map();
 for (const [filePath, html] of expectedFiles) {
@@ -2188,6 +2305,9 @@ for (const [filePath, sourceHtml] of expectedFiles) {
 }
 
 // Preserve the URL of the settlement card merged into Dor.
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-postryaevo-1626-102", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Потеряево</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/poteryaevo/"><meta http-equiv="refresh" content="0;url=../poteryaevo/"></head><body><a href="../poteryaevo/">Потеряево — объединённая карточка</a></body></html>\n`);
+
 expectedFiles.set(path.join(root, "dist", "places", "dor-levashev", "index.html"), `<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><title>Дор</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/dor/"><meta http-equiv="refresh" content="0;url=../dor/"></head><body><a href="../dor/">Дор — объединённая карточка</a></body></html>\n`);
 
@@ -2242,6 +2362,15 @@ expectedFiles.set(path.join(root, "dist", "places", "mervyatino", "index.html"),
 expectedFiles.set(path.join(root, "dist", "places", "moshkov", "index.html"), `<!doctype html>
 <html lang="ru"><head><meta charset="utf-8"><title>Мушково</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/pustosh-mushkovo-1626-75/"><meta http-equiv="refresh" content="0;url=../pustosh-mushkovo-1626-75/"></head><body><a href="../pustosh-mushkovo-1626-75/">Мушково — объединённая карточка</a></body></html>\n`);
 
+expectedFiles.set(path.join(root, "dist", "places", "sosnovets-1559", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Сосновец</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/sosnovka-monastery/"><meta http-equiv="refresh" content="0;url=../sosnovka-monastery/"></head><body><a href="../sosnovka-monastery/">Сосновка — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-stepanovskaya-1626-93", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Степановская — переход к объединённой карточке</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/stepanovskaya-kolinets-1601/"><meta http-equiv="refresh" content="0;url=../stepanovskaya-kolinets-1601/"></head><body><a href="../stepanovskaya-kolinets-1601/">Степановская — объединённая карточка</a></body></html>\n`);
+
+expectedFiles.set(path.join(root, "dist", "places", "pustosh-semenova-1626-60", "index.html"), `<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><title>Семенова — переход к объединённой карточке</title><meta name="robots" content="noindex"><link rel="canonical" href="${siteUrl.replace(/\/$/u, "")}/places/senkin/"><meta http-equiv="refresh" content="0;url=../senkin/"></head><body><a href="../senkin/">Семенова — объединённая карточка</a></body></html>\n`);
+
 publicPageUrls.sort((left, right) => left.localeCompare(right, "ru-RU"));
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -2258,6 +2387,34 @@ for (const [filePath, html] of expectedFiles) {
     : html.replace("</head>", '<meta name="viewport" content="width=device-width, initial-scale=1"></head>');
   expectedFiles.set(filePath, /<h1\b/iu.test(withViewport) ? withViewport
     : withViewport.replace("<body>", `<body><h1>${title}</h1>`));
+}
+
+const includeExistingPages = async (directory) => {
+  for (const entry of await readdir(directory, { withFileTypes: true })) {
+    const filePath = path.join(directory, entry.name);
+    if (entry.isDirectory()) await includeExistingPages(filePath);
+    else if (entry.name.endsWith(".html") && !expectedFiles.has(filePath)) {
+      expectedFiles.set(filePath, await readFile(filePath, "utf8"));
+    }
+  }
+};
+await includeExistingPages(path.join(root, "dist"));
+
+for (const [filePath, html] of expectedFiles) {
+  if (path.extname(filePath) !== ".html" || /<meta\b[^>]*http-equiv="refresh"/iu.test(html)) continue;
+  const relativePath = path.relative(path.join(root, "dist"), filePath).replaceAll("\\", "/");
+  const rootPrefix = relativePath === "404.html" ? "/" : "../".repeat(relativePath.split("/").length - 1) || "./";
+  const header = fillTemplate(siteHeaderTemplate, {
+    ROOT_PREFIX: rootPrefix,
+    SOURCES_CURRENT: relativePath === "sources/index.html" ? ' aria-current="page"' : "",
+    MAP_CURRENT: relativePath === "map/index.html" ? ' aria-current="page"' : ""
+  }).trimEnd();
+  const withHeader = /<header\b/iu.test(html)
+    ? html.replace(/<header\b[^>]*>[\s\S]*?<\/header>/iu, header)
+    : html.replace(/<body\b[^>]*>/iu, (body) => `${body}\n${header}`);
+  const withoutHeaderStyles = withHeader.replace(/<style id="global-site-header-styles">[\s\S]*?<\/style>\s*/giu, "")
+    .replace(/[ \t]+(?=\r?$)/gmu, "");
+  expectedFiles.set(filePath, withoutHeaderStyles.replace(/<\/head>/iu, `<style id="global-site-header-styles">${siteHeaderStyles}</style>\n</head>`));
 }
 
 let changed = 0;

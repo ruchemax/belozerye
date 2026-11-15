@@ -233,6 +233,21 @@ h1 {
   font: 600 .92rem/1.45 Georgia, "Times New Roman", serif;
 }
 
+.location-coordinate-value {
+  display: inline-flex;
+  align-items: center;
+  gap: .9rem;
+}
+
+.source-match-info.location-uncertainty {
+  position: relative;
+  margin-left: 0;
+}
+
+.location-uncertainty .source-match-tooltip {
+  right: 0;
+}
+
 .location-coordinates:hover,
 .location-coordinates:focus-visible {
   text-decoration: underline;
@@ -345,7 +360,46 @@ h1 {
 
 .source-summary-copy {
   min-width: 0;
+  flex: 1;
 }
+
+.source-details > summary { position: relative; }
+.source-match-info { flex: 0 0 auto; margin-left: auto; }
+.source-match-info-button {
+  display: grid;
+  place-items: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: .15rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--accent, #9a3412);
+  cursor: help;
+}
+.source-match-info-button svg { width: 100%; height: 100%; }
+.source-match-info-button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.source-match-tooltip {
+  display: none;
+  position: absolute;
+  z-index: 50;
+  top: 100%;
+  right: .5rem;
+  box-sizing: border-box;
+  width: min(26rem, calc(100vw - 4rem));
+  padding: .75rem .9rem;
+  border: 1px solid var(--line, #c8b99b);
+  border-radius: 5px;
+  background: #fbf3df;
+  color: #33281f;
+  box-shadow: 0 5px 18px #33281f25;
+  font-size: .9rem;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+}
+.source-match-info:hover .source-match-tooltip,
+.source-match-info:focus-within .source-match-tooltip { display: block; }
 
 .source-title {
   display: block;
@@ -854,6 +908,8 @@ h2 {
   background: var(--card-bg);
 }
 
+.overview:has(+ .overview) { margin-bottom: 0; }
+
 .overview-label {
   display: inline;
   margin: 0;
@@ -1006,7 +1062,7 @@ h2 {
   background: var(--card-bg);
 }
 
-:is(.place-card, .church-card) .sources-heading + .mention-card {
+:is(.place-card, .church-card) .source-sections > .mention-card:first-child {
   border-top: 1px solid var(--line);
   border-radius: 5px 5px 0 0;
 }
@@ -1021,7 +1077,7 @@ h2 {
   border-top: 1px solid var(--line);
 }
 
-:is(.place-card, .church-card) .sources-heading + .mention-card .source-details {
+:is(.place-card, .church-card) .source-sections > .mention-card:first-child .source-details {
   border-top: 0;
 }
 
@@ -1037,6 +1093,71 @@ h2 {
 }
 
 /* Responsive layout */
+
+.card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.card-heading h1 { min-width: 0; }
+.map-toggle {
+  flex: 0 0 auto;
+  padding: .45rem .65rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--card-bg);
+  color: #9a3412;
+  font: 600 .85rem/1.4 system-ui, sans-serif;
+  cursor: pointer;
+}
+.map-toggle:focus-visible {
+  outline: 2px solid #9a3412;
+  outline-offset: 3px;
+}
+.map-collapse-control {
+  position: absolute;
+  z-index: 1;
+  top: .5em;
+  right: 2.75em;
+}
+.map-collapse-control svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+}
+.content.is-map-collapsed { grid-template-columns: minmax(0, 1fr); }
+.place-map[hidden] { display: none; }
+@media (min-width: 951px) {
+  .is-map-collapsed .place-info > :is(.card-heading, .place-meta-row, .overview) {
+    width: calc((100% - 1rem) / 2);
+  }
+  .is-map-collapsed .source-sections {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+  .is-map-collapsed .source-sections:has(> .mention-card + .mention-card) {
+    grid-auto-rows: 1px;
+    row-gap: 0;
+  }
+  :is(.place-card, .church-card) .is-map-collapsed .mention-card {
+    min-width: 0;
+    border: 1px solid var(--line);
+    border-radius: 0;
+  }
+  .is-map-collapsed .mention-card:only-child { grid-column: 1 / -1; }
+  .is-map-collapsed .mention-card:only-child .source-body {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+  .is-map-collapsed .source-content-card { min-width: 0; }
+  .is-map-collapsed .source-content-card:only-child { grid-column: 1 / -1; }
+  .is-map-collapsed .mention-card:only-child .source-content-card + .source-content-card { margin-top: 0; }
+}
 
 @media (max-width: 950px) {
   .site-nav {
@@ -1136,16 +1257,60 @@ footer {
   <meta property="og:title" content="Обухово (Раменская волость) — Белозерье">
   <meta property="og:url" content="https://belozersky.uezd.workers.dev/places/obukhovo-ramenskaya/">
   <meta name="twitter:card" content="summary">
+<style id="global-site-header-styles">.global-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 62px;
+  padding: 0 clamp(14px, 3.3vw, 52px);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  color: #f8f4e9;
+  background: #181818;
+}
+.global-site-header a {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: none;
+  text-decoration: none;
+}
+.global-site-header .global-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 1.15rem/1.4 Georgia, "Times New Roman", serif;
+}
+.global-site-header .global-brand img { width: 36px; height: 36px; }
+.global-site-header .global-site-nav { display: flex; align-items: center; gap: 24px; }
+.global-site-header .global-site-nav a { font: 650 .85rem/1.4 system-ui, sans-serif; }
+.global-site-header a:hover,
+.global-site-header a:focus-visible,
+.global-site-header a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 520px) {
+  .global-site-header { padding-inline: 14px; gap: 12px; }
+  .global-site-header .global-site-nav { gap: 14px; }
+}
+</style>
 </head>
 
 <body class="place-card">
 
-<header class="site-header">
-  <nav class="site-nav" aria-label="Основная навигация">
-    <a class="brand" href="../../">
-      <img src="../../images/icons/belozerye-monastery-logo.svg" alt="">
-      <span>Белозерье</span>
-    </a>
+<header class="global-site-header">
+  <a class="global-brand" href="../../" aria-label="Белозерье — главная">
+    <img src="../../images/icons/belozerye-monastery-logo.svg" alt="">
+    <span>Белозерье</span>
+  </a>
+  <nav class="global-site-nav" aria-label="Основная навигация">
+    <a href="../../sources/">Источники</a>
+    <a href="../../map/">Карта</a>
   </nav>
 </header>
 
@@ -1158,7 +1323,10 @@ footer {
 
   <div class="place-info">
 
-    <h1>Обухово</h1>
+    <div class="card-heading">
+      <h1>Обухово</h1>
+      <button class="map-toggle" type="button" aria-controls="card-map" aria-expanded="false" data-map-restore hidden>Показать карту</button>
+    </div>
 
     <div class="place-meta-row">
 
@@ -1196,7 +1364,10 @@ footer {
           Координаты
         </span>
 
+        <span class="location-coordinate-value">
         <span class="location-coordinates">не установлены</span>
+
+        </span>
 
       </div>
 
@@ -1209,21 +1380,21 @@ footer {
     <details class="overview">
       <summary><span class="overview-label">Названия</span></summary>
       <ul class="overview-value">
-                <li>деревня Обухово (1585)</li>
+                <li>1585 — деревня Обухово</li>
       </ul>
     </details>
 
     <details class="overview">
       <summary><span class="overview-label">Административная принадлежность</span></summary>
       <ul class="overview-value">
-                <li>Вологодский уезд · Раменская волость (1585)</li>
+                <li>1585 — Вологодский уезд · Раменская волость</li>
       </ul>
     </details>
 
     <details class="overview">
       <summary><span class="overview-label">Принадлежность земли</span></summary>
       <ul class="overview-value">
-                <li>Дворцовая (1585)</li>
+                <li>1585 — Дворцовая</li>
       </ul>
     </details>
 
@@ -1239,6 +1410,7 @@ footer {
       Источники
     </h2>
 
+    <div class="source-sections">
 
     <section class="mention-card" aria-labelledby="source-1">
 
@@ -1252,6 +1424,7 @@ footer {
               </a>
             </span>
           </span>
+
         </summary>
 
         <div class="source-body">
@@ -1259,7 +1432,7 @@ footer {
 <div class="source-content-card">
             <div class="source-fragment">
               <section class="source-document-window" aria-label="Деревня Обухово" style="height:230px">
-                <iframe src="../../books/belozersky_uezd-1585/?embed=1&view=fragment-layout-8&revision=216c1d734d4c&end=belozersky-1585-transferred-6#belozersky-1585-transferred-6" title="Деревня Обухово" loading="lazy" data-fragment-anchor="belozersky-1585-transferred-6" data-fragment-end-anchor="belozersky-1585-transferred-6"></iframe>
+                <iframe src="../../books/belozersky_uezd-1585/?embed=1&view=fragment-layout-8&revision=fca2b208fab6&end=belozersky-1585-transferred-6#belozersky-1585-transferred-6" title="Деревня Обухово" loading="lazy" data-fragment-anchor="belozersky-1585-transferred-6" data-fragment-end-anchor="belozersky-1585-transferred-6"></iframe>
               </section>
               <div class="source-resize-handle" data-source-resize role="separator" aria-orientation="horizontal" aria-label="Потяните нижнюю границу вниз, чтобы увеличить окно" title="Потяните нижнюю границу вниз, чтобы увеличить окно"></div>
               <button class="source-fragment-reset" type="button" data-return-to-fragment aria-label="Вернуться к фрагменту" title="Вернуться к фрагменту"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2.5 11h2.25v9h14.5v-9h2.25L12 3Z"/></svg></button>
@@ -1270,16 +1443,24 @@ footer {
 
       </details>
     </section>
+    </div>
 
   </div>
 
   <!-- RIGHT COLUMN -->
 
   <section
+    id="card-map"
     class="place-map"
     aria-label="Карта: Обухово">
 
     <div class="map-frame">
+
+      <div class="map-collapse-control ol-unselectable ol-control">
+        <button type="button" data-map-toggle aria-controls="card-map" aria-expanded="true" aria-label="Свернуть карту" title="Свернуть карту">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h16v16H4zM9 4v16m8-12-4 4 4 4"/></svg>
+        </button>
+      </div>
 
       <div
         id="village-map"
@@ -1325,10 +1506,14 @@ footer {
     }),
     controls: ol.control.defaults.defaults({ attribution: false, zoom: true, rotate: false }).extend([
       new ol.control.ScaleLine({ units: "metric" }),
-      new ol.control.FullScreen()
+      new ol.control.FullScreen(),
+      new ol.control.Control({ element: document.querySelector(".map-collapse-control") })
     ])
   });
   window.BelozeryeYandexMaps.addAttribution(map);
+  new ResizeObserver(() => {
+    if (document.getElementById("village-map").getBoundingClientRect().width > 0) map.updateSize();
+  }).observe(document.getElementById("village-map"));
   const updateCardClusters = () => {
     cardClusterOverlays.splice(0).forEach((overlay) => map.removeOverlay(overlay));
     cardMarkerEntries.forEach((entry) => {
@@ -1552,6 +1737,12 @@ footer {
         preparationTimers = [150, 550, 1500].map(delay => setTimeout(prepare, delay));
       };
       frame.addEventListener("load", prepareFrame);
+      let previousWidth = 0;
+      new ResizeObserver(([entry]) => {
+        if (entry.contentRect.width === previousWidth) return;
+        previousWidth = entry.contentRect.width;
+        prepareFrame();
+      }).observe(frame.closest(".source-document-window"));
       frame.closest(".source-details")?.addEventListener("toggle", (event) => {
         if (event.currentTarget.open) prepareFrame();
       });
@@ -1564,6 +1755,15 @@ footer {
       if (!frame) return;
       scrollToFragment(frame);
     });
+    for (const button of document.querySelectorAll(".source-match-info-button")) {
+      button.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      });
+      button.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") button.blur();
+      });
+    }
     for (const handle of document.querySelectorAll("[data-source-resize]")) {
       handle.addEventListener("dblclick", () => {
         const window = handle.closest(".source-fragment")?.querySelector(".source-document-window");
@@ -1588,6 +1788,50 @@ footer {
       });
     }
   })();
+</script>
+
+<script>
+(() => {
+  const button = document.querySelector("[data-map-toggle]");
+  const restore = document.querySelector("[data-map-restore]");
+  const mapPanel = document.getElementById("card-map");
+  const content = document.querySelector(".content");
+  if (!button || !restore || !mapPanel || !content) return;
+  const sourceCards = [...document.querySelectorAll(".source-sections > .mention-card")];
+  const wideScreen = matchMedia("(min-width: 951px)");
+  const arrangeSources = () => {
+    const compact = content.classList.contains("is-map-collapsed") && wideScreen.matches && sourceCards.length > 1;
+    for (const card of sourceCards) {
+      if (compact) {
+        card.style.gridRowEnd = `span ${Math.max(1, Math.ceil(card.getBoundingClientRect().height) - 1)}`;
+      } else {
+        card.style.removeProperty("grid-row-end");
+      }
+    }
+  };
+  const sourceObserver = new ResizeObserver(arrangeSources);
+  sourceCards.forEach(card => sourceObserver.observe(card));
+  wideScreen.addEventListener("change", arrangeSources);
+  const setCollapsed = (collapsed) => {
+    mapPanel.hidden = collapsed;
+    content.classList.toggle("is-map-collapsed", collapsed);
+    button.setAttribute("aria-expanded", String(!collapsed));
+    restore.hidden = !collapsed;
+    arrangeSources();
+    requestAnimationFrame(() => window.dispatchEvent(new Event("resize")));
+  };
+  button.addEventListener("click", async () => {
+    if (document.fullscreenElement && mapPanel.contains(document.fullscreenElement)) {
+      await document.exitFullscreen();
+    }
+    setCollapsed(true);
+    restore.focus();
+  });
+  restore.addEventListener("click", () => {
+    setCollapsed(false);
+    button.focus();
+  });
+})();
 </script>
 
 </body>

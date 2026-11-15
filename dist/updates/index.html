@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Все обновления — Белозерье</title>
+  <link rel="preload" as="image" href="../images/textures/homepage-parchment-v3.webp" fetchpriority="high">
+  <link rel="stylesheet" href="../css/book-updates.css">
+  <style>
+    :root { color-scheme: light; --ink: #33281f; --deep: #241f1a; --muted: #80664f; --accent: #9a3412; --rule: rgba(111,78,43,.25); }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); font: 16px/1.5 Georgia, "Times New Roman", serif; background: linear-gradient(110deg,rgba(255,250,231,.54),rgba(232,216,181,.26)), url("../images/textures/homepage-parchment-v3.webp") center/cover fixed #e8dfc4; }
+    a { color: inherit; text-decoration: none; }
+    a:hover, a:focus-visible { text-decoration: underline; text-underline-offset: 4px; }
+    main { width: min(1050px,100%); margin: auto; padding: 30px clamp(14px,3.3vw,52px) 48px; }
+    .back-link { color: var(--accent); font: 650 .8rem/1.5 system-ui,sans-serif; }
+    h1 { margin: 16px 0 24px; color: var(--deep); font-size: clamp(2rem,4vw,3rem); line-height: 1.15; }
+    .updates-panel { padding: 8px 26px 24px; border: 1px solid var(--rule); border-radius: 5px; background: rgba(255,251,235,.57); }
+    .update-item { grid-template-columns: 115px minmax(0,1fr); gap: 22px; padding: 24px 0; }
+    .update-item:first-child { border-top: 0; }
+    .update-meta { display: block; }
+    .update-status { margin-top: 7px; }
+    @media (max-width: 720px) {
+      .updates-panel { padding-inline: 17px; }
+      .update-item { grid-template-columns: minmax(0,1fr); gap: 10px; }
+      .update-meta { display: flex; }
+      .update-status { margin-top: 0; }
+    }
+  </style>
+  <link rel="canonical" href="https://belozersky.uezd.workers.dev/updates/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Белозерье">
+  <meta property="og:title" content="Все обновления — Белозерье">
+  <meta property="og:url" content="https://belozersky.uezd.workers.dev/updates/">
+  <meta name="twitter:card" content="summary">
+<style id="global-site-header-styles">.global-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  gap: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  height: 62px;
+  padding: 0 clamp(14px, 3.3vw, 52px);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  color: #f8f4e9;
+  background: #181818;
+}
+.global-site-header a {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  background: none;
+  text-decoration: none;
+}
+.global-site-header .global-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font: 700 1.15rem/1.4 Georgia, "Times New Roman", serif;
+}
+.global-site-header .global-brand img { width: 36px; height: 36px; }
+.global-site-header .global-site-nav { display: flex; align-items: center; gap: 24px; }
+.global-site-header .global-site-nav a { font: 650 .85rem/1.4 system-ui, sans-serif; }
+.global-site-header a:hover,
+.global-site-header a:focus-visible,
+.global-site-header a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 520px) {
+  .global-site-header { padding-inline: 14px; gap: 12px; }
+  .global-site-header .global-site-nav { gap: 14px; }
+}
+</style>
+</head>
+<body>
+<header class="global-site-header">
+  <a class="global-brand" href="../" aria-label="Белозерье — главная">
+    <img src="../images/icons/belozerye-monastery-logo.svg" alt="">
+    <span>Белозерье</span>
+  </a>
+  <nav class="global-site-nav" aria-label="Основная навигация">
+    <a href="../sources/">Источники</a>
+    <a href="../map/">Карта</a>
+  </nav>
+</header>
+  <main>
+    <a class="back-link" href="../#updates">← На главную</a>
+    <h1>Все обновления</h1>
+    <section class="updates-panel" aria-label="Полный журнал добавлений к книгам">
+      <ol class="updates-list">
+<li class="update-item"><div class="update-meta"><time datetime="2026-11-15">15.11.2026</time></div><article><h2><a href="../books/kirillov_monastery-1601/">Переписная книга Кирилова монастыря (1601 г.)</a></h2><ul class="update-sections"><li class="update-section"><a href="../books/kirillov_monastery-1601/#sizma-estate">Да Белоозерскаго ж уезда Кирилова монастыря вотчина на Сизме</a><span class="update-folios">Листы 37об.–45</span></li></ul></article></li>
+<li class="update-item"><div class="update-meta"><time datetime="2026-11-15">15.11.2026</time></div><article><h2><a href="../books/kirillov_monastery-1559/">Вытные книги Кирилова монастыря (1559 г.)</a></h2><ul class="update-sections"><li class="update-section"><a href="../books/kirillov_monastery-1559/#seed-koshchievsky-title">Семянник ржаной и яровой. Ключ Кощеевьской</a><span class="update-folios">Листы 111–115</span></li><li class="update-section"><a href="../books/kirillov_monastery-1559/#seed">Семянник ржаной и яровой. Ключ Чяромской</a><span class="update-folios">Листы 120–124об.</span></li><li class="update-section"><a href="../books/kirillov_monastery-1559/#seed-chyurava">Семяник ржаной и яровой. Ключ Чюравской</a><span class="update-folios">Листы 125–130об.</span></li><li class="update-section"><a href="../books/kirillov_monastery-1559/#rent-koshchievsky-title">Оброчник всякого хлеба Кощиевского ключа. Ключ Кощиевской</a><span class="update-folios">Листы 235об.–239об.</span></li><li class="update-section"><a href="../books/kirillov_monastery-1559/#rent-charoma-title">Оброчник Чяромского ключя всякого хлеба. Ключ Чяромской [Чаромской]</a><span class="update-folios">Листы 244–249об.</span></li><li class="update-section"><a href="../books/kirillov_monastery-1559/">Оброчник Чюравского ключа всякого хлеба [Оброчник хлебной Чюравской]. Ключ Чюравской</a><span class="update-folios">Листы 249об.–254об.</span></li></ul></article></li>
+<li class="update-item"><div class="update-meta"><time datetime="2026-11-09">09.11.2026</time></div><article><h2><a href="../books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a></h2><ul class="update-sections"><li class="update-section"><a href="../books/belozersky_uezd-1626-27/#folios-547-561">Того ж Надпорожскаго стану Кирилова манастыря вотчина на Сизьме, в Чюровской волости в Чаромском ключе и в Запогосте, и в Коленце, и в Судбицах</a><span class="update-folios">Листы 547–561</span></li></ul></article></li>
+<li class="update-item"><div class="update-meta"><time datetime="2026-10-29">29.10.2026</time></div><article><h2><a href="../books/belozersky_uezd-1585/">Писцовая книга Белозерского уезда (1585 г.)</a></h2><ul class="update-sections"><li class="update-section"><a href="../books/belozersky_uezd-1585/#churovskaya">Волость Чюровская пуста того ж Усть-Угольского приказу</a><span class="update-folios">Листы 1544–1548об.</span></li></ul></article></li>
+<li class="update-item"><div class="update-meta"><time datetime="2026-10-29">29.10.2026</time></div><article><h2><a href="../books/belozersky_uezd-1544/">Сотная из писцовых книг Белозерского уезда (1544 г.)</a></h2><ul class="update-sections"><li class="update-section"><a href="../books/belozersky_uezd-1544/#volost-ugol">В волости в Угле деревни Кирилова ж монастыря</a><span class="update-folios">Листы 497об.–502/2об.</span></li><li class="update-section"><a href="../books/belozersky_uezd-1544/#without-plough">Кирилова ж монастыря починки без пашни</a><span class="update-folios">Листы 502/2об.–503</span></li></ul></article></li>
+<li class="update-item"><div class="update-meta"><time datetime="2026-10-20">20.10.2026</time></div><article><h2><a href="../books/belozersky_uezd-1626-27/">Писцовая книга Белозерского уезда (1626/27 г.)</a></h2><ul class="update-sections"><li class="update-section"><a href="../books/belozersky_uezd-1626-27/#church-and-estates">Волость Чуровская, а в ней погост на государеве земле</a><span class="update-folios">Листы 362об.</span></li><li class="update-section"><a href="../books/belozersky_uezd-1626-27/#landowners">В той же волости за помещики</a><span class="update-folios">Листы 362об.–363об.</span></li><li class="update-section"><a href="../books/belozersky_uezd-1626-27/#vacant-lands">А под ней написано: в той волости, тое ж Чюровские волости, в порозжих землях старые пустоты</a><span class="update-folios">Листы 364–367</span></li><li class="update-section"><a href="../books/belozersky_uezd-1626-27/#patriarchal-domain">Патриаршая вотчина</a><span class="update-folios">Листы 444–453об.</span></li></ul></article></li>
+      </ol>
+    </section>
+  </main>
+</body>
+</html>

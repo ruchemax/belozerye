@@ -13,7 +13,7 @@ the complete static website.
 
 ## Highlights
 
-- Browse three historical source books and navigate their structured fragments.
+- Browse five historical source books and navigate their structured fragments.
 - Explore 200+ settlement cards with citations back to the exact source passage.
 - View settlements and churches on an OpenLayers map with filtering, grouping,
   labels, and clustered markers.
